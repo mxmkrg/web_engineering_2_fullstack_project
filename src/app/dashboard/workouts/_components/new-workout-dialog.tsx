@@ -41,7 +41,10 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
 
         <form action={formAction} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Workout Name
             </label>
             <input
@@ -53,9 +56,11 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
               placeholder="e.g., Push Day, Morning Run"
             />
           </div>
-
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="date"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Date
             </label>
             <input
@@ -63,13 +68,15 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
               id="date"
               name="date"
               required
-              defaultValue={new Date().toISOString().split('T')[0]}
+              defaultValue={new Date().toISOString().split("T")[0]}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-
           <div>
-            <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="duration"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Duration (minutes)
             </label>
             <input
@@ -81,9 +88,11 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
               placeholder="60"
             />
           </div>
-
           <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="notes"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Notes (optional)
             </label>
             <textarea
@@ -94,14 +103,15 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
               placeholder="How did it go? Any observations..."
             />
           </div>
-
-            {state.error && (
-              <div className="text-red-600 text-sm">{state.error}</div>
-            )}
-
-            {state.success && (
-              <div className="text-green-600 text-sm">Workout created successfully!</div>
-            )}          <div className="flex space-x-3 pt-4">
+          {state.error && (
+            <div className="text-red-600 text-sm">{state.error}</div>
+          )}
+          {state.success && (
+            <div className="text-green-600 text-sm">
+              Workout created successfully!
+            </div>
+          )}{" "}
+          <div className="flex space-x-3 pt-4">
             <button
               type="button"
               onClick={onClose}

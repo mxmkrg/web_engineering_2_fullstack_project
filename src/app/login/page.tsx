@@ -9,7 +9,7 @@ import { Eye, EyeOff, Dumbbell } from "lucide-react";
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const [loginState, loginAction] = useActionState(login, {});
   const [signupState, signupAction] = useActionState(signUp, {});
 
@@ -29,10 +29,9 @@ export default function LoginPage() {
             {isSignUp ? "Create Account" : "Welcome Back"}
           </h2>
           <p className="mt-2 text-gray-600">
-            {isSignUp 
-              ? "Start your fitness journey today" 
-              : "Sign in to track your workouts"
-            }
+            {isSignUp
+              ? "Start your fitness journey today"
+              : "Sign in to track your workouts"}
           </p>
         </div>
 
@@ -40,7 +39,10 @@ export default function LoginPage() {
           <form action={currentAction} className="space-y-6">
             {isSignUp && (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Full Name
                 </label>
                 <input
@@ -55,7 +57,10 @@ export default function LoginPage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <input
@@ -69,7 +74,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="mt-1 relative">
@@ -121,7 +129,9 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  {isSignUp ? "Already have an account?" : "Don't have an account?"}
+                  {isSignUp
+                    ? "Already have an account?"
+                    : "Don't have an account?"}
                 </span>
               </div>
             </div>
@@ -142,8 +152,12 @@ export default function LoginPage() {
             Demo Credentials (for testing)
           </h3>
           <div className="text-xs text-yellow-700 space-y-1">
-            <p><strong>Email:</strong> demo@example.com</p>
-            <p><strong>Password:</strong> password123</p>
+            <p>
+              <strong>Email:</strong> demo@example.com
+            </p>
+            <p>
+              <strong>Password:</strong> password123
+            </p>
             <p className="text-yellow-600 mt-2">
               Or create a new account above
             </p>

@@ -1,6 +1,10 @@
 import { getServerSession } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb";
@@ -11,7 +15,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
-  
+
   if (!session) {
     redirect("/login");
   }
@@ -27,9 +31,7 @@ export default async function DashboardLayout({
             <DynamicBreadcrumb />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {children}
-        </div>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -31,7 +31,9 @@ export const createWorkout = async (
   const rawData = {
     name: formData.get("name"),
     date: formData.get("date"),
-    duration: formData.get("duration") ? Number(formData.get("duration")) : undefined,
+    duration: formData.get("duration")
+      ? Number(formData.get("duration"))
+      : undefined,
     notes: formData.get("notes") || undefined,
   };
 

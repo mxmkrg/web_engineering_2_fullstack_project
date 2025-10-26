@@ -18,7 +18,9 @@ export async function WorkoutList({ userId }: WorkoutListProps) {
   if (recentWorkouts.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No workouts yet. Start your fitness journey!</p>
+        <p className="text-gray-500">
+          No workouts yet. Start your fitness journey!
+        </p>
       </div>
     );
   }
@@ -41,7 +43,7 @@ export async function WorkoutList({ userId }: WorkoutListProps) {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center text-sm text-gray-500">
             <Clock className="size-4 mr-1" />
             {workoutItem.duration || 0}m

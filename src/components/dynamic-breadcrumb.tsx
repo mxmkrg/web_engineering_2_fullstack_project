@@ -41,12 +41,14 @@ export function DynamicBreadcrumb() {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        
+
         {breadcrumbSegments.map((segment, index) => {
           const isLast = index === breadcrumbSegments.length - 1;
           const hrefParts = breadcrumbSegments.slice(0, index + 1);
           const href = `/dashboard/${hrefParts.join("/")}`;
-          const displayName = pathMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+          const displayName =
+            pathMap[segment] ||
+            segment.charAt(0).toUpperCase() + segment.slice(1);
 
           return (
             <div key={segment} className="flex items-center gap-1">
@@ -57,9 +59,7 @@ export function DynamicBreadcrumb() {
                 {isLast ? (
                   <BreadcrumbPage>{displayName}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink href={href}>
-                    {displayName}
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href={href}>{displayName}</BreadcrumbLink>
                 )}
               </BreadcrumbItem>
             </div>

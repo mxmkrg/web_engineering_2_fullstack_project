@@ -6,7 +6,7 @@ import { NewWorkoutButton } from "./_components/new-workout-button";
 
 export default async function WorkoutsPage() {
   const session = await getServerSession();
-  
+
   // No need to check for session here since middleware and layout handle it
   // But we still need to get the session for user.id
 
@@ -30,7 +30,9 @@ export default async function WorkoutsPage() {
 
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight">Recent Workouts</h3>
+          <h3 className="text-2xl font-semibold leading-none tracking-tight">
+            Recent Workouts
+          </h3>
         </div>
         <div className="p-6 pt-0">
           <Suspense fallback={<WorkoutListSkeleton />}>
@@ -46,7 +48,10 @@ function StatsSkeleton() {
   return (
     <>
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div
+          key={i}
+          className="rounded-lg border bg-card text-card-foreground shadow-sm"
+        >
           <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
             <div className="animate-pulse">
               <div className="h-4 bg-muted rounded w-24 mb-2"></div>

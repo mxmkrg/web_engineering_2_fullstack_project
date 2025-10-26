@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { Activity, TrendingUp, Calendar, Users } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface DashboardContentProps {
   userName: string;
@@ -20,7 +26,7 @@ export function DashboardContent({ userName }: DashboardContentProps) {
       color: "text-blue-600",
     },
     {
-      title: "This Week", 
+      title: "This Week",
       value: "0",
       description: "Workouts this week",
       icon: Calendar,
@@ -91,7 +97,8 @@ export function DashboardContent({ userName }: DashboardContentProps) {
                 Start Your First Workout
               </button>
               <p className="text-sm text-muted-foreground text-center">
-                Track exercises, sets, reps, and weights to monitor your progress over time.
+                Track exercises, sets, reps, and weights to monitor your
+                progress over time.
               </p>
             </div>
           </CardContent>
@@ -108,7 +115,8 @@ export function DashboardContent({ userName }: DashboardContentProps) {
             <div className="text-center py-6">
               <Activity className="size-12 text-muted-foreground mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">
-                No workouts yet. Create your first workout to see your activity here.
+                No workouts yet. Create your first workout to see your activity
+                here.
               </p>
             </div>
           </CardContent>
@@ -129,21 +137,27 @@ export function DashboardContent({ userName }: DashboardContentProps) {
               <TrendingUp className="size-8 text-green-600" />
               <div>
                 <h4 className="font-medium">Progress Tracking</h4>
-                <p className="text-sm text-muted-foreground">Visual progress charts and analytics</p>
+                <p className="text-sm text-muted-foreground">
+                  Visual progress charts and analytics
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg border">
               <Calendar className="size-8 text-purple-600" />
               <div>
                 <h4 className="font-medium">Workout Scheduling</h4>
-                <p className="text-sm text-muted-foreground">Plan and schedule your workouts</p>
+                <p className="text-sm text-muted-foreground">
+                  Plan and schedule your workouts
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg border">
               <Users className="size-8 text-orange-600" />
               <div>
                 <h4 className="font-medium">Goal Setting</h4>
-                <p className="text-sm text-muted-foreground">Set and track fitness goals</p>
+                <p className="text-sm text-muted-foreground">
+                  Set and track fitness goals
+                </p>
               </div>
             </div>
           </div>

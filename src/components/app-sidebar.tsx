@@ -1,16 +1,16 @@
 "use client";
 
-import { 
-  Calendar, 
-  Dumbbell, 
-  Home, 
-  LineChart, 
-  Settings, 
+import {
+  Calendar,
+  Dumbbell,
+  Home,
+  LineChart,
+  Settings,
   Target,
   User,
   ChevronUp,
   MoreHorizontal,
-  Plus
+  Plus,
 } from "lucide-react";
 
 import {
@@ -47,7 +47,7 @@ const currentItems = [
   },
   {
     title: "Workouts",
-    url: "/dashboard/workouts", 
+    url: "/dashboard/workouts",
     icon: Dumbbell,
   },
 ];
@@ -62,7 +62,7 @@ const futureItems = [
   },
   {
     title: "Schedule",
-    url: "#", 
+    url: "#",
     icon: Calendar,
     comingSoon: true,
   },
@@ -102,7 +102,7 @@ export function AppSidebar({ userName = "User" }: AppSidebarProps) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Main</SidebarGroupLabel>

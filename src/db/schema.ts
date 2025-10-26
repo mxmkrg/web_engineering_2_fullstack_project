@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 
 /**
  * Authentication schema.
@@ -102,6 +102,8 @@ export const exercise = sqliteTable("exercise", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
   category: text("category").notNull(), // chest, back, legs, shoulders, arms, cardio, etc.
+  muscleGroups: text("muscle_groups").notNull(), // JSON array of primary and secondary muscles
+  equipment: text("equipment"), // barbell, dumbbell, machine, bodyweight, etc.
   description: text("description"),
   instructions: text("instructions"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
@@ -115,6 +117,7 @@ export const workout = sqliteTable("workout", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  status: text("status").notNull().default("active"), // 'active' or 'completed'
   date: integer("date", { mode: "timestamp_ms" }).notNull(),
   duration: integer("duration"), // in minutes
   notes: text("notes"),
@@ -135,12 +138,22 @@ export const workoutExercise = sqliteTable("workout_exercise", {
   exerciseId: integer("exercise_id")
     .notNull()
     .references(() => exercise.id, { onDelete: "cascade" }),
-  sets: integer("sets").notNull(),
+  order: integer("order").notNull().default(0), // order of exercise in workout
+  notes: text("notes"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+});
+
+export const workoutSet = sqliteTable("workout_set", {
+  id: integer("id").primaryKey(),
+  workoutExerciseId: integer("workout_exercise_id")
+    .notNull()
+    .references(() => workoutExercise.id, { onDelete: "cascade" }),
+  setNumber: integer("set_number").notNull(), // 1, 2, 3, etc.
   reps: integer("reps"),
-  weight: integer("weight"), // in kg or lbs
-  duration: integer("duration"), // for cardio exercises in seconds
-  distance: integer("distance"), // for cardio exercises in meters
-  restTime: integer("rest_time"), // in seconds
+  weight: real("weight"), // using real for decimal support
+  completed: integer("completed", { mode: "boolean" }).default(false).notNull(),
   notes: text("notes"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)

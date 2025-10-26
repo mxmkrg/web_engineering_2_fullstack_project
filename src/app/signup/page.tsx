@@ -19,18 +19,17 @@ export default function SignupPage() {
               <Dumbbell className="size-8 text-white" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            Create Account
-          </h2>
-          <p className="mt-2 text-gray-600">
-            Start your fitness journey today
-          </p>
+          <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
+          <p className="mt-2 text-gray-600">Start your fitness journey today</p>
         </div>
 
         <div className="bg-white py-8 px-6 shadow-lg rounded-lg">
           <form action={formAction} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Full Name
               </label>
               <input
@@ -44,7 +43,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <input
@@ -58,7 +60,10 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="mt-1 relative">
@@ -104,8 +109,8 @@ export default function SignupPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="font-medium text-green-600 hover:text-green-500"
               >
                 Sign in

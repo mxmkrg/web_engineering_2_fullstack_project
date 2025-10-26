@@ -24,7 +24,7 @@ export function DashboardClient({ userName }: DashboardClientProps) {
             Track your workouts and monitor your fitness progress
           </p>
         </div>
-        
+
         <form action={logoutAction}>
           <button
             type="submit"
@@ -46,9 +46,7 @@ export function DashboardClient({ userName }: DashboardClientProps) {
               <Activity className="size-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                Workouts
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900">Workouts</h3>
               <p className="text-gray-600">Track your fitness journey</p>
             </div>
           </div>
@@ -59,8 +57,13 @@ export function DashboardClient({ userName }: DashboardClientProps) {
         <h2 className="text-xl font-semibold mb-4">Getting Started</h2>
         <div className="text-center py-6">
           <Activity className="size-16 text-blue-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Welcome to your fitness journey!</h3>
-          <p className="text-gray-600 mb-6">Start by creating your first workout to begin tracking your progress.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Welcome to your fitness journey!
+          </h3>
+          <p className="text-gray-600 mb-6">
+            Start by creating your first workout to begin tracking your
+            progress.
+          </p>
           <button
             onClick={() => router.push("/dashboard/workouts" as any)}
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"

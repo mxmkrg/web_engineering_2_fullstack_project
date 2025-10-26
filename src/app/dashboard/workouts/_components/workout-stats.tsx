@@ -18,24 +18,24 @@ export async function WorkoutStats({ userId }: WorkoutStatsProps) {
   const thisMonth = new Date();
   thisMonth.setDate(1);
   thisMonth.setHours(0, 0, 0, 0);
-  
+
   const monthlyWorkouts = await db
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisMonth.getTime()}`
+      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisMonth.getTime()}`,
     );
 
   // Get workouts this week
   const thisWeek = new Date();
   thisWeek.setDate(thisWeek.getDate() - thisWeek.getDay());
   thisWeek.setHours(0, 0, 0, 0);
-  
+
   const weeklyWorkouts = await db
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisWeek.getTime()}`
+      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisWeek.getTime()}`,
     );
 
   // Calculate average duration
