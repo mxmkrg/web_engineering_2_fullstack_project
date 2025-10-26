@@ -21,5 +21,5 @@ export async function middleware(request: NextRequest) {
 }
 export const config = {
   runtime: "nodejs",
-  matcher: ["/dashboard"], // Apply middleware to specific routes
+  matcher: ["/dashboard/:path*"], // Apply middleware to all dashboard routes
 };

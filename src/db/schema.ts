@@ -94,3 +94,55 @@ export const demoData = sqliteTable("demo_data", {
   limit: integer("limit").notNull(),
   reviewer: text("reviewer").notNull(),
 });
+
+/**
+ * Workout Tracker Schema
+ */
+export const exercise = sqliteTable("exercise", {
+  id: integer("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // chest, back, legs, shoulders, arms, cardio, etc.
+  description: text("description"),
+  instructions: text("instructions"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+});
+
+export const workout = sqliteTable("workout", {
+  id: integer("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  date: integer("date", { mode: "timestamp_ms" }).notNull(),
+  duration: integer("duration"), // in minutes
+  notes: text("notes"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const workoutExercise = sqliteTable("workout_exercise", {
+  id: integer("id").primaryKey(),
+  workoutId: integer("workout_id")
+    .notNull()
+    .references(() => workout.id, { onDelete: "cascade" }),
+  exerciseId: integer("exercise_id")
+    .notNull()
+    .references(() => exercise.id, { onDelete: "cascade" }),
+  sets: integer("sets").notNull(),
+  reps: integer("reps"),
+  weight: integer("weight"), // in kg or lbs
+  duration: integer("duration"), // for cardio exercises in seconds
+  distance: integer("distance"), // for cardio exercises in meters
+  restTime: integer("rest_time"), // in seconds
+  notes: text("notes"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+});
