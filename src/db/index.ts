@@ -1,8 +1,14 @@
 import { drizzle } from "drizzle-orm/libsql";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not defined in the environment variables.");
+}
 
 export const db = drizzle({
   connection: {
-    // biome-ignore lint/style/noNonNullAssertion: We have a .env file so we expect this to be fine
-    url: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL,
   },
 });
