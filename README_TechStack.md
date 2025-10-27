@@ -21,6 +21,7 @@ See [pnpm Installation Guide](https://pnpm.io/installation).
 
 ```bash
 pnpm i
+##npm install framer-motion lucide-react # ist schon in package.json, falls du es brauchst
 ```
 
 You do this whenever new dependencies should get installed
