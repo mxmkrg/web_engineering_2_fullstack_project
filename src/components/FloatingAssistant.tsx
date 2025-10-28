@@ -1,8 +1,6 @@
 import {useEffect, useState} from "react";
 import {MessageCircle, Send, Loader2} from "lucide-react";
 import {motion, AnimatePresence} from "framer-motion";
-import {db} from "@/db";
-import {exercise} from "@/db/schema";
 import {SYSTEM_PROMPT} from "@/app/dashboard/_components/prompts/SystemPrompt";
 
 export default function FloatingAssistant() {
@@ -19,11 +17,12 @@ export default function FloatingAssistant() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const rows = await db.select().from(exercise).limit(5);
-                const formattedData = rows.map((row) => `Exercise: ${row.name}, muscleGroups: ${row.muscleGroups}`).join("\n"); //key-worts einbinden, welche spalten sind relevant?
+                const response = await fetch("/api/exercises");
+                const rows = await response.json();
+                const formattedData = rows.map((row: { name: any; muscleGroups: any; }) => `Exercise: ${row.name}, muscleGroups: ${row.muscleGroups}`).join("\n");
                 setDbData(formattedData);
-                console.log("Data was loaded from columns:", rows.map(row => ({ name: row.name, muscleGroups: row.muscleGroups })));            } catch (err) {
-                //console.error("Error fetching data from the database:", err);
+            } catch (err) {
+                console.error("Error fetching data:", err);
             }
         };
         fetchData();

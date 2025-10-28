@@ -21,7 +21,7 @@ See [pnpm Installation Guide](https://pnpm.io/installation).
 
 ```bash
 pnpm i
-##npm install framer-motion lucide-react # ist schon in package.json, falls du es brauchst
+##npm install framer-motion lucide-react #falls du es brauchst
 ```
 
 You do this whenever new dependencies should get installed
@@ -36,7 +36,14 @@ This command creates a (.gitignore'd) SQLite DB file in src/db/localdb.sqlite.
 
 *You also use this command later to push the changes to the schema into the database!*
 
-### 3. Running the development server
+### 3. Set up environment variables
+Create a `.env.local` file in the root directory of the project and add the following environment variables:
+
+- DATABASE_URL=file:./src/db/localdb.sqlite
+- BETTER_AUTH_SECRET=your_secret_key_here
+- VITE_OPENAI_API_KEY=your_secret_here
+
+### 4. Running the development server
 
 ```bash
 pnpm dev
