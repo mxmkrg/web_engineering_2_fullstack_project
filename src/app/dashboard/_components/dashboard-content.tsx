@@ -9,7 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import FloatingAssistant from "./FloatingAssistant";
+import FloatingAssistant from "../../../components/FloatingAssistant";
 
 interface DashboardContentProps {
     userName: string;

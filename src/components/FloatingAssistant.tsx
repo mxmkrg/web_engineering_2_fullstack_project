@@ -1,52 +1,76 @@
-import { useState } from "react";
-import { MessageCircle, Send, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-if (typeof process !== "undefined" && process.stdout && process.stdout.isTTY) {
-    console.log("Running in a TTY environment");
-} else {
-    console.log("Not running in a TTY environment");
-}
+import {useEffect, useState} from "react";
+import {MessageCircle, Send, Loader2} from "lucide-react";
+import {motion, AnimatePresence} from "framer-motion";
+import {db} from "@/db";
+import {exercise} from "@/db/schema";
+import {SYSTEM_PROMPT} from "@/app/dashboard/_components/prompts/SystemPrompt";
 
 export default function FloatingAssistant() {
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState("");
+    const systemPrompt = SYSTEM_PROMPT;
     const [messages, setMessages] = useState([
-        { role: "assistant", content: "Hello 👋 I'm your AI assistant. How can I help?" }, //todo ysystem prompt setzen
+        {role: "assistant", content: "Hello 👋 I'm your AI assistant. How can I help?"},
     ]);
     const [loading, setLoading] = useState(false);
+    const [dbData, setDbData] = useState<string>("");
 
-    const handleSend = async (e: { preventDefault: () => void; }) => {
+    // Fetch data from the database
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const rows = await db.select().from(exercise).limit(5);
+                const formattedData = rows.map((row) => `Exercise: ${row.name}, muscleGroups: ${row.muscleGroups}`).join("\n"); //key-worts einbinden, welche spalten sind relevant?
+                setDbData(formattedData);
+                console.log("Data was loaded from columns:", rows.map(row => ({ name: row.name, muscleGroups: row.muscleGroups })));            } catch (err) {
+                //console.error("Error fetching data from the database:", err);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleSend = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (!input.trim()) return;
 
-        const userMessage = { role: "user", content: input };
+        const userMessage = {role: "user", content: input};
         setMessages((prev) => [...prev, userMessage]);
         setInput("");
         setLoading(true);
 
         try {
-            // Beispiel für OpenAI (du kannst hier auch OpenRouter, HuggingFace, etc. nutzen)
+            const systemPrompt = `
+                 ${SYSTEM_PROMPT}
+                
+                   Available exercises:                
+                   ${dbData}
+            `;
+
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${process.env.VITE_OPENAI_API_KEY}`, // key aus .env
+                    Authorization: `Bearer ${process.env.VITE_OPENAI_API_KEY}`,
                 },
                 body: JSON.stringify({
                     model: "gpt-4o-mini",
-                    messages: [...messages, userMessage],
+                    messages: [
+                        {role: "system", content: systemPrompt},
+                        ...messages,
+                        userMessage,
+                    ],
                 }),
             });
 
             const data = await response.json();
+            console.log("Connection to ein KI Model successful");
             const aiReply = data.choices?.[0]?.message?.content || "I'm sorry, there was a problem.";
-            setMessages((prev) => [...prev, { role: "assistant", content: aiReply }]);
+            setMessages((prev) => [...prev, {role: "assistant", content: aiReply}]);
         } catch (err) {
             console.error(err);
             setMessages((prev) => [
                 ...prev,
-                { role: "assistant", content: "⚠ Error retrieving the response." },
+                {role: "assistant", content: "⚠ Error retrieving the response."},
             ]);
         } finally {
             setLoading(false);
@@ -58,10 +82,10 @@ export default function FloatingAssistant() {
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        transition={{ duration: 0.25 }}
+                        initial={{opacity: 0, y: 20, scale: 0.95}}
+                        animate={{opacity: 1, y: 0, scale: 1}}
+                        exit={{opacity: 0, y: 20, scale: 0.95}}
+                        transition={{duration: 0.25}}
                         className="mb-3 w-80 bg-white rounded-2xl shadow-2xl border border-blue-200 overflow-hidden flex flex-col"
                     >
                         <div className="p-3 bg-blue-600 text-white font-semibold text-sm flex justify-between">
@@ -84,7 +108,7 @@ export default function FloatingAssistant() {
                             ))}
                             {loading && (
                                 <div className="flex items-center space-x-2 text-gray-400 text-xs">
-                                    <Loader2 className="animate-spin w-4 h-4" /> <span>AI thinks...</span>
+                                    <Loader2 className="animate-spin w-4 h-4"/> <span>AI thinks...</span>
                                 </div>
                             )}
                         </div>
@@ -102,7 +126,7 @@ export default function FloatingAssistant() {
                                 disabled={loading}
                                 className="p-2 text-blue-500 hover:text-blue-600 transition disabled:opacity-40"
                             >
-                                <Send size={18} />
+                                <Send size={18}/>
                             </button>
                         </form>
                     </motion.div>
@@ -113,7 +137,7 @@ export default function FloatingAssistant() {
                 onClick={() => setOpen(!open)}
                 className="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition-all"
             >
-                <MessageCircle size={26} />
+                <MessageCircle size={26}/>
             </button>
         </div>
     );
