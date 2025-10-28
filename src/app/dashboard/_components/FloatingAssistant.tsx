@@ -2,11 +2,17 @@ import { useState } from "react";
 import { MessageCircle, Send, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+if (typeof process !== "undefined" && process.stdout && process.stdout.isTTY) {
+    console.log("Running in a TTY environment");
+} else {
+    console.log("Not running in a TTY environment");
+}
+
 export default function FloatingAssistant() {
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([
-        { role: "assistant", content: "Hello 👋 I'm your AI assistant. How can I help?" },
+        { role: "assistant", content: "Hello 👋 I'm your AI assistant. How can I help?" }, //todo ysystem prompt setzen
     ]);
     const [loading, setLoading] = useState(false);
 
