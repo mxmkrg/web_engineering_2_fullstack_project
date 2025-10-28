@@ -30,7 +30,6 @@ export async function GET(req: Request) {
                 return false;
             }
         });
-
         // Get user's favorites
         const favorites = await db
             .select()
