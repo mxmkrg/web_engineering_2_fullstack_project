@@ -140,7 +140,6 @@ export function ExerciseSelector({
                 autoComplete="off"
             />
           </div>
-
           {/* Exercise Dropdown List - Google Style */}
           {isDropdownOpen && filteredExercises.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 max-h-96 overflow-y-auto border rounded-lg bg-white shadow-2xl z-50 border-gray-300">
