@@ -46,3 +46,24 @@ export async function searchExercises(searchTerm?: string, category?: string) {
     return [];
   }
 }
+
+export async function getExercisesByCategory() {
+  try {
+    const exercises = await db.select().from(exercise);
+
+    // Gruppiere nach Kategorie
+    const grouped: Record<string, Array<{ id: number; name: string }>> = {};
+
+    for (const ex of exercises) {
+      if (!grouped[ex.category]) {
+        grouped[ex.category] = [];
+      }
+      grouped[ex.category].push({ id: ex.id, name: ex.name });
+    }
+
+    return grouped;
+  } catch (error) {
+    console.error("Error fetching exercises by category:", error);
+    return {};
+  }
+}

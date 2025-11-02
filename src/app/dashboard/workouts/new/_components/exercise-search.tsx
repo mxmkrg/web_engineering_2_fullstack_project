@@ -7,41 +7,10 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { X, Search, Dumbbell, Target, Zap, Flame, Triangle, Activity } from "lucide-react"
+import { getExercisesByCategory } from "@/actions/get-exercises"
 
 type Category = "all" | "chest" | "back" | "legs" | "shoulders" | "arms" | "cardio"
 
-const EXERCISES: Record<Exclude<Category, "all">, string[]> = {
-    chest: [
-        "Bench Press",
-        "Incline Dumbbell Press",
-        "Cable Flyes",
-        "Push-Ups",
-        "Chest Dips",
-        "Decline Press",
-        "Pec Deck Machine",
-    ],
-    back: ["Pull-Ups", "Barbell Rows", "Lat Pulldown", "Deadlifts", "T-Bar Rows", "Cable Rows", "Face Pulls"],
-    legs: ["Squats", "Leg Press", "Romanian Deadlifts", "Leg Curls", "Leg Extensions", "Lunges", "Calf Raises"],
-    shoulders: [
-        "Overhead Press",
-        "Lateral Raises",
-        "Front Raises",
-        "Rear Delt Flyes",
-        "Arnold Press",
-        "Upright Rows",
-        "Shrugs",
-    ],
-    arms: [
-        "Barbell Curls",
-        "Tricep Dips",
-        "Hammer Curls",
-        "Skull Crushers",
-        "Cable Curls",
-        "Tricep Pushdowns",
-        "Preacher Curls",
-    ],
-    cardio: ["Running", "Cycling", "Rowing Machine", "Jump Rope", "Elliptical", "Stair Climber", "Swimming"],
-}
 
 const CATEGORY_ICONS: Record<Category, React.ComponentType<{ className?: string }>> = {
     all: Dumbbell,
@@ -72,15 +41,41 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
     const [selectedCategory, setSelectedCategory] = useState<Category>("all")
     const [searchQuery, setSearchQuery] = useState("")
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const [exercises, setExercises] = useState<Record<string, string[]>>({})
+    const [isLoading, setIsLoading] = useState(true)
     const inputRef = useRef<HTMLInputElement>(null)
     const dropdownRef = useRef<HTMLDivElement>(null)
+
+    // Lade Übungen einmalig beim Mount
+    useEffect(() => {
+        async function loadExercises() {
+            setIsLoading(true)
+            try {
+                const data = await getExercisesByCategory()
+
+                // Konvertiere zu erwartetem Format: { category: [exerciseName1, exerciseName2, ...] }
+                const formatted: Record<string, string[]> = {}
+                for (const [category, exerciseList] of Object.entries(data)) {
+                    formatted[category] = exerciseList.map((ex: { id: number; name: string }) => ex.name)
+                }
+
+                setExercises(formatted)
+            } catch (error) {
+                console.error("Failed to load exercises:", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        loadExercises()
+    }, [])
 
     // Get all exercises for selected category
     const getExercisesForCategory = () => {
         if (selectedCategory === "all") {
-            return Object.values(EXERCISES).flat()
+            return Object.values(exercises).flat()
         }
-        return EXERCISES[selectedCategory]
+        return exercises[selectedCategory] || []
     }
 
     // Filter exercises based on search query
@@ -157,12 +152,12 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                         </div>
 
                         {/* Dropdown List */}
-                        {isDropdownOpen && filteredExercises.length > 0 && (
+                        {isDropdownOpen && filteredExercises.length > 0 && !isLoading && (
                             <div className="absolute z-10 mt-2 max-h-80 w-full overflow-y-auto rounded-lg border bg-popover shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
                                 {filteredExercises.map((exercise, index) => {
                                     const exerciseCategory =
                                         selectedCategory === "all"
-                                            ? (Object.entries(EXERCISES).find(([_, exercises]) => exercises.includes(exercise))?.[0] as
+                                            ? (Object.entries(exercises).find(([_, exList]) => exList.includes(exercise))?.[0] as
                                                 | Exclude<Category, "all">
                                                 | undefined)
                                             : selectedCategory
@@ -190,8 +185,15 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                             </div>
                         )}
 
+                        {/* Loading State */}
+                        {isLoading && (
+                            <div className="absolute z-10 mt-2 w-full rounded-lg border bg-popover p-8 text-center shadow-lg">
+                                <p className="text-muted-foreground">Loading exercises...</p>
+                            </div>
+                        )}
+
                         {/* No Results */}
-                        {isDropdownOpen && searchQuery && filteredExercises.length === 0 && (
+                        {isDropdownOpen && searchQuery && filteredExercises.length === 0 && !isLoading && (
                             <div className="absolute z-10 mt-2 w-full rounded-lg border bg-popover p-8 text-center shadow-lg">
                                 <p className="text-muted-foreground">No exercises found for "{searchQuery}"</p>
                             </div>
