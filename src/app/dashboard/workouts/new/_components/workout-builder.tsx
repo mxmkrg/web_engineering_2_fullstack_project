@@ -16,6 +16,10 @@ export function WorkoutBuilder() {
         setSelectedExercises([...selectedExercises, exercise])
         setShowExerciseSearch(false)
     }
+    function saveData() {
+        console.log(workoutTitle);
+        console.log(selectedExercises);
+    }
 
     return (
         <div className="mx-auto max-w-7xl p-6">
@@ -37,7 +41,7 @@ export function WorkoutBuilder() {
                         <X className="mr-2 h-4 w-4" />
                         Cancel
                     </Button>
-                    <Button size="lg" className="bg-blue-500 hover:bg-blue-600">
+                    <Button size="lg" className="bg-blue-500 hover:bg-blue-600" onClick={saveData}>
                         <Save className="mr-2 h-4 w-4" />
                         Save Workout
                     </Button>
