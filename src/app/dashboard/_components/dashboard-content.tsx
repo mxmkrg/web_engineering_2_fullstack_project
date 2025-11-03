@@ -9,7 +9,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import FloatingAssistant from "../../../components/FloatingAssistant";
 
 interface DashboardContentProps {
     userName: string;
@@ -165,7 +164,6 @@ export function DashboardContent({userName}: DashboardContentProps) {
                         </div>
                     </CardContent>
                 </Card>
-                <FloatingAssistant/>
             </div>
         </div>
     );

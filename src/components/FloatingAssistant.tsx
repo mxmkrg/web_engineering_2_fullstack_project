@@ -1,18 +1,73 @@
-import { useEffect, useState } from "react";
-import { MessageCircle, Send, Loader2, Zap, TrendingUp, Dumbbell } from "lucide-react";
+import { useState } from "react";
+import { MessageCircle, Send, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MOTIVATION_PROMPT, PROGRESS_PROMPT, SUGGESTIONS_PROMPT } from "@/app/dashboard/_components/prompts/Prompts";
 
 type UseCase = "motivation" | "progress" | "suggestions" | null;
 
+// Formatierungsfunktion für KI-Antworten
+const formatAIResponse = (content: string) => {
+    const lines = content.split('\n');
+
+    return lines.map((line, index) => {
+        // Fette Texte mit ** markieren - SCHWARZ
+        if (line.includes('**')) {
+            const parts = line.split('**');
+            return (
+                <div key={index} className="mb-2">
+                    {parts.map((part, partIndex) =>
+                        partIndex % 2 === 1 ?
+                        <strong key={partIndex} className="font-bold text-black">{part}</strong> :
+                        <span key={partIndex}>{part}</span>
+                    )}
+                </div>
+            );
+        }
+
+        // Stichpunkte mit - oder • erkennen
+        if (line.trim().startsWith('-') || line.trim().startsWith('•')) {
+            return (
+                <div key={index} className="flex items-start gap-2 mb-2 ml-2">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span className="flex-1">{line.replace(/^[-•]\s*/, '').trim()}</span>
+                </div>
+            );
+        }
+
+        // Nummerierte Listen erkennen
+        if (/^\d+\./.test(line.trim())) {
+            const number = line.match(/^(\d+)\./)?.[1];
+            const text = line.replace(/^\d+\.\s*/, '').trim();
+            return (
+                <div key={index} className="flex items-start gap-2 mb-2 ml-2">
+                    <span className="text-gray-400 font-semibold min-w-max">{number}.</span>
+                    <span className="flex-1">{text}</span>
+                </div>
+            );
+        }
+
+        // Leere Zeilen als Abstand
+        if (line.trim() === '') {
+            return <div key={index} className="mb-2"></div>;
+        }
+
+        // Normale Zeilen
+        return (
+            <div key={index} className="mb-1 leading-relaxed">
+                {line}
+            </div>
+        );
+    });
+};
+
 export default function FloatingAssistant() {
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([
-        { role: "assistant", content: "Hello 👋 I'm your AI assistant. How can I help?" },
+        { role: "assistant", content: "Hello 👋 I'm your AI Fitness Coach. How can I help?" },
     ]);
     const [loading, setLoading] = useState(false);
-    const [activeUseCase, setActiveUseCase] = useState<UseCase>(null);
+
 
     const useCases = [
         { id: "motivation", label: "Motivation", icon: "⚡", emoji: "💪" },
@@ -23,7 +78,6 @@ export default function FloatingAssistant() {
     const handleUseCaseClick = async (useCase: UseCase) => {
         if (!useCase) return;
 
-        setActiveUseCase(useCase);
         setLoading(true);
 
         try {
@@ -49,25 +103,35 @@ export default function FloatingAssistant() {
             const dataResponse = await fetch(apiEndpoint);
             const dbData = await dataResponse.json();
 
-            // Add user message
-            const userMessage = { role: "user", content: `${useCase}: ${dbData.summary || ""}` };
+            // Add user message - nur der Typ, ohne Daten
+            const userMessage = { role: "user", content: useCase };
             setMessages((prev) => [...prev, userMessage]);
 
-            // Call OpenAI with formatted data
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            // Call internal AI APIwith formatted data
+            const response = await fetch("/api/ai/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${process.env.VITE_OPENAI_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "gpt-4o-mini",
                     messages: [
                         {
                             role: "system",
-                            content: `${prompt}\n\nFormatted Data:\n${JSON.stringify(dbData, null, 2)}`,
+                            content: `You are an AI fitness coach assistant. Respond in English only.
+
+Antwortformat:
+- Use **bold text** for main points
+- Use numbered lists (1. 2. 3.) for structured guidance
+- Use bullet points (-) for lists
+- Be concise and professional
+- Minimal emojis
+
+${prompt}
+
+User Workout Data:
+${JSON.stringify(dbData, null, 2)}`,
                         },
-                        ...messages,
+                        ...messages.slice(1),
                         userMessage,
                     ],
                 }),
@@ -84,7 +148,6 @@ export default function FloatingAssistant() {
             ]);
         } finally {
             setLoading(false);
-            setActiveUseCase(null);
             setInput("");
         }
     };
@@ -99,16 +162,25 @@ export default function FloatingAssistant() {
         setLoading(true);
 
         try {
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            // Call internal AI API
+            const response = await fetch("/api/ai/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${process.env.VITE_OPENAI_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a helpful fitness coach assistant." },
+                        {
+                            role: "system",
+                            content: `You are an AI fitness coach assistant. Respond in English only.
+
+Response Format:
+- Use **bold text** for main points
+- Use numbered lists (1. 2. 3.) for structured guidance
+- Use bullet points (-) for lists
+- Be concise and professional
+- Minimal emojis`
+                        },
                         ...messages,
                         userMessage,
                     ],
@@ -116,7 +188,7 @@ export default function FloatingAssistant() {
             });
 
             const data = await response.json();
-            const aiReply = data.choices?.[0]?.message?.content || "I'm sorry, there was a problem.";
+            const aiReply = data.choices?.[0]?.message?.content || "Entschuldigung, es gab ein Problem.";
             setMessages((prev) => [...prev, { role: "assistant", content: aiReply }]);
         } catch (err) {
             console.error(err);
@@ -156,13 +228,19 @@ export default function FloatingAssistant() {
                             {messages.map((msg, i) => (
                                 <div
                                     key={i}
-                                    className={`p-2 rounded-xl max-w-[85%] ${
+                                    className={`p-3 rounded-xl max-w-[85%] ${
                                         msg.role === "user"
-                                            ? "ml-auto bg-blue-100 text-blue-800"
-                                            : "bg-gray-100 text-gray-800"
+                                            ? "ml-auto bg-blue-500 text-white"
+                                            : "mr-auto bg-gray-50 text-gray-800 border border-gray-200"
                                     }`}
                                 >
-                                    {msg.content}
+                                    {msg.role === "assistant" ? (
+                                        <div className="space-y-1">
+                                            {formatAIResponse(msg.content)}
+                                        </div>
+                                    ) : (
+                                        <div>{msg.content}</div>
+                                    )}
                                 </div>
                             ))}
                             {loading && (

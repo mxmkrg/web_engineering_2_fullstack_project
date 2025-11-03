@@ -41,7 +41,7 @@ Create a `.env.local` file in the root directory of the project and add the foll
 
 - DATABASE_URL=file:./src/db/localdb.sqlite
 - BETTER_AUTH_SECRET=your_secret_key_here
-- VITE_OPENAI_API_KEY=your_secret_here
+- OPENAI_API_KEY=your_secret_here
 
 ### 4. Running the development server
 
