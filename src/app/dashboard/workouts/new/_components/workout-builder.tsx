@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { X, Plus, Save } from "lucide-react"
 import { ExerciseSearch } from "./exercise-search"
+import { saveWorkout } from "@/actions/save-workout"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface Exercise {
     name: string
@@ -17,6 +20,8 @@ export function WorkoutBuilder() {
     const [workoutTitle, setWorkoutTitle] = useState("")
     const [showExerciseSearch, setShowExerciseSearch] = useState(false)
     const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([])
+    const [isSaving, setIsSaving] = useState(false)
+    const router = useRouter()
 
     const handleAddExercise = (exerciseName: string) => {
         const newExercise: Exercise = {
@@ -42,10 +47,46 @@ export function WorkoutBuilder() {
         setSelectedExercises(selectedExercises.filter((_, i) => i !== index))
     }
 
-    function saveData() {
-        console.log('Workout Title:', workoutTitle)
-        console.log('Exercises:', selectedExercises)
-        // Hier kannst du die Daten an eine API senden
+    async function saveData() {
+        // Validierung
+        if (!workoutTitle || workoutTitle.trim() === "") {
+            toast.error("Please enter a workout title")
+            return
+        }
+
+        if (selectedExercises.length === 0) {
+            toast.error("Please add at least one exercise")
+            return
+        }
+
+        // Prüfe ob alle Übungen Wiederholungen haben
+        const hasEmptyReps = selectedExercises.some(ex => !ex.reps || ex.reps === 0)
+        if (hasEmptyReps) {
+            toast.error("Please enter repetitions for all exercises")
+            return
+        }
+
+        setIsSaving(true)
+
+        try {
+            const result = await saveWorkout({
+                workoutTitle: workoutTitle.trim(),
+                exercises: selectedExercises
+            })
+
+            if (result.success) {
+                toast.success(result.message || "Workout saved successfully!")
+                // Redirect to workouts page or workout detail
+                router.push("/dashboard/workouts")
+            } else {
+                toast.error(result.error || "Failed to save workout")
+            }
+        } catch (error) {
+            console.error("Error saving workout:", error)
+            toast.error("An unexpected error occurred")
+        } finally {
+            setIsSaving(false)
+        }
     }
 
     return (
@@ -64,13 +105,18 @@ export function WorkoutBuilder() {
                     <p className="mt-1 text-muted-foreground">Create and track your workout session</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="ghost" size="lg">
+                    <Button variant="ghost" size="lg" onClick={() => router.push("/dashboard/workouts")}>
                         <X className="mr-2 h-4 w-4" />
                         Cancel
                     </Button>
-                    <Button size="lg" className="bg-blue-500 hover:bg-blue-600" onClick={saveData}>
+                    <Button
+                        size="lg"
+                        className="bg-blue-500 hover:bg-blue-600"
+                        onClick={saveData}
+                        disabled={isSaving}
+                    >
                         <Save className="mr-2 h-4 w-4" />
-                        Save Workout
+                        {isSaving ? "Saving..." : "Save Workout"}
                     </Button>
                 </div>
             </div>
