@@ -18,6 +18,7 @@ interface Exercise {
 
 export function WorkoutBuilder() {
     const [workoutTitle, setWorkoutTitle] = useState("")
+    const [workoutNotes, setWorkoutNotes] = useState("")
     const [showExerciseSearch, setShowExerciseSearch] = useState(false)
     const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([])
     const [isSaving, setIsSaving] = useState(false)
@@ -71,6 +72,7 @@ export function WorkoutBuilder() {
         try {
             const result = await saveWorkout({
                 workoutTitle: workoutTitle.trim(),
+                workoutNotes: workoutNotes.trim() || null,
                 exercises: selectedExercises
             })
 
@@ -124,16 +126,30 @@ export function WorkoutBuilder() {
             {/* Workout Details */}
             <Card className="mb-6 p-6">
                 <h2 className="mb-4 text-xl font-semibold">Workout Details</h2>
-                <div>
-                    <label className="mb-2 block text-sm font-medium">
-                        Workout Title <span className="text-destructive">*</span>
-                    </label>
-                    <Input
-                        placeholder="e.g., Push Day, Leg Day, Full Body..."
-                        value={workoutTitle}
-                        onChange={(e) => setWorkoutTitle(e.target.value)}
-                        className="max-w-md"
-                    />
+                <div className="space-y-4">
+                    <div>
+                        <label className="mb-2 block text-sm font-medium">
+                            Workout Title <span className="text-destructive">*</span>
+                        </label>
+                        <Input
+                            placeholder="e.g., Push Day, Leg Day, Full Body..."
+                            value={workoutTitle}
+                            onChange={(e) => setWorkoutTitle(e.target.value)}
+                            className="max-w-md"
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-2 block text-sm font-medium">
+                            Notes <span className="text-muted-foreground text-xs">(optional)</span>
+                        </label>
+                        <textarea
+                            placeholder="Add notes about this workout (e.g., how you felt, goals, achievements)..."
+                            value={workoutNotes}
+                            onChange={(e) => setWorkoutNotes(e.target.value)}
+                            className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            rows={4}
+                        />
+                    </div>
                 </div>
             </Card>
 

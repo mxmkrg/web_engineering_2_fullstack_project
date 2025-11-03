@@ -13,6 +13,7 @@ interface ExerciseData {
 
 interface SaveWorkoutData {
     workoutTitle: string
+    workoutNotes: string | null
     exercises: ExerciseData[]
 }
 
@@ -53,7 +54,7 @@ export async function saveWorkout(data: SaveWorkoutData) {
             status: "active",
             date: new Date(), // Use Date object instead of getTime()
             duration: null,
-            notes: null,
+            notes: data.workoutNotes,
         }).returning()
 
         // 2. For each exercise, create workoutExercise and workoutSet entries
