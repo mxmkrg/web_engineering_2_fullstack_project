@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { X, Search, Dumbbell, Target, Zap, Flame, Triangle, Activity } from "lucide-react"
-import { getExercisesByCategory } from "@/actions/get-exercises"
 
 type Category = "all" | "chest" | "back" | "legs" | "shoulders" | "arms" | "cardio"
 
@@ -51,12 +50,18 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
         async function loadExercises() {
             setIsLoading(true)
             try {
-                const data = await getExercisesByCategory()
+                const response = await fetch('/api/data')
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch exercises')
+                }
+                
+                const data = await response.json()
 
                 // Konvertiere zu erwartetem Format: { category: [exerciseName1, exerciseName2, ...] }
                 const formatted: Record<string, string[]> = {}
                 for (const [category, exerciseList] of Object.entries(data)) {
-                    formatted[category] = exerciseList.map((ex: { id: number; name: string }) => ex.name)
+                    formatted[category] = (exerciseList as Array<{ id: number; name: string }>).map((ex) => ex.name)
                 }
 
                 setExercises(formatted)
@@ -101,8 +106,8 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
     }, [])
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-white/70 pt-20">
-            <Card className="w-full max-w-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm pt-20">
+            <Card className="w-full max-w-2xl bg-white dark:bg-gray-950 animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between border-b p-6">
                     <h3 className="text-2xl font-semibold">Add Exercise</h3>
@@ -153,7 +158,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
                         {/* Dropdown List */}
                         {isDropdownOpen && filteredExercises.length > 0 && !isLoading && (
-                            <div className="absolute z-10 mt-2 max-h-80 w-full overflow-y-auto rounded-lg border bg-popover shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="absolute z-10 mt-2 max-h-80 w-full overflow-y-auto rounded-lg border bg-white dark:bg-gray-950 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
                                 {filteredExercises.map((exercise, index) => {
                                     const exerciseCategory =
                                         selectedCategory === "all"
@@ -172,8 +177,8 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                                             }}
                                             className="flex w-full items-center gap-3 border-b px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-accent"
                                         >
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                                                <Icon className="h-5 w-5 text-primary" />
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                                                <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-medium">{exercise}</p>
@@ -187,14 +192,14 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
                         {/* Loading State */}
                         {isLoading && (
-                            <div className="absolute z-10 mt-2 w-full rounded-lg border bg-popover p-8 text-center shadow-lg">
+                            <div className="absolute z-10 mt-2 w-full rounded-lg border bg-white dark:bg-gray-950 p-8 text-center shadow-lg">
                                 <p className="text-muted-foreground">Loading exercises...</p>
                             </div>
                         )}
 
                         {/* No Results */}
                         {isDropdownOpen && searchQuery && filteredExercises.length === 0 && !isLoading && (
-                            <div className="absolute z-10 mt-2 w-full rounded-lg border bg-popover p-8 text-center shadow-lg">
+                            <div className="absolute z-10 mt-2 w-full rounded-lg border bg-white dark:bg-gray-950 p-8 text-center shadow-lg">
                                 <p className="text-muted-foreground">No exercises found for "{searchQuery}"</p>
                             </div>
                         )}
