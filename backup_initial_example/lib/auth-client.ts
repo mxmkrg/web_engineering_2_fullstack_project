@@ -10,6 +10,6 @@ import { createAuthClient } from "better-auth/react";
 
 export const { signIn, signUp, signOut, useSession, getSession } =
   createAuthClient({
-    // biome-ignore lint/style/noNonNullAssertion: We have a .env file so we expect this to be fine
+    // biome-ignore lint/style/noNonNullAssertion: We have a .env.local file so we expect this to be fine
     baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL!,
   });
