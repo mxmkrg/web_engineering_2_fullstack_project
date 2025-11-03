@@ -52,7 +52,7 @@ export async function saveWorkout(data: SaveWorkoutData) {
             userId: userId,
             name: data.workoutTitle,
             status: "active",
-            date: new Date(), // Use Date object instead of getTime()
+            date: new Date(),
             duration: null,
             notes: data.workoutNotes,
         }).returning()
