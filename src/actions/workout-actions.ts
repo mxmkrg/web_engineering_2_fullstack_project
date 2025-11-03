@@ -135,58 +135,42 @@ export async function updateWorkout(
 }
 
 export async function completeWorkout(workoutId: number) {
-  const session = await getServerSession();
+  const session = await getServerSession()
   if (!session) {
-    redirect("/login");
+    redirect("/login")
   }
 
   try {
+    // Fetch workout to get createdAt time
+    const [workoutData] = await db
+      .select()
+      .from(workout)
+      .where(eq(workout.id, workoutId))
+      .limit(1)
+
+    if (!workoutData) {
+      return { success: false, error: "Workout not found" }
+    }
+
+    // Calculate duration in minutes
+    const now = new Date()
+    const createdAt = new Date(workoutData.createdAt)
+    const durationMinutes = Math.floor((now.getTime() - createdAt.getTime()) / 60000)
+
     await db
       .update(workout)
       .set({
         status: "completed",
-        updatedAt: new Date(),
-        // Calculate duration based on created and updated time
+        duration: durationMinutes,
+        updatedAt: now,
       })
-      .where(eq(workout.id, workoutId));
+      .where(eq(workout.id, workoutId))
 
-    revalidatePath("/dashboard/workouts");
-    return { success: true };
+    revalidatePath("/dashboard/workouts")
+    return { success: true, duration: durationMinutes }
   } catch (error) {
-    console.error("Error completing workout:", error);
-    return { success: false, error: "Failed to complete workout" };
+    console.error("Error completing workout:", error)
+    return { success: false, error: "Failed to complete workout" }
   }
 }
 
-export async function cancelWorkout(workoutId: number) {
-  const session = await getServerSession();
-  if (!session) {
-    redirect("/login");
-  }
-
-  try {
-    // Delete the workout and all associated data
-    await db.delete(workout).where(eq(workout.id, workoutId));
-
-    revalidatePath("/dashboard/workouts");
-    return { success: true };
-  } catch (error) {
-    console.error("Error canceling workout:", error);
-    return { success: false, error: "Failed to cancel workout" };
-  }
-}
-
-export async function getActiveWorkout(userId: string) {
-  try {
-    const activeWorkouts = await db
-      .select()
-      .from(workout)
-      .where(eq(workout.userId, userId) && eq(workout.status, "active"))
-      .limit(1);
-
-    return activeWorkouts[0] || null;
-  } catch (error) {
-    console.error("Error fetching active workout:", error);
-    return null;
-  }
-}

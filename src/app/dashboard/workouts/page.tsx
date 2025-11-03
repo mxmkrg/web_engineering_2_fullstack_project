@@ -35,9 +35,7 @@ export default async function WorkoutsPage() {
           </h3>
         </div>
         <div className="p-6 pt-0">
-          <Suspense fallback={<WorkoutListSkeleton />}>
-            <WorkoutList userId={session?.user.id || ""} />
-          </Suspense>
+          <WorkoutList />
         </div>
       </div>
     </div>
@@ -62,21 +60,5 @@ function StatsSkeleton() {
         </div>
       ))}
     </>
-  );
-}
-
-function WorkoutListSkeleton() {
-  return (
-    <div className="space-y-4">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="flex items-center space-x-4 animate-pulse">
-          <div className="h-12 w-12 bg-muted rounded-lg"></div>
-          <div className="space-y-2">
-            <div className="h-4 bg-muted rounded w-32"></div>
-            <div className="h-3 bg-muted rounded w-24"></div>
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }

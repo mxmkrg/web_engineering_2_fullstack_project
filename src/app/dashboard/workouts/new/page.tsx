@@ -1,8 +1,9 @@
-import { getExercises } from "@/actions/get-exercises";
-import { NewWorkoutForm } from "./_components/new-workout-form";
+import { WorkoutBuilder } from "./_components/workout-builder"
 
-export default async function NewWorkoutPage() {
-  const exercises = await getExercises();
-
-  return <NewWorkoutForm exercises={exercises} />;
+export default function Home() {
+  return (
+      <div className="min-h-screen bg-background">
+        <WorkoutBuilder />
+      </div>
+  )
 }
