@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { X, Save } from "lucide-react"
 import { toast } from "sonner"
@@ -136,11 +137,10 @@ export function WorkoutEditForm({ workoutId, initialData }: WorkoutEditFormProps
             <label className="mb-2 block text-sm font-medium">
               Notes <span className="text-muted-foreground text-xs">(optional)</span>
             </label>
-            <textarea
+            <Textarea
               placeholder="Add notes about this workout..."
               value={workoutNotes}
               onChange={(e) => setWorkoutNotes(e.target.value)}
-              className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               rows={4}
             />
           </div>

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useActionState } from "react";
 import { createWorkout } from "@/actions/create-workout";
 import { X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface NewWorkoutDialogProps {
   isOpen: boolean;
@@ -47,12 +49,11 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
             >
               Workout Name
             </label>
-            <input
+            <Input
               type="text"
               id="name"
               name="name"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., Push Day, Morning Run"
             />
           </div>
@@ -63,13 +64,12 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
             >
               Date
             </label>
-            <input
+            <Input
               type="date"
               id="date"
               name="date"
               required
               defaultValue={new Date().toISOString().split("T")[0]}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <div>
@@ -79,12 +79,11 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
             >
               Duration (minutes)
             </label>
-            <input
+            <Input
               type="number"
               id="duration"
               name="duration"
               min="1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="60"
             />
           </div>
@@ -95,11 +94,10 @@ export function NewWorkoutDialog({ isOpen, onClose }: NewWorkoutDialogProps) {
             >
               Notes (optional)
             </label>
-            <textarea
+            <Textarea
               id="notes"
               name="notes"
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="How did it go? Any observations..."
             />
           </div>

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { login } from "@/actions/login";
 import { signUp } from "@/actions/signup";
 import { Eye, EyeOff, Dumbbell } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -45,12 +46,11 @@ export default function LoginPage() {
                 >
                   Full Name
                 </label>
-                <input
+                <Input
                   id="name"
                   name="name"
                   type="text"
                   required={isSignUp}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -63,12 +63,11 @@ export default function LoginPage() {
               >
                 Email Address
               </label>
-              <input
+              <Input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your email"
               />
             </div>
@@ -81,12 +80,11 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="mt-1 relative">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your password"
                 />
                 <button
