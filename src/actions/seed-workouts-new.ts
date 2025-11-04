@@ -74,11 +74,7 @@ function calculateWeight(
   const finalWeight = baseWeight + totalIncrease;
   
   // Round to nearest 2.5lbs for plates
-  if (exerciseType === 'compound') {
-    return Math.round(finalWeight / 2.5) * 2.5;
-  } else {
-    return Math.round(finalWeight / 2.5) * 2.5;
-  }
+  return Math.round(finalWeight / 2.5) * 2.5;
 }
 
 // Helper function to calculate rep progression with fatigue and adaptation

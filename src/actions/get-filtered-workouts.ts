@@ -105,26 +105,6 @@ export async function getFilteredWorkouts(
     const totalDuration = Math.round(totalDurationResult[0]?.sum || 0);
 
     // Calculate set statistics for the filtered workouts
-    // First, let's test a simpler query to see if sets exist at all
-    const allSetsCount = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(workoutSet);
-
-    console.log("🔍 Total sets in database:", allSetsCount[0]?.count);
-
-    // Test without conditions first
-    const setStatsNoConditions = await db
-      .select({
-        totalSets: sql<number>`COUNT(${workoutSet.id})`,
-        totalWorkouts: sql<number>`COUNT(DISTINCT ${workout.id})`,
-      })
-      .from(workout)
-      .leftJoin(workoutExercise, eq(workout.id, workoutExercise.workoutId))
-      .leftJoin(workoutSet, eq(workoutExercise.id, workoutSet.workoutExerciseId))
-      .where(eq(workout.userId, userId));
-
-    console.log("🔍 Set stats without date filter:", setStatsNoConditions);
-
     const setStatsResult = await db
       .select({
         totalSets: sql<number>`COUNT(${workoutSet.id})`,
@@ -135,13 +115,8 @@ export async function getFilteredWorkouts(
       .leftJoin(workoutSet, eq(workoutExercise.id, workoutSet.workoutExerciseId))
       .where(and(...conditions));
 
-    console.log("🔍 Set Stats Debug:", setStatsResult);
-    console.log("🔍 Conditions:", conditions);
-
     const totalSets = Math.round(setStatsResult[0]?.totalSets || 0);
     const avgSets = Math.round(setStatsResult[0]?.avgSets || 0);
-
-    console.log("🔍 Final sets - Total:", totalSets, "Avg:", avgSets);
 
     return { 
       workouts, 
