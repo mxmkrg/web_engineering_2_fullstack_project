@@ -49,15 +49,16 @@ export async function DashboardContent({ userName, userId }: DashboardContentPro
     },
   ];
 
-  return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div>
-        <h1 className="text-3xl font-bold">Welcome back, {userName}!</h1>
-        <p className="text-muted-foreground">
-          Track your workouts and monitor your fitness progress
-        </p>
-      </div>
+    return (
+        <div className="min-h-screen bg-gray-20">
+            <div className="space-y-6">
+                {/* Welcome Section */}
+                <div>
+                    <h1 className="text-3xl font-bold">Welcome back, {userName}!</h1>
+                    <p className="text-muted-foreground">
+                        Track your workouts and monitor your fitness progress
+                    </p>
+                </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -112,46 +113,47 @@ export async function DashboardContent({ userName, userId }: DashboardContentPro
         </Card>
       </div>
 
-      {/* Feature Preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Coming Soon</CardTitle>
-          <CardDescription>
-            Features we're working on to enhance your fitness journey
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex items-center gap-3 p-3 rounded-lg border">
-              <TrendingUp className="size-8 text-green-600" />
-              <div>
-                <h4 className="font-medium">Progress Tracking</h4>
-                <p className="text-sm text-muted-foreground">
-                  Visual progress charts and analytics
-                </p>
-              </div>
+                {/* Feature Preview */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Coming Soon</CardTitle>
+                        <CardDescription>
+                            Features we're working on to enhance your fitness journey
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <div className="flex items-center gap-3 p-3 rounded-lg border">
+                                <TrendingUp className="size-8 text-green-600"/>
+                                <div>
+                                    <h4 className="font-medium">Progress Tracking</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Visual progress charts and analytics
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 rounded-lg border">
+                                <Calendar className="size-8 text-purple-600"/>
+                                <div>
+                                    <h4 className="font-medium">Workout Scheduling</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Plan and schedule your workouts
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 rounded-lg border">
+                                <Users className="size-8 text-orange-600"/>
+                                <div>
+                                    <h4 className="font-medium">Goal Setting</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Set and track fitness goals
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg border">
-              <Calendar className="size-8 text-purple-600" />
-              <div>
-                <h4 className="font-medium">Workout Scheduling</h4>
-                <p className="text-sm text-muted-foreground">
-                  Plan and schedule your workouts
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg border">
-              <Users className="size-8 text-orange-600" />
-              <div>
-                <h4 className="font-medium">Goal Setting</h4>
-                <p className="text-sm text-muted-foreground">
-                  Set and track fitness goals
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        </div>
+    );
 }

@@ -96,13 +96,6 @@ export function WorkoutBuilder() {
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>Dashboard</span>
-                        <span>›</span>
-                        <span>Workouts</span>
-                        <span>›</span>
-                        <span>New</span>
-                    </div>
                     <h1 className="text-4xl font-bold">New Workout</h1>
                     <p className="mt-1 text-muted-foreground">Create and track your workout session</p>
                 </div>
