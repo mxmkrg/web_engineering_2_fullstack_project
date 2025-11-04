@@ -135,9 +135,9 @@ export async function updateWorkout(
 }
 
 export async function completeWorkout(workoutId: number) {
-  const session = await getServerSession()
+  const session = await getServerSession();
   if (!session) {
-    redirect("/login")
+    redirect("/login");
   }
 
   try {
@@ -146,16 +146,18 @@ export async function completeWorkout(workoutId: number) {
       .select()
       .from(workout)
       .where(eq(workout.id, workoutId))
-      .limit(1)
+      .limit(1);
 
     if (!workoutData) {
-      return { success: false, error: "Workout not found" }
+      return { success: false, error: "Workout not found" };
     }
 
     // Calculate duration in minutes
-    const now = new Date()
-    const createdAt = new Date(workoutData.createdAt)
-    const durationMinutes = Math.floor((now.getTime() - createdAt.getTime()) / 60000)
+    const now = new Date();
+    const createdAt = new Date(workoutData.createdAt);
+    const durationMinutes = Math.floor(
+      (now.getTime() - createdAt.getTime()) / 60000,
+    );
 
     await db
       .update(workout)
@@ -164,13 +166,12 @@ export async function completeWorkout(workoutId: number) {
         duration: durationMinutes,
         updatedAt: now,
       })
-      .where(eq(workout.id, workoutId))
+      .where(eq(workout.id, workoutId));
 
-    revalidatePath("/dashboard/workouts")
-    return { success: true, duration: durationMinutes }
+    revalidatePath("/dashboard/workouts");
+    return { success: true, duration: durationMinutes };
   } catch (error) {
-    console.error("Error completing workout:", error)
-    return { success: false, error: "Failed to complete workout" }
+    console.error("Error completing workout:", error);
+    return { success: false, error: "Failed to complete workout" };
   }
 }
-

@@ -50,16 +50,15 @@ const currentItems = [
     url: "/dashboard/workouts",
     icon: Dumbbell,
   },
+  {
+    title: "Progress",
+    url: "/dashboard/progress",
+    icon: LineChart,
+  },
 ];
 
 // Future menu items (coming soon)
 const futureItems = [
-  {
-    title: "Progress",
-    url: "#",
-    icon: LineChart,
-    comingSoon: true,
-  },
   {
     title: "Schedule",
     url: "#",

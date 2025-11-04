@@ -23,7 +23,7 @@ export function RecentActivity() {
   const loadRecentWorkouts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/workouts?limit=2'); // Only get last 2 workouts
+      const response = await fetch("/api/workouts?limit=2"); // Only get last 2 workouts
       const result = await response.json();
 
       if (result.success) {
@@ -73,15 +73,19 @@ export function RecentActivity() {
           className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center space-x-3">
-            <div className={`p-1.5 rounded ${workout.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'}`}>
-              {workout.status === 'completed' ? (
+            <div
+              className={`p-1.5 rounded ${workout.status === "completed" ? "bg-green-100" : "bg-blue-100"}`}
+            >
+              {workout.status === "completed" ? (
                 <CheckCircle className="size-3 text-green-600" />
               ) : (
                 <Calendar className="size-3 text-blue-600" />
               )}
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">{workout.name}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {workout.name}
+              </p>
               <p className="text-xs text-gray-500">
                 {new Date(workout.date).toLocaleDateString()}
               </p>
@@ -95,8 +99,8 @@ export function RecentActivity() {
       ))}
       {workouts.length === 3 && (
         <div className="text-center pt-2">
-          <a 
-            href="/dashboard/workouts" 
+          <a
+            href="/dashboard/workouts"
             className="text-xs text-blue-600 hover:text-blue-800 font-medium"
           >
             View all workouts →

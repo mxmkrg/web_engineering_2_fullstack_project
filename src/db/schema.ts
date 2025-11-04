@@ -117,7 +117,7 @@ export const workout = sqliteTable("workout", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  status: text("status").notNull().default("active"), // 'active' or 'completed'
+  status: text("status").notNull().default("completed"), // 'active' or 'completed'
   date: integer("date", { mode: "timestamp_ms" }).notNull(),
   duration: integer("duration"), // in minutes
   notes: text("notes"),
@@ -153,7 +153,7 @@ export const workoutSet = sqliteTable("workout_set", {
   setNumber: integer("set_number").notNull(), // 1, 2, 3, etc.
   reps: integer("reps"),
   weight: real("weight"), // using real for decimal support
-  completed: integer("completed", { mode: "boolean" }).default(false).notNull(),
+  completed: integer("completed", { mode: "boolean" }).default(true).notNull(),
   notes: text("notes"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)

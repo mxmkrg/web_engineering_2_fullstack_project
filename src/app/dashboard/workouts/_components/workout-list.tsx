@@ -1,109 +1,116 @@
-"use client"
+"use client";
 
-import { Calendar, Clock, Edit, Trash2, CheckCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { useState, useEffect } from "react"
+import { Calendar, Clock, Edit, Trash2, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useState, useEffect } from "react";
 
 interface Workout {
-  id: number
-  name: string
-  date: Date
-  duration: number | null
-  status: string
+  id: number;
+  name: string;
+  date: Date;
+  duration: number | null;
+  status: string;
 }
 
 export function WorkoutList() {
-  const router = useRouter()
-  const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [deletingId, setDeletingId] = useState<number | null>(null)
-  const [completingId, setCompletingId] = useState<number | null>(null)
+  const router = useRouter();
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [completingId, setCompletingId] = useState<number | null>(null);
 
   // Load workouts from API
   useEffect(() => {
-    loadWorkouts()
-  }, [])
+    loadWorkouts();
+  }, []);
 
   const loadWorkouts = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/workouts')
-      const result = await response.json()
+      const response = await fetch("/api/workouts");
+      const result = await response.json();
 
       if (result.success) {
-        setWorkouts(result.workouts)
+        setWorkouts(result.workouts);
       } else {
-        toast.error(result.error || "Failed to load workouts")
+        toast.error(result.error || "Failed to load workouts");
       }
     } catch (error) {
-      console.error("Error loading workouts:", error)
-      toast.error("An unexpected error occurred")
+      console.error("Error loading workouts:", error);
+      toast.error("An unexpected error occurred");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleEdit = (workoutId: number) => {
-    router.push(`/dashboard/workouts/${workoutId}/edit`)
-  }
+    router.push(`/dashboard/workouts/${workoutId}/edit`);
+  };
 
   const handleComplete = async (workoutId: number) => {
-    if (!confirm("Mark this workout as completed? Duration will be calculated automatically.")) {
-      return
+    if (
+      !confirm(
+        "Mark this workout as completed? Duration will be calculated automatically.",
+      )
+    ) {
+      return;
     }
 
-    setCompletingId(workoutId)
+    setCompletingId(workoutId);
     try {
       const response = await fetch(`/api/workouts/${workoutId}/complete`, {
-        method: 'PATCH',
-      })
+        method: "PATCH",
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        toast.success(result.message || `Workout completed! Duration: ${result.duration} minutes`)
+        toast.success(
+          result.message ||
+            `Workout completed! Duration: ${result.duration} minutes`,
+        );
         // Reload workouts after completing
-        await loadWorkouts()
+        await loadWorkouts();
       } else {
-        toast.error(result.error || "Failed to complete workout")
+        toast.error(result.error || "Failed to complete workout");
       }
     } catch (error) {
-      console.error("Error completing workout:", error)
-      toast.error("An unexpected error occurred")
+      console.error("Error completing workout:", error);
+      toast.error("An unexpected error occurred");
     } finally {
-      setCompletingId(null)
+      setCompletingId(null);
     }
-  }
+  };
 
   const handleDelete = async (workoutId: number) => {
     if (!confirm("Are you sure you want to delete this workout?")) {
-      return
+      return;
     }
 
-    setDeletingId(workoutId)
+    setDeletingId(workoutId);
     try {
       const response = await fetch(`/api/workouts/${workoutId}`, {
-        method: 'DELETE',
-      })
+        method: "DELETE",
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        toast.success("Workout deleted successfully")
+        toast.success("Workout deleted successfully");
         // Reload workouts after deleting
-        await loadWorkouts()
+        await loadWorkouts();
       } else {
-        toast.error(result.error || "Failed to delete workout")
+        toast.error(result.error || "Failed to delete workout");
       }
     } catch (error) {
-      console.error("Error deleting workout:", error)
-      toast.error("An unexpected error occurred")
+      console.error("Error deleting workout:", error);
+      toast.error("An unexpected error occurred");
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -118,7 +125,7 @@ export function WorkoutList() {
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   if (!workouts || workouts.length === 0) {
@@ -128,7 +135,7 @@ export function WorkoutList() {
           No workouts yet. Start your fitness journey!
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -139,8 +146,10 @@ export function WorkoutList() {
           className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center space-x-4">
-            <div className={`p-2 rounded-lg ${workoutItem.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'}`}>
-              {workoutItem.status === 'completed' ? (
+            <div
+              className={`p-2 rounded-lg ${workoutItem.status === "completed" ? "bg-green-100" : "bg-blue-100"}`}
+            >
+              {workoutItem.status === "completed" ? (
                 <CheckCircle className="size-4 text-green-600" />
               ) : (
                 <Calendar className="size-4 text-blue-600" />
@@ -148,8 +157,10 @@ export function WorkoutList() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-medium text-gray-900">{workoutItem.name}</h3>
-                {workoutItem.status === 'completed' && (
+                <h3 className="font-medium text-gray-900">
+                  {workoutItem.name}
+                </h3>
+                {workoutItem.status === "completed" && (
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                     Completed
                   </span>
@@ -168,7 +179,7 @@ export function WorkoutList() {
             </div>
 
             <div className="flex gap-2">
-              {workoutItem.status === 'active' && (
+              {workoutItem.status === "active" && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -204,5 +215,5 @@ export function WorkoutList() {
         </div>
       ))}
     </div>
-  )
+  );
 }
