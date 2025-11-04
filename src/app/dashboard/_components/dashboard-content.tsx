@@ -1,49 +1,96 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { Activity, TrendingUp, Calendar, Users } from "lucide-react";
+import { Activity, TrendingUp, Calendar, Target, Users } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
+import { db } from "@/db";
+import { workout } from "@/db/schema";
+import { eq, count, sql } from "drizzle-orm";
+import { QuickStartButton } from "./quick-start-button";
 
 interface DashboardContentProps {
   userName: string;
+  userId: string;
 }
 
-export function DashboardContent({ userName }: DashboardContentProps) {
-  const router = useRouter();
+async function getWorkoutStats(userId: string) {
+  // Get total workouts
+  const totalWorkouts = await db
+    .select({ count: count() })
+    .from(workout)
+    .where(eq(workout.userId, userId));
+
+  // Get workouts this month
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
+  thisMonth.setHours(0, 0, 0, 0);
+
+  const monthlyWorkouts = await db
+    .select({ count: count() })
+    .from(workout)
+    .where(
+      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisMonth.getTime()}`,
+    );
+
+  // Get workouts this week
+  const thisWeek = new Date();
+  thisWeek.setDate(thisWeek.getDate() - thisWeek.getDay());
+  thisWeek.setHours(0, 0, 0, 0);
+
+  const weeklyWorkouts = await db
+    .select({ count: count() })
+    .from(workout)
+    .where(
+      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisWeek.getTime()}`,
+    );
+
+  // Calculate average duration
+  const avgDuration = await db
+    .select({ avg: sql<number>`AVG(${workout.duration})` })
+    .from(workout)
+    .where(eq(workout.userId, userId));
+
+  return {
+    total: totalWorkouts[0]?.count || 0,
+    thisMonth: monthlyWorkouts[0]?.count || 0,
+    thisWeek: weeklyWorkouts[0]?.count || 0,
+    avgDuration: Math.round(avgDuration[0]?.avg || 0),
+  };
+}
+
+export async function DashboardContent({ userName, userId }: DashboardContentProps) {
+  const workoutStats = await getWorkoutStats(userId);
 
   const stats = [
     {
       title: "Total Workouts",
-      value: "0",
+      value: workoutStats.total.toString(),
       description: "Workouts completed",
       icon: Activity,
       color: "text-blue-600",
     },
     {
       title: "This Week",
-      value: "0",
+      value: workoutStats.thisWeek.toString(),
       description: "Workouts this week",
       icon: Calendar,
       color: "text-green-600",
     },
     {
       title: "Average Duration",
-      value: "0m",
+      value: `${workoutStats.avgDuration}m`,
       description: "Per workout",
       icon: TrendingUp,
       color: "text-purple-600",
     },
     {
-      title: "Active Streak",
-      value: "0",
-      description: "Days in a row",
-      icon: Users,
+      title: "This Month",
+      value: workoutStats.thisMonth.toString(),
+      description: "Workouts this month",
+      icon: Target,
       color: "text-orange-600",
     },
   ];
@@ -89,13 +136,7 @@ export function DashboardContent({ userName }: DashboardContentProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <button
-                onClick={() => router.push("/dashboard/workouts" as any)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                <Activity className="size-5" />
-                Start Your First Workout
-              </button>
+              <QuickStartButton />
               <p className="text-sm text-muted-foreground text-center">
                 Track exercises, sets, reps, and weights to monitor your
                 progress over time.
