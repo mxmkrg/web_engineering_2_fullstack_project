@@ -49,7 +49,7 @@ export function DashboardContent({userName}: DashboardContentProps) {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-20">
             <div className="space-y-6">
                 {/* Welcome Section */}
                 <div>
