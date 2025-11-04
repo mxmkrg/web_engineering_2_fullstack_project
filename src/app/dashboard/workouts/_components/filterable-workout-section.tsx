@@ -36,7 +36,18 @@ export function FilterableWorkoutSection({
 }: FilterableWorkoutSectionProps) {
   const [activeFilter, setActiveFilter] = useState<WorkoutFilterType>("total");
   const [workouts, setWorkouts] = useState(initialWorkouts);
+  const [currentAvgDuration, setCurrentAvgDuration] = useState(
+    initialStats.avgDuration,
+  );
   const [isLoading, setIsLoading] = useState(false);
+
+  // Reset to initial stats when returning to "total" filter
+  useEffect(() => {
+    if (activeFilter === "total") {
+      setWorkouts(initialWorkouts);
+      setCurrentAvgDuration(initialStats.avgDuration);
+    }
+  }, [activeFilter, initialWorkouts, initialStats.avgDuration]);
 
   const filterOptions: FilterOption[] = [
     {
@@ -67,7 +78,7 @@ export function FilterableWorkoutSection({
 
   const avgDurationStat = {
     title: "Avg Duration",
-    value: `${initialStats.avgDuration}m`,
+    value: `${currentAvgDuration}m`,
     icon: TrendingUp,
     color: "text-orange-600",
     bgColor: "bg-orange-50",
@@ -80,12 +91,13 @@ export function FilterableWorkoutSection({
     setIsLoading(true);
 
     try {
-      const filteredWorkouts = await getFilteredWorkouts(userId, {
+      const result = await getFilteredWorkouts(userId, {
         status: "completed", // Use "completed" status instead of "archived"
         filter: filter,
         limit: 50,
       });
-      setWorkouts(filteredWorkouts);
+      setWorkouts(result.workouts);
+      setCurrentAvgDuration(result.avgDuration);
     } catch (error) {
       console.error("Error filtering workouts:", error);
     } finally {

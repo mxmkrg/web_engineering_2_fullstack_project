@@ -133,8 +133,14 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
       <Card className="w-full max-w-2xl bg-white text-foreground animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border p-6">
-          <h3 className="text-2xl font-semibold text-foreground">Add Exercise</h3>
-          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+          <h3 className="text-2xl font-semibold text-foreground">
+            Add Exercise
+          </h3>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="flex items-center gap-2"
+          >
             <X className="h-4 w-4" />
             Close
           </Button>
@@ -196,9 +202,10 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                           exList.includes(exercise),
                         )?.[0] as Exclude<Category, "all"> | undefined)
                       : selectedCategory;
-                  const Icon = exerciseCategory && CATEGORY_ICONS[exerciseCategory]
-                    ? CATEGORY_ICONS[exerciseCategory]
-                    : Dumbbell;
+                  const Icon =
+                    exerciseCategory && CATEGORY_ICONS[exerciseCategory]
+                      ? CATEGORY_ICONS[exerciseCategory]
+                      : Dumbbell;
 
                   return (
                     <button
@@ -213,7 +220,9 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                         <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-foreground">{exercise}</p>
+                        <p className="font-medium text-foreground">
+                          {exercise}
+                        </p>
                         <p className="text-sm capitalize text-muted-foreground">
                           {exerciseCategory}
                         </p>

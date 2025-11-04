@@ -4,7 +4,7 @@ import "server-only";
 import { db } from "@/db";
 import { workout } from "@/db/schema";
 import { getServerSession } from "@/lib/auth-server";
-import { eq, desc, and, gte, lte } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 
 export type WorkoutFilterType = "total" | "thisWeek" | "thisMonth";
 
@@ -14,15 +14,20 @@ interface GetFilteredWorkoutsOptions {
   filter?: WorkoutFilterType;
 }
 
+export interface FilteredWorkoutsResult {
+  workouts: any[];
+  avgDuration: number;
+}
+
 export async function getFilteredWorkouts(
   userId: string,
   options: GetFilteredWorkoutsOptions = {},
-) {
+): Promise<FilteredWorkoutsResult> {
   try {
     const session = await getServerSession();
 
     if (!session?.user?.id || session.user.id !== userId) {
-      return [];
+      return { workouts: [], avgDuration: 0 };
     }
 
     const { status = "archived", limit = 50, filter = "total" } = options;
@@ -66,9 +71,17 @@ export async function getFilteredWorkouts(
       .orderBy(desc(workout.date))
       .limit(limit);
 
-    return workouts;
+    // Calculate average duration for the filtered workouts
+    const avgDurationResult = await db
+      .select({ avg: sql<number>`AVG(${workout.duration})` })
+      .from(workout)
+      .where(and(...conditions));
+
+    const avgDuration = Math.round(avgDurationResult[0]?.avg || 0);
+
+    return { workouts, avgDuration };
   } catch (error) {
     console.error("Error getting filtered workouts:", error);
-    return [];
+    return { workouts: [], avgDuration: 0 };
   }
 }
