@@ -8,7 +8,6 @@ import { useActionState } from "react";
 interface DashboardClientProps {
   userName: string;
 }
-
 export function DashboardClient({ userName }: DashboardClientProps) {
   const router = useRouter();
   const [logoutState, logoutAction] = useActionState(logout, {});
