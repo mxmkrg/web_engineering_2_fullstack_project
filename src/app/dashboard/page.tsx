@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { getServerSession } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 import { DashboardContent } from "./_components/dashboard-content";
