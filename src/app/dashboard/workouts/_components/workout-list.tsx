@@ -60,7 +60,7 @@ export function WorkoutList({ userId, initialWorkouts }: WorkoutListProps) {
     try {
       const result = await deleteWorkout(workoutId);
       if (result.success) {
-        setWorkouts(workouts.filter(w => w.id !== workoutId));
+        setWorkouts(workouts.filter((w) => w.id !== workoutId));
         toast.success("Workout deleted successfully");
       } else {
         toast.error(result.error || "Failed to delete workout");
@@ -77,11 +77,15 @@ export function WorkoutList({ userId, initialWorkouts }: WorkoutListProps) {
 
   const handleDeleteClick = async (e: React.MouseEvent, workout: Workout) => {
     e.stopPropagation();
-    if (confirm(`Are you sure you want to delete "${workout.name}"? This action cannot be undone.`)) {
+    if (
+      confirm(
+        `Are you sure you want to delete "${workout.name}"? This action cannot be undone.`,
+      )
+    ) {
       try {
         const result = await deleteWorkout(workout.id);
         if (result.success) {
-          setWorkouts(workouts.filter(w => w.id !== workout.id));
+          setWorkouts(workouts.filter((w) => w.id !== workout.id));
           toast.success("Workout deleted successfully");
         } else {
           toast.error(result.error || "Failed to delete workout");

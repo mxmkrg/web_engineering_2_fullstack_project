@@ -43,7 +43,8 @@ type WorkoutCalendarProps = {
 
 export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedWorkout, setSelectedWorkout] = useState<DetailedWorkout | null>(null);
+  const [selectedWorkout, setSelectedWorkout] =
+    useState<DetailedWorkout | null>(null);
   const [isLoadingWorkout, setIsLoadingWorkout] = useState(false);
 
   // Get current month and year
@@ -71,7 +72,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
 
   // Create a map of workout dates for quick lookup
   const workoutDateMap = new Map<string, BasicWorkout[]>();
-  workouts.forEach(workout => {
+  workouts.forEach((workout) => {
     const dateKey = workout.date.toDateString();
     if (!workoutDateMap.has(dateKey)) {
       workoutDateMap.set(dateKey, []);
@@ -106,7 +107,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
 
     // For now, get details for the first workout if multiple workouts on same day
     const workoutToShow = dayWorkouts[0];
-    
+
     setIsLoadingWorkout(true);
     try {
       const result = await getWorkoutDetails(workoutToShow.id);
@@ -117,7 +118,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
         // Fallback: show basic workout data
         setSelectedWorkout({
           ...workoutToShow,
-          exercises: []
+          exercises: [],
         });
       }
     } catch (error) {
@@ -125,7 +126,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
       // Fallback: show basic workout data
       setSelectedWorkout({
         ...workoutToShow,
-        exercises: []
+        exercises: [],
       });
     } finally {
       setIsLoadingWorkout(false);
@@ -133,14 +134,24 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   };
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   // Count workouts in current month
-  const currentMonthWorkouts = workouts.filter(workout => {
+  const currentMonthWorkouts = workouts.filter((workout) => {
     const workoutMonth = workout.date.getMonth();
     const workoutYear = workout.date.getFullYear();
     return workoutMonth === currentMonth && workoutYear === currentYear;
@@ -169,16 +180,17 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
         >
           <ChevronLeft className="size-4" />
         </button>
-        
+
         <h3 className="text-lg font-medium">
           {monthNames[currentMonth]} {currentYear}
           {currentMonthWorkouts > 0 && (
             <span className="ml-2 text-sm font-normal text-gray-500">
-              ({currentMonthWorkouts} workout{currentMonthWorkouts !== 1 ? 's' : ''})
+              ({currentMonthWorkouts} workout
+              {currentMonthWorkouts !== 1 ? "s" : ""})
             </span>
           )}
         </h3>
-        
+
         <button
           onClick={goToNextMonth}
           className="p-2 hover:bg-gray-100 rounded-lg"
@@ -189,7 +201,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
 
       {/* Day names header */}
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {dayNames.map(dayName => (
+        {dayNames.map((dayName) => (
           <div
             key={dayName}
             className="h-8 flex items-center justify-center text-sm font-medium text-gray-500"
@@ -208,22 +220,27 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
 
           const dayWorkouts = getDayWorkouts(day);
           const hasWorkouts = dayWorkouts.length > 0;
-          const isToday = new Date().toDateString() === new Date(currentYear, currentMonth, day).toDateString();
+          const isToday =
+            new Date().toDateString() ===
+            new Date(currentYear, currentMonth, day).toDateString();
 
           return (
             <button
               key={day}
               onClick={() => handleDayClick(day)}
               disabled={!hasWorkouts || isLoadingWorkout}
-              title={hasWorkouts ? dayWorkouts.map(w => w.name).join(', ') : ''}
+              title={
+                hasWorkouts ? dayWorkouts.map((w) => w.name).join(", ") : ""
+              }
               className={`
                 h-10 flex items-center justify-center text-sm rounded-lg transition-colors relative
-                ${hasWorkouts 
-                  ? `bg-blue-600 text-white hover:bg-blue-700 cursor-pointer ${isLoadingWorkout ? 'opacity-50' : ''}` 
-                  : 'hover:bg-gray-100 cursor-default'
+                ${
+                  hasWorkouts
+                    ? `bg-blue-600 text-white hover:bg-blue-700 cursor-pointer ${isLoadingWorkout ? "opacity-50" : ""}`
+                    : "hover:bg-gray-100 cursor-default"
                 }
-                ${isToday && !hasWorkouts ? 'bg-gray-200 font-semibold' : ''}
-                ${isToday && hasWorkouts ? 'ring-2 ring-blue-300' : ''}
+                ${isToday && !hasWorkouts ? "bg-gray-200 font-semibold" : ""}
+                ${isToday && hasWorkouts ? "ring-2 ring-blue-300" : ""}
               `}
             >
               {day}

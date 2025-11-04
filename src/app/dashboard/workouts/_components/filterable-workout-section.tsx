@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { Activity, Calendar, Target, TrendingUp } from "lucide-react";
 import { WorkoutList } from "./workout-list";
-import { getFilteredWorkouts, type WorkoutFilterType } from "@/actions/get-filtered-workouts";
+import {
+  getFilteredWorkouts,
+  type WorkoutFilterType,
+} from "@/actions/get-filtered-workouts";
 import { cn } from "@/lib/utils";
 
 interface FilterableWorkoutSectionProps {
@@ -26,10 +29,10 @@ type FilterOption = {
   bgColor: string;
 };
 
-export function FilterableWorkoutSection({ 
-  userId, 
+export function FilterableWorkoutSection({
+  userId,
   initialStats,
-  initialWorkouts 
+  initialWorkouts,
 }: FilterableWorkoutSectionProps) {
   const [activeFilter, setActiveFilter] = useState<WorkoutFilterType>("total");
   const [workouts, setWorkouts] = useState(initialWorkouts);
@@ -45,7 +48,7 @@ export function FilterableWorkoutSection({
       bgColor: "bg-blue-50",
     },
     {
-      key: "thisMonth", 
+      key: "thisMonth",
       title: "This Month",
       value: initialStats.thisMonth,
       icon: Calendar,
@@ -54,7 +57,7 @@ export function FilterableWorkoutSection({
     },
     {
       key: "thisWeek",
-      title: "This Week", 
+      title: "This Week",
       value: initialStats.thisWeek,
       icon: Target,
       color: "text-purple-600",
@@ -72,7 +75,7 @@ export function FilterableWorkoutSection({
 
   const handleFilterClick = async (filter: WorkoutFilterType) => {
     if (filter === activeFilter) return;
-    
+
     setActiveFilter(filter);
     setIsLoading(true);
 
@@ -95,11 +98,12 @@ export function FilterableWorkoutSection({
       {/* Stats Section with Clickable Filters */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {filterOptions.map((stat) => (
-          <div 
-            key={stat.key} 
+          <div
+            key={stat.key}
             className={cn(
               "bg-white rounded-lg shadow p-6 cursor-pointer transition-all duration-200 hover:shadow-md transform hover:scale-[1.02]",
-              activeFilter === stat.key && "ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
+              activeFilter === stat.key &&
+                "ring-2 ring-blue-500 ring-opacity-50 shadow-lg",
             )}
             onClick={() => handleFilterClick(stat.key)}
           >
@@ -108,7 +112,9 @@ export function FilterableWorkoutSection({
                 <p className="text-sm text-gray-600">{stat.title}</p>
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 {activeFilter === stat.key && (
-                  <p className="text-xs text-blue-600 font-medium mt-1">Active Filter</p>
+                  <p className="text-xs text-blue-600 font-medium mt-1">
+                    Active Filter
+                  </p>
                 )}
               </div>
               <div className={`p-3 rounded-lg ${stat.bgColor}`}>
@@ -123,10 +129,14 @@ export function FilterableWorkoutSection({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">{avgDurationStat.title}</p>
-              <p className="text-2xl font-bold text-gray-900">{avgDurationStat.value}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {avgDurationStat.value}
+              </p>
             </div>
             <div className={`p-3 rounded-lg ${avgDurationStat.bgColor}`}>
-              <avgDurationStat.icon className={`size-4 ${avgDurationStat.color}`} />
+              <avgDurationStat.icon
+                className={`size-4 ${avgDurationStat.color}`}
+              />
             </div>
           </div>
         </div>

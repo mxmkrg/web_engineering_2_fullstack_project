@@ -11,7 +11,8 @@ const sampleExercises = [
     category: "chest",
     muscleGroups: "pectoralis_major,triceps,anterior_deltoid",
     description: "Classic bodyweight chest exercise",
-    instructions: "Start in plank position, lower chest to ground, push back up",
+    instructions:
+      "Start in plank position, lower chest to ground, push back up",
   },
   {
     name: "Bench Press",
@@ -32,7 +33,8 @@ const sampleExercises = [
     category: "chest",
     muscleGroups: "pectoralis_major,anterior_deltoid,triceps",
     description: "Upper chest focused pressing",
-    instructions: "Bench at 30-45 degree angle, press weight up and slightly back",
+    instructions:
+      "Bench at 30-45 degree angle, press weight up and slightly back",
   },
   {
     name: "Decline Bench Press",

@@ -16,7 +16,7 @@ interface GetFilteredWorkoutsOptions {
 
 export async function getFilteredWorkouts(
   userId: string,
-  options: GetFilteredWorkoutsOptions = {}
+  options: GetFilteredWorkoutsOptions = {},
 ) {
   try {
     const session = await getServerSession();

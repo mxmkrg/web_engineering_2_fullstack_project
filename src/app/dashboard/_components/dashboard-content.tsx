@@ -1,4 +1,14 @@
-import { Activity, TrendingUp, Calendar, Target, Users, Trophy, Zap, Award, TrendingDown } from "lucide-react";
+import {
+  Activity,
+  TrendingUp,
+  Calendar,
+  Target,
+  Users,
+  Trophy,
+  Zap,
+  Award,
+  TrendingDown,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,11 +18,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getWorkoutStatistics } from "@/lib/workout-stats";
-import { 
-  getPersonalRecords, 
-  getProgressionOverview, 
+import {
+  getPersonalRecords,
+  getProgressionOverview,
   getMuscleGroupStats,
-  type DateFilter 
+  type DateFilter,
 } from "@/actions/get-progression-stats";
 import { QuickStartButton } from "./quick-start-button";
 import { RecentActivity } from "./recent-activity";
@@ -27,7 +37,7 @@ export async function DashboardContent({
   userId,
 }: DashboardContentProps) {
   const workoutStats = await getWorkoutStatistics(userId);
-  
+
   // Get progression data for dashboard insights
   const last30DaysFilter: DateFilter = {
     type: "preset",
@@ -35,29 +45,34 @@ export async function DashboardContent({
     startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
   };
-  
+
   const allTimeFilter: DateFilter = {
     type: "all-time",
     label: "All Time",
   };
 
-  const [progressionOverview, personalRecords, muscleGroupStats] = await Promise.all([
-    getProgressionOverview(userId, last30DaysFilter),
-    getPersonalRecords(userId, allTimeFilter),
-    getMuscleGroupStats(userId, last30DaysFilter),
-  ]);
+  const [progressionOverview, personalRecords, muscleGroupStats] =
+    await Promise.all([
+      getProgressionOverview(userId, last30DaysFilter),
+      getPersonalRecords(userId, allTimeFilter),
+      getMuscleGroupStats(userId, last30DaysFilter),
+    ]);
 
   // Calculate some interesting stats
-  const recentPRs = personalRecords.filter(pr => {
+  const recentPRs = personalRecords.filter((pr) => {
     const prDate = new Date(pr.date);
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     return prDate >= weekAgo;
   });
 
-  const totalVolumeThisMonth = muscleGroupStats.reduce((sum, group) => sum + group.totalVolume, 0);
-  const strongestMuscleGroup = muscleGroupStats.reduce((strongest, current) => 
-    current.totalVolume > strongest.totalVolume ? current : strongest, 
-    muscleGroupStats[0] || { category: "None", totalVolume: 0 }
+  const totalVolumeThisMonth = muscleGroupStats.reduce(
+    (sum, group) => sum + group.totalVolume,
+    0,
+  );
+  const strongestMuscleGroup = muscleGroupStats.reduce(
+    (strongest, current) =>
+      current.totalVolume > strongest.totalVolume ? current : strongest,
+    muscleGroupStats[0] || { category: "None", totalVolume: 0 },
   );
 
   const stats = [

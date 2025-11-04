@@ -12,12 +12,23 @@ export default async function WorkoutsPage() {
   // No need to check for session here since middleware and layout handle it
   // But we still need to get the session for user.id
   const userId = session?.user.id || "";
-  
+
+  // Debug: Log the userId and workout counts
+  console.log("🔍 DEBUG - Full session object:", session);
+  console.log("🆔 DEBUG - userId from session:", userId);
+  console.log(
+    "🧩 DEBUG - Expected userId from debug endpoint:",
+    "7985bd0f-0bd2-430a-aebb-8160ea1a811d",
+  );
+
   // Fetch initial workouts and stats for the client component
   const [initialWorkouts, workoutStats] = await Promise.all([
-    getWorkouts(userId, { status: "archived", limit: 50 }),
-    getWorkoutStatistics(userId)
+    getWorkouts(userId, { limit: 50 }), // Remove status filter to see all workouts
+    getWorkoutStatistics(userId),
   ]);
+
+  console.log("Debug - initialWorkouts count:", initialWorkouts.length);
+  console.log("Debug - workoutStats:", workoutStats);
 
   return (
     <div className="space-y-6">
@@ -34,7 +45,7 @@ export default async function WorkoutsPage() {
       </div>
 
       <Suspense fallback={<div>Loading...</div>}>
-        <WorkoutViewTabs 
+        <WorkoutViewTabs
           userId={userId}
           initialStats={workoutStats}
           initialWorkouts={initialWorkouts}

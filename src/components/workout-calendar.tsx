@@ -41,45 +41,47 @@ export function WorkoutCalendar({
   // Get workouts for specific dates
   const getWorkoutsForDate = (date: Date): Workout[] => {
     if (!Array.isArray(workouts)) return [];
-    return workouts.filter(workout => 
-      isSameDay(new Date(workout.date), date)
+    return workouts.filter((workout) =>
+      isSameDay(new Date(workout.date), date),
     );
   };
 
   // Get all workout dates in current month
   const getWorkoutDatesInMonth = (month: Date): Date[] => {
     if (!Array.isArray(workouts)) return [];
-    
+
     const start = startOfMonth(month);
     const end = endOfMonth(month);
-    
+
     return workouts
-      .map(workout => new Date(workout.date))
-      .filter(date => date >= start && date <= end)
-      .filter((date, index, self) => 
-        self.findIndex(d => isSameDay(d, date)) === index
+      .map((workout) => new Date(workout.date))
+      .filter((date) => date >= start && date <= end)
+      .filter(
+        (date, index, self) =>
+          self.findIndex((d) => isSameDay(d, date)) === index,
       );
-  };  const workoutDates = getWorkoutDatesInMonth(currentMonth);
-  
+  };
+  const workoutDates = getWorkoutDatesInMonth(currentMonth);
+
   // Debug log to see what data we have
   console.log("WorkoutCalendar Debug:", {
     workouts: workouts.length,
     currentMonth: currentMonth.toDateString(),
     workoutDates: workoutDates.length,
-    sampleWorkout: workouts[0]
+    sampleWorkout: workouts[0],
   });
 
   // Handle date selection
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
-    
+
     setSelectedDate(date);
     const workoutsForDate = getWorkoutsForDate(date);
     setSelectedWorkouts(workoutsForDate);
-    
+
     // Don't automatically navigate to workout details anymore
     // Just update the selected date and workouts in sidebar
-  };  // Handle month navigation
+  }; // Handle month navigation
   const navigateMonth = (direction: "prev" | "next") => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(
@@ -171,13 +173,16 @@ export function WorkoutCalendar({
                     },
                   }}
                   modifiersClassNames={{
-                    workout: "bg-blue-600 text-white hover:bg-blue-700 font-bold",
+                    workout:
+                      "bg-blue-600 text-white hover:bg-blue-700 font-bold",
                   }}
                   classNames={{
                     day_selected:
                       "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
-                    day_today: "bg-blue-100 text-blue-900 font-bold border border-blue-300",
-                    head_cell: "text-gray-500 font-medium text-sm w-9 text-center",
+                    day_today:
+                      "bg-blue-100 text-blue-900 font-bold border border-blue-300",
+                    head_cell:
+                      "text-gray-500 font-medium text-sm w-9 text-center",
                     cell: "h-9 w-9 text-center text-sm p-0 relative cursor-pointer",
                     day: "h-9 w-9 p-0 font-normal hover:bg-gray-100 rounded-md text-center leading-9",
                   }}
@@ -232,7 +237,9 @@ export function WorkoutCalendar({
                         </h4>
                         <div className="flex items-center gap-2">
                           {workout.duration && (
-                            <Badge variant="secondary">{workout.duration}m</Badge>
+                            <Badge variant="secondary">
+                              {workout.duration}m
+                            </Badge>
                           )}
                           <div className="text-xs text-gray-400 group-hover:text-blue-500">
                             Click for details →
@@ -276,14 +283,17 @@ export function WorkoutCalendar({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Total Duration:</span>
                   <span className="font-medium">
-                    {Array.isArray(workouts) ? workouts
-                      .filter(w => {
-                        const workoutDate = new Date(w.date);
-                        const start = startOfMonth(currentMonth);
-                        const end = endOfMonth(currentMonth);
-                        return workoutDate >= start && workoutDate <= end;
-                      })
-                      .reduce((sum, w) => sum + (w.duration || 0), 0) : 0}m
+                    {Array.isArray(workouts)
+                      ? workouts
+                          .filter((w) => {
+                            const workoutDate = new Date(w.date);
+                            const start = startOfMonth(currentMonth);
+                            const end = endOfMonth(currentMonth);
+                            return workoutDate >= start && workoutDate <= end;
+                          })
+                          .reduce((sum, w) => sum + (w.duration || 0), 0)
+                      : 0}
+                    m
                   </span>
                 </div>
               </div>

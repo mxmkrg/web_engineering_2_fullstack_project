@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Calendar, Clock, Edit, Trash2, X, Dumbbell } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -48,7 +53,11 @@ export function WorkoutDetailDialog({
   if (!workout) return null;
 
   const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this workout? This action cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this workout? This action cannot be undone.",
+      )
+    ) {
       setIsDeleting(true);
       try {
         await onDelete(workout.id);
@@ -132,7 +141,9 @@ export function WorkoutDetailDialog({
           {/* Exercises */}
           {workout.exercises && workout.exercises.length > 0 && (
             <div>
-              <h4 className="font-medium mb-4">Exercises ({workout.exercises.length})</h4>
+              <h4 className="font-medium mb-4">
+                Exercises ({workout.exercises.length})
+              </h4>
               <div className="space-y-4">
                 {workout.exercises
                   .sort((a, b) => a.order - b.order)
@@ -172,11 +183,11 @@ export function WorkoutDetailDialog({
                                   </span>
                                   <div className="flex items-center gap-4">
                                     <span>{set.reps} reps</span>
-                                    {set.weight && (
-                                      <span>{set.weight} kg</span>
-                                    )}
+                                    {set.weight && <span>{set.weight} kg</span>}
                                     <Badge
-                                      variant={set.completed ? "default" : "secondary"}
+                                      variant={
+                                        set.completed ? "default" : "secondary"
+                                      }
                                       className={
                                         set.completed
                                           ? "bg-green-100 text-green-700"

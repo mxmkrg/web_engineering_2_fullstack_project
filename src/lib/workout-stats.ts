@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { workout } from "@/db/schema";
-import { eq, count, sql, and } from "drizzle-orm";
+import { eq, count, sql, and, inArray } from "drizzle-orm";
 
 export interface WorkoutStatsData {
   total: number;
@@ -12,13 +12,18 @@ export interface WorkoutStatsData {
 export async function getWorkoutStatistics(
   userId: string,
 ): Promise<WorkoutStatsData> {
-  // Get total archived workouts (saved workouts)
+  // Get total completed and archived workouts (finished workouts)
   const totalWorkouts = await db
     .select({ count: count() })
     .from(workout)
-    .where(and(eq(workout.userId, userId), eq(workout.status, "archived")));
+    .where(
+      and(
+        eq(workout.userId, userId),
+        inArray(workout.status, ["completed", "archived"]),
+      ),
+    );
 
-  // Get archived workouts this month
+  // Get completed and archived workouts this month
   const thisMonth = new Date();
   thisMonth.setDate(1);
   thisMonth.setHours(0, 0, 0, 0);
@@ -27,10 +32,10 @@ export async function getWorkoutStatistics(
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.status} = 'archived' AND ${workout.date} >= ${thisMonth.getTime()}`,
+      sql`${workout.userId} = ${userId} AND ${workout.status} IN ('completed', 'archived') AND ${workout.date} >= ${thisMonth.getTime()}`,
     );
 
-  // Get archived workouts this week (starting from Monday)
+  // Get completed and archived workouts this week (starting from Monday)
   const thisWeek = new Date();
   const currentDay = thisWeek.getDay();
   const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Sunday = 0, so 6 days from Monday
@@ -41,14 +46,19 @@ export async function getWorkoutStatistics(
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.status} = 'archived' AND ${workout.date} >= ${thisWeek.getTime()}`,
+      sql`${workout.userId} = ${userId} AND ${workout.status} IN ('completed', 'archived') AND ${workout.date} >= ${thisWeek.getTime()}`,
     );
 
-  // Calculate average duration for archived workouts
+  // Calculate average duration for completed and archived workouts
   const avgDuration = await db
     .select({ avg: sql<number>`AVG(${workout.duration})` })
     .from(workout)
-    .where(and(eq(workout.userId, userId), eq(workout.status, "archived")));
+    .where(
+      and(
+        eq(workout.userId, userId),
+        inArray(workout.status, ["completed", "archived"]),
+      ),
+    );
 
   return {
     total: totalWorkouts[0]?.count || 0,

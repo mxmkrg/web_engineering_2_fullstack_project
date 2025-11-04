@@ -27,7 +27,11 @@ type WorkoutViewTabsProps = {
   }>;
 };
 
-export function WorkoutViewTabs({ userId, initialStats, initialWorkouts }: WorkoutViewTabsProps) {
+export function WorkoutViewTabs({
+  userId,
+  initialStats,
+  initialWorkouts,
+}: WorkoutViewTabsProps) {
   return (
     <Tabs defaultValue="list" className="space-y-6">
       <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -42,7 +46,7 @@ export function WorkoutViewTabs({ userId, initialStats, initialWorkouts }: Worko
       </TabsList>
 
       <TabsContent value="list" className="space-y-6">
-        <FilterableWorkoutSection 
+        <FilterableWorkoutSection
           userId={userId}
           initialStats={initialStats}
           initialWorkouts={initialWorkouts}
