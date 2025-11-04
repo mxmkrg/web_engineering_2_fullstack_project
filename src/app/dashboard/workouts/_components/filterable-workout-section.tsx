@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Activity, Calendar, Target, TrendingUp } from "lucide-react";
+import { Activity, Calendar, Target, TrendingUp, Clock, BarChart3, Hash } from "lucide-react";
 import { WorkoutList } from "./workout-list";
 import {
   getFilteredWorkouts,
@@ -29,6 +29,14 @@ type FilterOption = {
   bgColor: string;
 };
 
+type StatisticTile = {
+  title: string;
+  value: string;
+  icon: any;
+  color: string;
+  bgColor: string;
+};
+
 export function FilterableWorkoutSection({
   userId,
   initialStats,
@@ -39,15 +47,52 @@ export function FilterableWorkoutSection({
   const [currentAvgDuration, setCurrentAvgDuration] = useState(
     initialStats.avgDuration,
   );
+  const [currentTotalDuration, setCurrentTotalDuration] = useState(0);
+  const [currentAvgSets, setCurrentAvgSets] = useState(0);
+  const [currentTotalSets, setCurrentTotalSets] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize statistics when component mounts
+  useEffect(() => {
+    const initializeStats = async () => {
+      try {
+        const result = await getFilteredWorkouts(userId, {
+          filter: "total",
+          limit: 50,
+        });
+        setCurrentTotalDuration(result.totalDuration);
+        setCurrentAvgSets(result.avgSets);
+        setCurrentTotalSets(result.totalSets);
+      } catch (error) {
+        console.error("Error initializing statistics:", error);
+      }
+    };
+
+    initializeStats();
+  }, [userId]);
 
   // Reset to initial stats when returning to "total" filter
   useEffect(() => {
     if (activeFilter === "total") {
       setWorkouts(initialWorkouts);
       setCurrentAvgDuration(initialStats.avgDuration);
+      // Reinitialize other stats
+      const initializeStats = async () => {
+        try {
+          const result = await getFilteredWorkouts(userId, {
+            filter: "total",
+            limit: 50,
+          });
+          setCurrentTotalDuration(result.totalDuration);
+          setCurrentAvgSets(result.avgSets);
+          setCurrentTotalSets(result.totalSets);
+        } catch (error) {
+          console.error("Error reinitializing statistics:", error);
+        }
+      };
+      initializeStats();
     }
-  }, [activeFilter, initialWorkouts, initialStats.avgDuration]);
+  }, [activeFilter, initialWorkouts, initialStats.avgDuration, userId]);
 
   const filterOptions: FilterOption[] = [
     {
@@ -76,13 +121,36 @@ export function FilterableWorkoutSection({
     },
   ];
 
-  const avgDurationStat = {
-    title: "Avg Duration",
-    value: `${currentAvgDuration}m`,
-    icon: TrendingUp,
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-  };
+  const statisticTiles: StatisticTile[] = [
+    {
+      title: "Avg Duration",
+      value: `${currentAvgDuration}m`,
+      icon: TrendingUp,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+    {
+      title: "Total Duration",
+      value: `${currentTotalDuration}m`,
+      icon: Clock,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+    },
+    {
+      title: "Avg Sets",
+      value: currentAvgSets.toString(),
+      icon: BarChart3,
+      color: "text-red-600",
+      bgColor: "bg-red-50",
+    },
+    {
+      title: "Total Sets",
+      value: currentTotalSets.toString(),
+      icon: Hash,
+      color: "text-teal-600",
+      bgColor: "bg-teal-50",
+    },
+  ];
 
   const handleFilterClick = async (filter: WorkoutFilterType) => {
     if (filter === activeFilter) return;
@@ -92,12 +160,14 @@ export function FilterableWorkoutSection({
 
     try {
       const result = await getFilteredWorkouts(userId, {
-        status: "completed", // Use "completed" status instead of "archived"
         filter: filter,
         limit: 50,
       });
       setWorkouts(result.workouts);
       setCurrentAvgDuration(result.avgDuration);
+      setCurrentTotalDuration(result.totalDuration);
+      setCurrentAvgSets(result.avgSets);
+      setCurrentTotalSets(result.totalSets);
     } catch (error) {
       console.error("Error filtering workouts:", error);
     } finally {
@@ -107,8 +177,8 @@ export function FilterableWorkoutSection({
 
   return (
     <>
-      {/* Stats Section with Clickable Filters */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Filter Section */}
+      <div className="grid gap-4 md:grid-cols-3">
         {filterOptions.map((stat) => (
           <div
             key={stat.key}
@@ -135,22 +205,32 @@ export function FilterableWorkoutSection({
             </div>
           </div>
         ))}
+      </div>
 
-        {/* Average Duration (Non-clickable) */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">{avgDurationStat.title}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {avgDurationStat.value}
-              </p>
+      {/* Statistics Section */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Workout Statistics
+        </h3>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {statisticTiles.map((stat, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 rounded-lg p-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{stat.title}</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {stat.value}
+                  </p>
+                </div>
+                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                  <stat.icon className={`size-4 ${stat.color}`} />
+                </div>
+              </div>
             </div>
-            <div className={`p-3 rounded-lg ${avgDurationStat.bgColor}`}>
-              <avgDurationStat.icon
-                className={`size-4 ${avgDurationStat.color}`}
-              />
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
