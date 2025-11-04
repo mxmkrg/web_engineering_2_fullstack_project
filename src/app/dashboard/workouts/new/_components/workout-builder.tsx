@@ -109,12 +109,13 @@ export function WorkoutBuilder() {
         </div>
         <div className="flex gap-3">
           <Button
-            variant="ghost"
+            variant="outline"
             size="lg"
             onClick={() => router.push("/dashboard/workouts")}
+            className="flex items-center gap-2"
           >
-            <X className="mr-2 h-4 w-4" />
-            Cancel
+            <X className="h-4 w-4" />
+            Back
           </Button>
           <Button
             size="lg"
@@ -188,11 +189,13 @@ export function WorkoutBuilder() {
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-lg font-semibold">{exercise.name}</h3>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => removeExercise(index)}
+                    className="flex items-center gap-1 text-destructive hover:bg-destructive hover:text-destructive-foreground"
                   >
                     <X className="h-4 w-4" />
+                    Remove
                   </Button>
                 </div>
                 <div className="grid grid-cols-2 gap-4">

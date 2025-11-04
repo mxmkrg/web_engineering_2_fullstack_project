@@ -130,19 +130,20 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm pt-20">
-      <Card className="w-full max-w-2xl bg-white dark:bg-gray-950 animate-in fade-in zoom-in-95 duration-200">
+      <Card className="w-full max-w-2xl bg-white text-foreground animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between border-b p-6">
-          <h3 className="text-2xl font-semibold">Add Exercise</h3>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-5 w-5" />
+        <div className="flex items-center justify-between border-b border-border p-6">
+          <h3 className="text-2xl font-semibold text-foreground">Add Exercise</h3>
+          <Button variant="outline" onClick={onClose} className="flex items-center gap-2">
+            <X className="h-4 w-4" />
+            Close
           </Button>
         </div>
 
         <div className="p-6">
           {/* Category Filter */}
           <div className="mb-6">
-            <label className="mb-3 block text-sm font-medium">
+            <label className="mb-3 block text-sm font-medium text-foreground">
               Choose Category
             </label>
             <div className="flex flex-wrap gap-2">
@@ -167,7 +168,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
           {/* Search Input with Dropdown */}
           <div className="relative" ref={dropdownRef}>
-            <label className="mb-3 block text-sm font-medium">
+            <label className="mb-3 block text-sm font-medium text-foreground">
               Search Exercises
             </label>
             <div className="relative">
@@ -187,7 +188,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
             {/* Dropdown List */}
             {isDropdownOpen && filteredExercises.length > 0 && !isLoading && (
-              <div className="absolute z-10 mt-2 max-h-80 w-full overflow-y-auto rounded-lg border bg-white dark:bg-gray-950 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute z-10 mt-2 max-h-80 w-full overflow-y-auto rounded-lg border border-border bg-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
                 {filteredExercises.map((exercise, index) => {
                   const exerciseCategory =
                     selectedCategory === "all"
@@ -195,7 +196,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                           exList.includes(exercise),
                         )?.[0] as Exclude<Category, "all"> | undefined)
                       : selectedCategory;
-                  const Icon = exerciseCategory
+                  const Icon = exerciseCategory && CATEGORY_ICONS[exerciseCategory]
                     ? CATEGORY_ICONS[exerciseCategory]
                     : Dumbbell;
 
@@ -206,13 +207,13 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                         onSelect(exercise);
                         setIsDropdownOpen(false);
                       }}
-                      className="flex w-full items-center gap-3 border-b px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-accent"
+                      className="flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-accent hover:text-accent-foreground"
                     >
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
                         <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium">{exercise}</p>
+                        <p className="font-medium text-foreground">{exercise}</p>
                         <p className="text-sm capitalize text-muted-foreground">
                           {exerciseCategory}
                         </p>
@@ -225,7 +226,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
             {/* Loading State */}
             {isLoading && (
-              <div className="absolute z-10 mt-2 w-full rounded-lg border bg-white dark:bg-gray-950 p-8 text-center shadow-lg">
+              <div className="absolute z-10 mt-2 w-full rounded-lg border border-border bg-white p-8 text-center shadow-lg">
                 <p className="text-muted-foreground">Loading exercises...</p>
               </div>
             )}
@@ -235,7 +236,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
               searchQuery &&
               filteredExercises.length === 0 &&
               !isLoading && (
-                <div className="absolute z-10 mt-2 w-full rounded-lg border bg-white dark:bg-gray-950 p-8 text-center shadow-lg">
+                <div className="absolute z-10 mt-2 w-full rounded-lg border border-border bg-white p-8 text-center shadow-lg">
                   <p className="text-muted-foreground">
                     No exercises found for "{searchQuery}"
                   </p>

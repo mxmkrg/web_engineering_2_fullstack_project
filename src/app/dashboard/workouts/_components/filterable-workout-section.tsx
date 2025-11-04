@@ -161,8 +161,8 @@ export function FilterableWorkoutSection({
           {isLoading ? (
             <WorkoutListSkeleton />
           ) : (
-            <WorkoutList 
-              userId={userId} 
+            <WorkoutList
+              userId={userId}
               initialWorkouts={workouts}
               activeFilter="all" // Always "all" since server-side filtering is handled here
             />

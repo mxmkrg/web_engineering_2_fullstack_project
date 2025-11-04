@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Calendar, Clock, Dumbbell, Edit, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  Clock,
+  Dumbbell,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { format } from "date-fns";
 import { getWorkoutDetails } from "@/actions/get-workout-details";
 import { Button } from "@/components/ui/button";
@@ -45,7 +53,8 @@ type WorkoutCalendarProps = {
 
 export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedWorkout, setSelectedWorkout] = useState<DetailedWorkout | null>(null);
+  const [selectedWorkout, setSelectedWorkout] =
+    useState<DetailedWorkout | null>(null);
   const [isLoadingWorkout, setIsLoadingWorkout] = useState(false);
 
   // Get current month and year
@@ -56,9 +65,10 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
   const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
   const firstDayWeekday = firstDayOfMonth.getDay(); // 0 = Sunday
-  
+
   // Adjust for Monday start (0 = Sunday, 1 = Monday, etc.)
-  const mondayAdjustedFirstDay = firstDayWeekday === 0 ? 6 : firstDayWeekday - 1;
+  const mondayAdjustedFirstDay =
+    firstDayWeekday === 0 ? 6 : firstDayWeekday - 1;
 
   // Generate calendar days
   const daysInMonth = lastDayOfMonth.getDate();
@@ -141,8 +151,18 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   };
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   // Day names starting with Monday
@@ -158,7 +178,10 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   return (
     <div className="flex gap-6">
       {/* Calendar Section - Made smaller */}
-      <div className="bg-white rounded-lg shadow p-4 flex-shrink-0" style={{ width: '400px' }}>
+      <div
+        className="bg-white rounded-lg shadow p-4 flex-shrink-0"
+        style={{ width: "400px" }}
+      >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Calendar className="size-4 text-blue-600" />
@@ -222,13 +245,14 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
             const isToday =
               new Date().toDateString() ===
               new Date(currentYear, currentMonth, day).toDateString();
-            const isSelected = selectedWorkout && 
-              selectedWorkout.date.toDateString() === 
-              new Date(currentYear, currentMonth, day).toDateString();
+            const isSelected =
+              selectedWorkout &&
+              selectedWorkout.date.toDateString() ===
+                new Date(currentYear, currentMonth, day).toDateString();
 
             return (
               <button
-                key={day}
+                key={index}
                 onClick={() => handleDayClick(day)}
                 disabled={isLoadingWorkout}
                 title={
@@ -236,9 +260,10 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
                 }
                 className={`
                   h-8 flex items-center justify-center text-xs rounded transition-colors relative
-                  ${hasWorkouts
-                    ? `bg-blue-600 text-white hover:bg-blue-700 cursor-pointer ${isLoadingWorkout ? "opacity-50" : ""}`
-                    : "hover:bg-gray-100 cursor-pointer"
+                  ${
+                    hasWorkouts
+                      ? `bg-blue-600 text-white hover:bg-blue-700 cursor-pointer ${isLoadingWorkout ? "opacity-50" : ""}`
+                      : "hover:bg-gray-100 cursor-pointer"
                   }
                   ${isToday && !hasWorkouts ? "bg-gray-200 font-semibold" : ""}
                   ${isToday && hasWorkouts ? "ring-2 ring-blue-300" : ""}
@@ -276,7 +301,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
       {/* Workout Details Panel */}
       <div className="flex-1 bg-white rounded-lg shadow p-6">
         {selectedWorkout ? (
-          <WorkoutDetailsPanel 
+          <WorkoutDetailsPanel
             workout={selectedWorkout}
             onEdit={(workoutId) => {
               // Handle edit - could navigate to edit page
@@ -292,7 +317,9 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
             <Calendar className="size-12 mb-4 text-gray-300" />
             <p className="text-lg font-medium">No workout selected</p>
-            <p className="text-sm">Click on a workout day in the calendar to view details</p>
+            <p className="text-sm">
+              Click on a workout day in the calendar to view details
+            </p>
           </div>
         )}
       </div>
@@ -370,7 +397,7 @@ function WorkoutDetailsPanel({
           <Dumbbell className="size-4" />
           Exercises ({workout.exercises?.length || 0})
         </h4>
-        
+
         {workout.exercises && workout.exercises.length > 0 ? (
           <div className="space-y-4">
             {workout.exercises.map((exercise) => (
