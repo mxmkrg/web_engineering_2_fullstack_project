@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { workout, workoutExercise, workoutSet, exercise } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { WorkoutEditForm } from "./_components/workout-edit-form";
+import { WorkoutDetailView } from "./_components/workout-detail-view";
 
 interface PageProps {
   params: {
@@ -10,7 +10,7 @@ interface PageProps {
   };
 }
 
-export default async function WorkoutEditPage({ params }: PageProps) {
+export default async function WorkoutDetailPage({ params }: PageProps) {
   const { id } = await params;
   const workoutId = parseInt(id);
 
@@ -35,6 +35,7 @@ export default async function WorkoutEditPage({ params }: PageProps) {
       id: workoutExercise.id,
       exerciseId: workoutExercise.exerciseId,
       exerciseName: exercise.name,
+      category: exercise.category,
       order: workoutExercise.order,
     })
     .from(workoutExercise)
@@ -54,6 +55,7 @@ export default async function WorkoutEditPage({ params }: PageProps) {
       return {
         exerciseId: ex.exerciseId,
         exerciseName: ex.exerciseName || "",
+        category: ex.category || "",
         order: ex.order,
         sets: sets.map((set) => ({
           setNumber: set.setNumber,
@@ -67,10 +69,13 @@ export default async function WorkoutEditPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <WorkoutEditForm
-        workoutId={workoutId}
-        initialData={{
+      <WorkoutDetailView
+        workoutData={{
+          id: workoutData.id,
           name: workoutData.name,
+          date: workoutData.date,
+          duration: workoutData.duration,
+          status: workoutData.status,
           notes: workoutData.notes,
           exercises: exercisesWithSets,
         }}
