@@ -189,7 +189,11 @@ export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
       {/* Filter Sheet */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
             <Filter className="size-4" />
             Change Period
           </Button>
@@ -218,7 +222,7 @@ export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
                         };
 
                   const url = buildFilterUrl(filterToApply);
-                  const isActive = currentFilter.label === preset.label;
+                  const isActive = currentFilter.label === preset.label && !startMonth && !endMonth;
 
                   return (
                     <Button
@@ -226,7 +230,7 @@ export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
                       variant={isActive ? "default" : "outline"}
                       size="sm"
                       asChild
-                      className="text-xs"
+                      className={`text-xs ${isActive ? "bg-blue-600 hover:bg-blue-700 border-blue-600" : ""}`}
                       onClick={() => setIsOpen(false)}
                     >
                       <Link href={url}>{preset.label}</Link>
@@ -290,7 +294,10 @@ export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
                       size="sm"
                       disabled={disabled}
                       onClick={() => !disabled && handleMonthClick(date)}
-                      className={`h-10 text-xs ${disabled ? "opacity-50" : ""}`}
+                      className={`h-10 text-xs ${disabled ? "opacity-50" : ""} ${
+                        selected ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white" : 
+                        inRange ? "bg-blue-50 border-blue-200 text-blue-700" : ""
+                      }`}
                     >
                       {label}
                     </Button>
@@ -332,7 +339,7 @@ export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
                     applyCustomRange();
                     setIsOpen(false);
                   }}
-                  className="w-full"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white border border-blue-600 hover:border-blue-700 shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   Apply Range
                 </Button>
