@@ -23,7 +23,7 @@ export function RecentActivity() {
   const loadRecentWorkouts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/workouts?limit=3'); // Only get last 3 workouts
+      const response = await fetch('/api/workouts?limit=2'); // Only get last 2 workouts
       const result = await response.json();
 
       if (result.success) {

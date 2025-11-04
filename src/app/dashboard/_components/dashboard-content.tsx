@@ -67,7 +67,7 @@ export async function DashboardContent({ userName, userId }: DashboardContentPro
               <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              <stat.icon className={`h-6 w-6 ${stat.color}`} />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
@@ -89,7 +89,7 @@ export async function DashboardContent({ userName, userId }: DashboardContentPro
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="flex flex-col items-center justify-center space-y-4 min-h-[100px]">
               <QuickStartButton />
               <p className="text-sm text-muted-foreground text-center">
                 Track exercises, sets, reps, and weights to monitor your
