@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { workout } from "@/db/schema";
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get all workouts for the user
@@ -22,15 +22,17 @@ export async function GET(request: NextRequest) {
         date: workout.date,
         duration: workout.duration,
         status: workout.status,
-        createdAt: workout.createdAt
+        createdAt: workout.createdAt,
       })
       .from(workout)
       .where(eq(workout.userId, session.user.id))
       .orderBy(desc(workout.createdAt));
 
     // Separate pending and completed workouts
-    const pendingWorkouts = allWorkouts.filter(w => w.status !== 'completed');
-    const completedWorkouts = allWorkouts.filter(w => w.status === 'completed');
+    const pendingWorkouts = allWorkouts.filter((w) => w.status !== "completed");
+    const completedWorkouts = allWorkouts.filter(
+      (w) => w.status === "completed",
+    );
     const lastCompletedWorkout = completedWorkouts[0] || null;
 
     // Case 1: No workouts at all
@@ -38,11 +40,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         summary: "No workouts yet",
         workoutStatus: "empty",
-        message: "Start with a new workout ! Get moving and begin your fitness journey today",
+        message:
+          "Start with a new workout ! Get moving and begin your fitness journey today",
         pendingWorkouts: [],
         completedWorkouts: [],
         lastCompletedWorkout: null,
-        pendingCount: 0
+        pendingCount: 0,
       });
     }
 
@@ -56,20 +59,22 @@ export async function GET(request: NextRequest) {
         nextPendingWorkout: {
           id: nextPending.id,
           name: nextPending.name,
-          date: nextPending.date
+          date: nextPending.date,
         },
-        pendingWorkouts: pendingWorkouts.map(w => ({
+        pendingWorkouts: pendingWorkouts.map((w) => ({
           id: w.id,
           name: w.name,
           date: w.date,
-          status: w.status
+          status: w.status,
         })),
         completedCount: completedWorkouts.length,
         pendingCount: pendingWorkouts.length,
-        lastCompletedWorkout: lastCompletedWorkout ? {
-          name: lastCompletedWorkout.name,
-          date: lastCompletedWorkout.date
-        } : null
+        lastCompletedWorkout: lastCompletedWorkout
+          ? {
+              name: lastCompletedWorkout.name,
+              date: lastCompletedWorkout.date,
+            }
+          : null,
       });
     }
 
@@ -79,21 +84,22 @@ export async function GET(request: NextRequest) {
       workoutStatus: "completed",
       message: "Well done ! Start a new workout",
       completedCount: completedWorkouts.length,
-      completedWorkouts: completedWorkouts.slice(0, 3).map(w => ({
+      completedWorkouts: completedWorkouts.slice(0, 3).map((w) => ({
         name: w.name,
-        date: w.date
+        date: w.date,
       })),
-      lastCompletedWorkout: lastCompletedWorkout ? {
-        name: lastCompletedWorkout.name,
-        date: lastCompletedWorkout.date
-      } : null
+      lastCompletedWorkout: lastCompletedWorkout
+        ? {
+            name: lastCompletedWorkout.name,
+            date: lastCompletedWorkout.date,
+          }
+        : null,
     });
-
   } catch (error) {
-    console.error('Error fetching motivation data:', error);
+    console.error("Error fetching motivation data:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch motivation data' },
-      { status: 500 }
+      { error: "Failed to fetch motivation data" },
+      { status: 500 },
     );
   }
 }

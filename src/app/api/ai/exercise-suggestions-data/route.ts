@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { exercise, workout, workoutExercise, workoutSet } from "@/db/schema";
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get all available exercises from database
@@ -62,17 +62,20 @@ export async function GET(request: NextRequest) {
         .from(workoutExercise)
         .innerJoin(exercise, eq(workoutExercise.exerciseId, exercise.id))
         .innerJoin(workout, eq(workoutExercise.workoutId, workout.id))
-        .leftJoin(workoutSet, eq(workoutExercise.id, workoutSet.workoutExerciseId))
+        .leftJoin(
+          workoutSet,
+          eq(workoutExercise.id, workoutSet.workoutExerciseId),
+        )
         .where(eq(workout.userId, session.user.id))
         .orderBy(desc(workout.date));
     }
 
     // Parse muscle groups for better recommendations
-    const exercisesWithParsedGroups = allExercises.map(ex => {
+    const exercisesWithParsedGroups = allExercises.map((ex) => {
       try {
         return {
           ...ex,
-          muscleGroupsArray: JSON.parse(ex.muscleGroups || '[]'),
+          muscleGroupsArray: JSON.parse(ex.muscleGroups || "[]"),
         };
       } catch {
         return {
@@ -83,18 +86,22 @@ export async function GET(request: NextRequest) {
     });
 
     // Categorize exercises
-    const exercisesByCategory = exercisesWithParsedGroups.reduce((acc: any, ex) => {
-      if (!acc[ex.category]) {
-        acc[ex.category] = [];
-      }
-      acc[ex.category].push(ex);
-      return acc;
-    }, {});
+    const exercisesByCategory = exercisesWithParsedGroups.reduce(
+      (acc: any, ex) => {
+        if (!acc[ex.category]) {
+          acc[ex.category] = [];
+        }
+        acc[ex.category].push(ex);
+        return acc;
+      },
+      {},
+    );
 
     // Get most used exercises by the user
     const exerciseFrequency: { [key: string]: number } = {};
-    usedExercises.forEach(ex => {
-      exerciseFrequency[ex.exerciseName] = (exerciseFrequency[ex.exerciseName] || 0) + 1;
+    usedExercises.forEach((ex) => {
+      exerciseFrequency[ex.exerciseName] =
+        (exerciseFrequency[ex.exerciseName] || 0) + 1;
     });
 
     const mostUsedExercises = Object.entries(exerciseFrequency)
@@ -104,13 +111,14 @@ export async function GET(request: NextRequest) {
 
     // Get unique muscle groups from user's exercises
     const userMuscleGroups = new Set<string>();
-    usedExercises.forEach(ex => {
+    usedExercises.forEach((ex) => {
       try {
-        const groups = JSON.parse(ex.muscleGroups || '[]');
+        const groups = JSON.parse(ex.muscleGroups || "[]");
         if (Array.isArray(groups)) {
           groups.forEach((g: any) => {
-            if (typeof g === 'string') userMuscleGroups.add(g);
-            else if (typeof g === 'object' && g.name) userMuscleGroups.add(g.name);
+            if (typeof g === "string") userMuscleGroups.add(g);
+            else if (typeof g === "object" && g.name)
+              userMuscleGroups.add(g.name);
           });
         }
       } catch {}
@@ -129,13 +137,14 @@ export async function GET(request: NextRequest) {
       totalUserWorkouts: userWorkouts.length,
       categories: Object.keys(exercisesByCategory),
     });
-
   } catch (error) {
-    console.error('Error fetching exercise suggestions data:', error);
+    console.error("Error fetching exercise suggestions data:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch exercise suggestions data', details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
+      {
+        error: "Failed to fetch exercise suggestions data",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
     );
   }
 }
-

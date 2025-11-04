@@ -10,4 +10,3 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-

@@ -9,7 +9,9 @@ export interface WorkoutStatsData {
   avgDuration: number;
 }
 
-export async function getWorkoutStatistics(userId: string): Promise<WorkoutStatsData> {
+export async function getWorkoutStatistics(
+  userId: string,
+): Promise<WorkoutStatsData> {
   // Get total workouts
   const totalWorkouts = await db
     .select({ count: count() })

@@ -12,7 +12,7 @@ const sampleExercises = [
     muscleGroups: "pectoralis_major,triceps,anterior_deltoid",
     description: "Classic bodyweight chest exercise",
     instructions:
-        "Start in plank position, lower chest to ground, push back up",
+      "Start in plank position, lower chest to ground, push back up",
   },
   {
     name: "Bench Press",
