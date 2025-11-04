@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getWorkouts } from "@/actions/get-workouts";
 import { getWorkoutDetails } from "@/actions/get-workout-details";
 import { deleteWorkout } from "@/actions/delete-workout";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 interface WorkoutListProps {
   userId: string;
   initialWorkouts: Workout[];
+  activeFilter?: string;
 }
 
 type Workout = {
@@ -28,12 +29,61 @@ type Workout = {
   userId: string;
 };
 
-export function WorkoutList({ userId, initialWorkouts }: WorkoutListProps) {
+export function WorkoutList({
+  userId,
+  initialWorkouts,
+  activeFilter = "all",
+}: WorkoutListProps) {
   const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts || []);
   const [selectedWorkout, setSelectedWorkout] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  // Update workouts state when initialWorkouts prop changes
+  useEffect(() => {
+    setWorkouts(initialWorkouts || []);
+  }, [initialWorkouts]);
+
+  // Filter workouts based on activeFilter
+  const filteredWorkouts = workouts.filter((workout) => {
+    if (activeFilter === "all") return true;
+
+    const workoutDate = new Date(workout.date);
+    const now = new Date();
+
+    switch (activeFilter) {
+      case "week":
+        // Fix timezone issue by using date strings instead of modifying date objects
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const currentDay = today.getDay();
+        const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+        const startOfWeek = new Date(today.getTime() - daysFromMonday * 24 * 60 * 60 * 1000);
+        
+        const workoutDateOnly = new Date(workoutDate.getFullYear(), workoutDate.getMonth(), workoutDate.getDate());
+        return workoutDateOnly >= startOfWeek;
+
+      case "month":
+        // Fix timezone issue for month comparison
+        const workoutMonth = workoutDate.getMonth();
+        const workoutYear = workoutDate.getFullYear();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        return (workoutYear > currentYear) || 
+               (workoutYear === currentYear && workoutMonth >= currentMonth);
+
+      case "duration":
+        // For duration filter, show workouts with above-average duration
+        const avgDuration =
+          workouts.reduce((sum, w) => sum + (w.duration || 0), 0) /
+          workouts.length;
+        return (workout.duration || 0) >= avgDuration;
+
+      default:
+        return true;
+    }
+  });
 
   const handleWorkoutClick = async (workout: Workout) => {
     setIsLoading(true);
@@ -96,13 +146,17 @@ export function WorkoutList({ userId, initialWorkouts }: WorkoutListProps) {
     }
   };
 
-  if (workouts.length === 0) {
+  if (filteredWorkouts.length === 0) {
     return (
       <div className="text-center py-8">
         <Archive className="size-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">No Workouts Yet</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          {activeFilter === "all" ? "No Workouts Yet" : "No Workouts Found"}
+        </h3>
         <p className="text-muted-foreground">
-          Start your fitness journey! Create your first workout.
+          {activeFilter === "all"
+            ? "Start your fitness journey! Create your first workout."
+            : "No workouts found for the selected time period."}
         </p>
       </div>
     );
@@ -111,7 +165,7 @@ export function WorkoutList({ userId, initialWorkouts }: WorkoutListProps) {
   return (
     <>
       <div className="space-y-4">
-        {workouts.map((workout: Workout) => (
+        {filteredWorkouts.map((workout: Workout) => (
           <Card
             key={workout.id}
             className="hover:shadow-md transition-shadow cursor-pointer"

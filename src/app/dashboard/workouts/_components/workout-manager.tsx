@@ -183,7 +183,11 @@ export function WorkoutManager({ userId }: WorkoutManagerProps) {
             </div>
           </div>
           <div className="p-6 pt-0">
-            <WorkoutList userId={userId} initialWorkouts={workouts} />
+            <WorkoutList
+              userId={userId}
+              initialWorkouts={workouts}
+              activeFilter={activeFilter}
+            />
           </div>
         </div>
       )}

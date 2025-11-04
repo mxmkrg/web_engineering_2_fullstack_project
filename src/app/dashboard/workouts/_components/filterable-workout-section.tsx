@@ -81,7 +81,7 @@ export function FilterableWorkoutSection({
 
     try {
       const filteredWorkouts = await getFilteredWorkouts(userId, {
-        status: "archived",
+        status: "completed", // Use "completed" status instead of "archived"
         filter: filter,
         limit: 50,
       });
@@ -161,7 +161,11 @@ export function FilterableWorkoutSection({
           {isLoading ? (
             <WorkoutListSkeleton />
           ) : (
-            <WorkoutList userId={userId} initialWorkouts={workouts} />
+            <WorkoutList 
+              userId={userId} 
+              initialWorkouts={workouts}
+              activeFilter="all" // Always "all" since server-side filtering is handled here
+            />
           )}
         </div>
       </div>

@@ -473,26 +473,14 @@ const workoutTemplates = {
 // Generate 12 weeks of workouts (3 per week = 36 total workouts)
 function generateWorkoutProgression(): any[] {
   const workouts: any[] = [];
-  const dates = generateWorkoutDates(12); // 12 weeks back
+  const dates = generateWorkoutDates(4); // 4 weeks back to include current week
 
-  // Workout rotation pattern
+  // Workout rotation pattern for 4 weeks
   const rotations = [
-    // Weeks 1-4: Full Body (A/B alternating)
+    // Weeks 1-4: Full Body (A/B alternating) - 12 workouts total
     ...Array(12)
       .fill(null)
       .map((_, i) => (i % 2 === 0 ? "fullBodyA" : "fullBodyB")),
-    // Weeks 5-8: Upper/Lower split
-    ...Array(12)
-      .fill(null)
-      .map((_, i) => (i % 2 === 0 ? "upperBody" : "lowerBody")),
-    // Weeks 9-12: Push/Pull/Legs split with occasional cardio
-    ...Array(11)
-      .fill(null)
-      .map((_, i) => {
-        const pattern = ["pushDay", "pullDay", "legDay"];
-        return pattern[i % 3];
-      }),
-    "cardioDay", // One cardio day at the end
   ];
 
   dates.forEach((date, index) => {
