@@ -5,6 +5,7 @@ import { useState } from "react";
 import { signUp } from "@/actions/signup";
 import Link from "next/link";
 import { Eye, EyeOff, Dumbbell } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,12 +33,11 @@ export default function SignupPage() {
               >
                 Full Name
               </label>
-              <input
+              <Input
                 id="name"
                 name="name"
                 type="text"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Enter your full name"
               />
             </div>
@@ -49,12 +49,11 @@ export default function SignupPage() {
               >
                 Email Address
               </label>
-              <input
+              <Input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Enter your email"
               />
             </div>
@@ -67,12 +66,11 @@ export default function SignupPage() {
                 Password
               </label>
               <div className="mt-1 relative">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
                   placeholder="Create a password (min 8 characters)"
                 />
                 <button

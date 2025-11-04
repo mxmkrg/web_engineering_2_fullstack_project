@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm"
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession()
@@ -18,7 +18,8 @@ export async function PATCH(
       )
     }
 
-    const workoutId = parseInt(params.id)
+    const { id } = await params
+    const workoutId = parseInt(id)
 
     if (isNaN(workoutId)) {
       return NextResponse.json(
