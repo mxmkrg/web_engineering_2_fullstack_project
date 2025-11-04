@@ -117,7 +117,7 @@ export const workout = sqliteTable("workout", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  status: text("status").notNull().default("completed"), // 'active' or 'completed'
+  status: text("status").notNull().default("active"), // 'active', 'completed', or 'archived'
   date: integer("date", { mode: "timestamp_ms" }).notNull(),
   duration: integer("duration"), // in minutes
   notes: text("notes"),

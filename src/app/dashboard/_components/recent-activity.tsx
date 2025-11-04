@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Calendar, Clock, CheckCircle, Activity } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Workout {
   id: number;
@@ -14,6 +15,7 @@ interface Workout {
 export function RecentActivity() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   // Load workouts from API
   useEffect(() => {
@@ -23,7 +25,9 @@ export function RecentActivity() {
   const loadRecentWorkouts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/workouts?limit=2"); // Only get last 2 workouts
+      const response = await fetch("/api/workouts?limit=2", {
+        credentials: "include", // Include cookies for authentication
+      }); // Only get last 2 workouts
       const result = await response.json();
 
       if (result.success) {
@@ -36,6 +40,10 @@ export function RecentActivity() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleWorkoutClick = (workoutId: number) => {
+    router.push(`/dashboard/workouts/${workoutId}`);
   };
 
   if (isLoading) {
@@ -70,7 +78,8 @@ export function RecentActivity() {
       {workouts.map((workout) => (
         <div
           key={workout.id}
-          className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+          className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer"
+          onClick={() => handleWorkoutClick(workout.id)}
         >
           <div className="flex items-center space-x-3">
             <div

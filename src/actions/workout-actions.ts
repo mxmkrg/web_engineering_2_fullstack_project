@@ -162,13 +162,14 @@ export async function completeWorkout(workoutId: number) {
     await db
       .update(workout)
       .set({
-        status: "completed",
+        status: "archived",
         duration: durationMinutes,
         updatedAt: now,
       })
       .where(eq(workout.id, workoutId));
 
     revalidatePath("/dashboard/workouts");
+    revalidatePath("/dashboard/workouts/archived");
     return { success: true, duration: durationMinutes };
   } catch (error) {
     console.error("Error completing workout:", error);

@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { workout } from "@/db/schema";
-import { eq, count, sql } from "drizzle-orm";
+import { eq, count, sql, and } from "drizzle-orm";
 
 export interface WorkoutStatsData {
   total: number;
@@ -12,13 +12,13 @@ export interface WorkoutStatsData {
 export async function getWorkoutStatistics(
   userId: string,
 ): Promise<WorkoutStatsData> {
-  // Get total workouts
+  // Get total archived workouts (saved workouts)
   const totalWorkouts = await db
     .select({ count: count() })
     .from(workout)
-    .where(eq(workout.userId, userId));
+    .where(and(eq(workout.userId, userId), eq(workout.status, "archived")));
 
-  // Get workouts this month
+  // Get archived workouts this month
   const thisMonth = new Date();
   thisMonth.setDate(1);
   thisMonth.setHours(0, 0, 0, 0);
@@ -27,26 +27,28 @@ export async function getWorkoutStatistics(
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisMonth.getTime()}`,
+      sql`${workout.userId} = ${userId} AND ${workout.status} = 'archived' AND ${workout.date} >= ${thisMonth.getTime()}`,
     );
 
-  // Get workouts this week
+  // Get archived workouts this week (starting from Monday)
   const thisWeek = new Date();
-  thisWeek.setDate(thisWeek.getDate() - thisWeek.getDay());
+  const currentDay = thisWeek.getDay();
+  const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Sunday = 0, so 6 days from Monday
+  thisWeek.setDate(thisWeek.getDate() - daysFromMonday);
   thisWeek.setHours(0, 0, 0, 0);
 
   const weeklyWorkouts = await db
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.date} >= ${thisWeek.getTime()}`,
+      sql`${workout.userId} = ${userId} AND ${workout.status} = 'archived' AND ${workout.date} >= ${thisWeek.getTime()}`,
     );
 
-  // Calculate average duration
+  // Calculate average duration for archived workouts
   const avgDuration = await db
     .select({ avg: sql<number>`AVG(${workout.duration})` })
     .from(workout)
-    .where(eq(workout.userId, userId));
+    .where(and(eq(workout.userId, userId), eq(workout.status, "archived")));
 
   return {
     total: totalWorkouts[0]?.count || 0,
