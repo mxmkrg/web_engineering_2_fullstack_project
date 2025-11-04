@@ -71,10 +71,7 @@ export function WorkoutEditForm({
     try {
       const response = await fetch(`/api/workouts/${workoutId}/edit`, {
         method: "PATCH",
-<<<<<<< HEAD
-=======
         credentials: "include", // Include cookies for authentication
->>>>>>> workout_managment
         headers: {
           "Content-Type": "application/json",
         },

@@ -21,20 +21,9 @@ type WorkoutViewTabsProps = {
     date: Date;
     duration: number | null;
     notes: string | null;
-    exercises: Array<{
-      id: number;
-      name: string;
-      order: number;
-      notes: string | null;
-      sets: Array<{
-        id: number;
-        setNumber: number;
-        reps: number;
-        weight: number | null;
-        completed: boolean;
-        notes: string | null;
-      }>;
-    }>;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
   }>;
 };
 

@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation";
 
 interface WorkoutSet {
   setNumber: number;
-  reps: number;
-  weight: number;
+  reps: number | null;
+  weight: number | null;
   completed: boolean;
 }
 
@@ -66,7 +66,7 @@ export function WorkoutDetailView({ workoutData }: WorkoutDetailViewProps) {
   );
   const totalVolume = workoutData.exercises.reduce(
     (sum, ex) =>
-      sum + ex.sets.reduce((setSum, set) => setSum + set.weight * set.reps, 0),
+      sum + ex.sets.reduce((setSum, set) => setSum + (set.weight || 0) * (set.reps || 0), 0),
     0,
   );
 
@@ -238,13 +238,13 @@ export function WorkoutDetailView({ workoutData }: WorkoutDetailViewProps) {
                       </div>
                       <div>
                         <span className="font-medium">Total Reps: </span>
-                        {exercise.sets.reduce((sum, set) => sum + set.reps, 0)}
+                        {exercise.sets.reduce((sum, set) => sum + (set.reps || 0), 0)}
                       </div>
                       <div>
                         <span className="font-medium">Volume: </span>
                         {Math.round(
                           exercise.sets.reduce(
-                            (sum, set) => sum + set.weight * set.reps,
+                            (sum, set) => sum + (set.weight || 0) * (set.reps || 0),
                             0,
                           ),
                         )}
