@@ -1,7 +1,7 @@
 import { debugWorkoutData } from "@/actions/debug-workout-data";
 import { checkDatabaseStructure } from "@/actions/check-database-structure";
 import { updateWorkoutsToCompleted } from "@/actions/update-workouts-completed";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {

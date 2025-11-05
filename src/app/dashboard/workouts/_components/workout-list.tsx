@@ -53,7 +53,7 @@ export function WorkoutList({
     const now = new Date();
 
     switch (activeFilter) {
-      case "week":
+      case "week": {
         // Fix timezone issue by using date strings instead of modifying date objects
         const today = new Date(
           now.getFullYear(),
@@ -72,8 +72,9 @@ export function WorkoutList({
           workoutDate.getDate(),
         );
         return workoutDateOnly >= startOfWeek;
+      }
 
-      case "month":
+      case "month": {
         // Fix timezone issue for month comparison
         const workoutMonth = workoutDate.getMonth();
         const workoutYear = workoutDate.getFullYear();
@@ -84,13 +85,15 @@ export function WorkoutList({
           workoutYear > currentYear ||
           (workoutYear === currentYear && workoutMonth >= currentMonth)
         );
+      }
 
-      case "duration":
+      case "duration": {
         // For duration filter, show workouts with above-average duration
         const avgDuration =
           workouts.reduce((sum, w) => sum + (w.duration || 0), 0) /
           workouts.length;
         return (workout.duration || 0) >= avgDuration;
+      }
 
       default:
         return true;
