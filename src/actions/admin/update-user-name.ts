@@ -6,18 +6,32 @@ import { user } from "@/db/schema";
 import { getServerSession } from "@/lib/auth-server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const nameSchema = z.object({
+  userId: z.string().min(1),
+  name: z.string().min(1).max(255),
+});
 
 /**
- * Delete a user from the system.
+ * Update a user's name.
  * Only accessible by admins.
- * Admins cannot delete themselves.
  */
-export async function deleteUser(userId: string) {
+export async function updateUserName(userId: string, newName: string) {
   try {
     const session = await getServerSession();
 
     if (!session?.user) {
       return { success: false, error: "Not authenticated" };
+    }
+
+    // Validate input
+    const validation = nameSchema.safeParse({ userId, name: newName });
+    if (!validation.success) {
+      return {
+        success: false,
+        error: "Invalid name (1-255 characters required)",
+      };
     }
 
     // Check if current user is admin
@@ -31,34 +45,27 @@ export async function deleteUser(userId: string) {
       return { success: false, error: "Unauthorized: Admin access required" };
     }
 
-    // Prevent self-deletion
-    if (userId === session.user.id) {
-      return { success: false, error: "Cannot delete your own account" };
-    }
-
-    // Check if user exists
-    const userToDelete = await db
-      .select()
-      .from(user)
+    // Update the user's name
+    const result = await db
+      .update(user)
+      .set({ name: newName })
       .where(eq(user.id, userId))
-      .limit(1);
+      .returning();
 
-    if (!userToDelete.length) {
+    if (!result.length) {
       return { success: false, error: "User not found" };
     }
-
-    // Delete the user (cascade will handle sessions, workouts, etc.)
-    await db.delete(user).where(eq(user.id, userId));
 
     // Revalidate to refresh UI
     revalidatePath("/", "layout");
 
     return {
       success: true,
-      message: `User ${userToDelete[0].email} has been deleted`,
+      message: `Name updated to ${newName}`,
+      user: result[0],
     };
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error updating user name:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

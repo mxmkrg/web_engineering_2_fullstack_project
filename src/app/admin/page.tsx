@@ -1,3 +1,5 @@
+﻿import { UserManagementTable } from "./_components/user-management-table";
+
 export default function AdminPage() {
   return (
     <div className="container mx-auto p-8">
@@ -8,11 +10,11 @@ export default function AdminPage() {
         </p>
       </div>
 
-      <div className="rounded-lg border p-8 text-center">
-        <h2 className="text-xl font-semibold mb-4">User Management</h2>
-        <p className="text-muted-foreground">
-          User management features will be implemented here.
-        </p>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold mb-4">User Management</h2>
+          <UserManagementTable />
+        </div>
       </div>
     </div>
   );

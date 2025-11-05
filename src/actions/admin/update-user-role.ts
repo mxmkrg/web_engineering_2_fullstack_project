@@ -7,17 +7,24 @@ import { getServerSession } from "@/lib/auth-server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+type UserRole = "user" | "admin";
+
 /**
- * Delete a user from the system.
+ * Update a user's role.
  * Only accessible by admins.
- * Admins cannot delete themselves.
+ * Admins cannot change their own role.
  */
-export async function deleteUser(userId: string) {
+export async function updateUserRole(userId: string, newRole: UserRole) {
   try {
     const session = await getServerSession();
 
     if (!session?.user) {
       return { success: false, error: "Not authenticated" };
+    }
+
+    // Validate role
+    if (newRole !== "user" && newRole !== "admin") {
+      return { success: false, error: "Invalid role" };
     }
 
     // Check if current user is admin
@@ -31,34 +38,32 @@ export async function deleteUser(userId: string) {
       return { success: false, error: "Unauthorized: Admin access required" };
     }
 
-    // Prevent self-deletion
+    // Prevent self-role change
     if (userId === session.user.id) {
-      return { success: false, error: "Cannot delete your own account" };
+      return { success: false, error: "Cannot change your own role" };
     }
 
-    // Check if user exists
-    const userToDelete = await db
-      .select()
-      .from(user)
+    // Update the user's role
+    const result = await db
+      .update(user)
+      .set({ role: newRole })
       .where(eq(user.id, userId))
-      .limit(1);
+      .returning();
 
-    if (!userToDelete.length) {
+    if (!result.length) {
       return { success: false, error: "User not found" };
     }
-
-    // Delete the user (cascade will handle sessions, workouts, etc.)
-    await db.delete(user).where(eq(user.id, userId));
 
     // Revalidate to refresh UI
     revalidatePath("/", "layout");
 
     return {
       success: true,
-      message: `User ${userToDelete[0].email} has been deleted`,
+      message: `User role updated to ${newRole}`,
+      user: result[0],
     };
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error updating user role:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
