@@ -17,9 +17,21 @@ export async function middleware(request: NextRequest) {
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
+  
+  // Restrict access to admin routes to admin users only
+  const pathname = request.nextUrl.pathname;
+  if (pathname.startsWith("/admin")) {
+    // Session user type from better-auth may not include custom fields; access defensively
+    const rawRole = (session.user as Record<string, unknown> | undefined)?.role;
+    const role = typeof rawRole === "string" ? rawRole : undefined;
+    if (role !== "admin") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
   return NextResponse.next();
 }
 export const config = {
   runtime: "nodejs",
-  matcher: ["/dashboard/:path*"], // Apply middleware to all dashboard routes
+  // Apply middleware to dashboard, admin and debug routes
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/debug/:path*"],
 };
