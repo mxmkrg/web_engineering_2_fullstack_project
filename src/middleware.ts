@@ -9,8 +9,8 @@ import { eq } from "drizzle-orm";
  * Middleware for authentication and authorization.
  *
  * Protects routes:
- * - /dashboard/* - Requires authentication
- * - /admin/* - Requires authentication + admin role
+ * - /dashboard/* - Requires authentication (includes /dashboard/debug and /dashboard/admin)
+ * - /dashboard/admin - Requires authentication + admin role
  */
 export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({
@@ -22,8 +22,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Check if accessing admin routes
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  // Check if accessing admin routes (admin role required)
+  if (request.nextUrl.pathname.startsWith("/dashboard/admin")) {
     // Get user's role from database
     const userData = await db
       .select({ role: user.role })
@@ -43,5 +43,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   runtime: "nodejs",
-  matcher: ["/dashboard/:path*", "/admin/:path*"], // Apply middleware to dashboard and admin routes
+  matcher: ["/dashboard/:path*"], // Apply middleware to all dashboard routes
 };

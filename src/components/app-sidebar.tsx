@@ -11,6 +11,7 @@ import {
   ChevronUp,
   MoreHorizontal,
   Shield,
+  Bug,
 } from "lucide-react";
 
 import {
@@ -156,7 +157,7 @@ export function AppSidebar({
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{userName}</span>
-                    <span className="truncate text-xs">Manage account</span>
+                    <span className="truncate text-xs">Settings</span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -176,9 +177,21 @@ export function AppSidebar({
                     Account Settings
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/dashboard/debug"
+                    className="flex w-full items-center"
+                  >
+                    <Bug className="mr-2 size-4" />
+                    Debug Tools
+                  </Link>
+                </DropdownMenuItem>
                 {userRole === "admin" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/admin" className="flex w-full items-center">
+                    <Link
+                      href="/dashboard/admin"
+                      className="flex w-full items-center"
+                    >
                       <Shield className="mr-2 size-4" />
                       Admin Dashboard
                     </Link>
