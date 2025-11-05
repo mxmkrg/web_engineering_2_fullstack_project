@@ -1,208 +1,254 @@
-"use client"
+"use client";
 
-import { Calendar, Clock, Edit, Trash2, CheckCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { getWorkouts } from "@/actions/get-workouts";
+import { getWorkoutDetails } from "@/actions/get-workout-details";
+import { deleteWorkout } from "@/actions/delete-workout";
+import { format } from "date-fns";
+import { Calendar, Clock, Archive, Edit, Trash2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { WorkoutDetailDialog } from "./workout-detail-dialog";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-interface Workout {
-  id: number
-  name: string
-  date: Date
-  duration: number | null
-  status: string
+interface WorkoutListProps {
+  userId: string;
+  initialWorkouts: Workout[];
+  activeFilter?: string;
 }
 
-export function WorkoutList() {
-  const router = useRouter()
-  const [workouts, setWorkouts] = useState<Workout[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [deletingId, setDeletingId] = useState<number | null>(null)
-  const [completingId, setCompletingId] = useState<number | null>(null)
+type Workout = {
+  id: number;
+  name: string;
+  status: string;
+  date: Date;
+  duration: number | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+};
 
-  // Load workouts from API
+export function WorkoutList({
+  userId,
+  initialWorkouts,
+  activeFilter = "all",
+}: WorkoutListProps) {
+  const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts || []);
+  const [selectedWorkout, setSelectedWorkout] = useState<any>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  // Update workouts state when initialWorkouts prop changes
   useEffect(() => {
-    loadWorkouts()
-  }, [])
+    setWorkouts(initialWorkouts || []);
+  }, [initialWorkouts]);
 
-  const loadWorkouts = async () => {
-    setIsLoading(true)
+  // Filter workouts based on activeFilter
+  const filteredWorkouts = workouts.filter((workout) => {
+    if (activeFilter === "all") return true;
+
+    const workoutDate = new Date(workout.date);
+    const now = new Date();
+
+    switch (activeFilter) {
+      case "week":
+        // Fix timezone issue by using date strings instead of modifying date objects
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
+        const currentDay = today.getDay();
+        const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+        const startOfWeek = new Date(
+          today.getTime() - daysFromMonday * 24 * 60 * 60 * 1000,
+        );
+
+        const workoutDateOnly = new Date(
+          workoutDate.getFullYear(),
+          workoutDate.getMonth(),
+          workoutDate.getDate(),
+        );
+        return workoutDateOnly >= startOfWeek;
+
+      case "month":
+        // Fix timezone issue for month comparison
+        const workoutMonth = workoutDate.getMonth();
+        const workoutYear = workoutDate.getFullYear();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        return (
+          workoutYear > currentYear ||
+          (workoutYear === currentYear && workoutMonth >= currentMonth)
+        );
+
+      case "duration":
+        // For duration filter, show workouts with above-average duration
+        const avgDuration =
+          workouts.reduce((sum, w) => sum + (w.duration || 0), 0) /
+          workouts.length;
+        return (workout.duration || 0) >= avgDuration;
+
+      default:
+        return true;
+    }
+  });
+
+  const handleWorkoutClick = async (workout: Workout) => {
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/workouts')
-      const result = await response.json()
-
-      if (result.success) {
-        setWorkouts(result.workouts)
+      const result = await getWorkoutDetails(workout.id);
+      if (result.success && result.workout) {
+        setSelectedWorkout(result.workout);
+        setIsDetailOpen(true);
       } else {
-        toast.error(result.error || "Failed to load workouts")
+        toast.error(result.error || "Failed to load workout details");
       }
     } catch (error) {
-      console.error("Error loading workouts:", error)
-      toast.error("An unexpected error occurred")
+      toast.error("Error loading workout details");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleEdit = (workoutId: number) => {
-    router.push(`/dashboard/workouts/${workoutId}/edit`)
-  }
-
-  const handleComplete = async (workoutId: number) => {
-    if (!confirm("Mark this workout as completed? Duration will be calculated automatically.")) {
-      return
-    }
-
-    setCompletingId(workoutId)
-    try {
-      const response = await fetch(`/api/workouts/${workoutId}/complete`, {
-        method: 'PATCH',
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        toast.success(result.message || `Workout completed! Duration: ${result.duration} minutes`)
-        // Reload workouts after completing
-        await loadWorkouts()
-      } else {
-        toast.error(result.error || "Failed to complete workout")
-      }
-    } catch (error) {
-      console.error("Error completing workout:", error)
-      toast.error("An unexpected error occurred")
-    } finally {
-      setCompletingId(null)
-    }
-  }
+    router.push(`/dashboard/workouts/${workoutId}/edit`);
+  };
 
   const handleDelete = async (workoutId: number) => {
-    if (!confirm("Are you sure you want to delete this workout?")) {
-      return
-    }
-
-    setDeletingId(workoutId)
     try {
-      const response = await fetch(`/api/workouts/${workoutId}`, {
-        method: 'DELETE',
-      })
-
-      const result = await response.json()
-
+      const result = await deleteWorkout(workoutId);
       if (result.success) {
-        toast.success("Workout deleted successfully")
-        // Reload workouts after deleting
-        await loadWorkouts()
+        setWorkouts(workouts.filter((w) => w.id !== workoutId));
+        toast.success("Workout deleted successfully");
       } else {
-        toast.error(result.error || "Failed to delete workout")
+        toast.error(result.error || "Failed to delete workout");
       }
     } catch (error) {
-      console.error("Error deleting workout:", error)
-      toast.error("An unexpected error occurred")
-    } finally {
-      setDeletingId(null)
+      toast.error("Error deleting workout");
     }
-  }
+  };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex items-center space-x-4 animate-pulse">
-            <div className="h-12 w-12 bg-muted rounded-lg"></div>
-            <div className="space-y-2 flex-1">
-              <div className="h-4 bg-muted rounded w-32"></div>
-              <div className="h-3 bg-muted rounded w-24"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
+  const handleEditClick = (e: React.MouseEvent, workoutId: number) => {
+    e.stopPropagation();
+    router.push(`/dashboard/workouts/${workoutId}/edit`);
+  };
 
-  if (!workouts || workouts.length === 0) {
+  const handleDeleteClick = async (e: React.MouseEvent, workout: Workout) => {
+    e.stopPropagation();
+    if (
+      confirm(
+        `Are you sure you want to delete "${workout.name}"? This action cannot be undone.`,
+      )
+    ) {
+      try {
+        const result = await deleteWorkout(workout.id);
+        if (result.success) {
+          setWorkouts(workouts.filter((w) => w.id !== workout.id));
+          toast.success("Workout deleted successfully");
+        } else {
+          toast.error(result.error || "Failed to delete workout");
+        }
+      } catch (error) {
+        toast.error("Error deleting workout");
+      }
+    }
+  };
+
+  if (filteredWorkouts.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">
-          No workouts yet. Start your fitness journey!
+        <Archive className="size-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-semibold mb-2">
+          {activeFilter === "all" ? "No Workouts Yet" : "No Workouts Found"}
+        </h3>
+        <p className="text-muted-foreground">
+          {activeFilter === "all"
+            ? "Start your fitness journey! Create your first workout."
+            : "No workouts found for the selected time period."}
         </p>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="space-y-4">
-      {workouts.map((workoutItem) => (
-        <div
-          key={workoutItem.id}
-          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <div className="flex items-center space-x-4">
-            <div className={`p-2 rounded-lg ${workoutItem.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'}`}>
-              {workoutItem.status === 'completed' ? (
-                <CheckCircle className="size-4 text-green-600" />
-              ) : (
-                <Calendar className="size-4 text-blue-600" />
-              )}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium text-gray-900">{workoutItem.name}</h3>
-                {workoutItem.status === 'completed' && (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                    Completed
-                  </span>
-                )}
+    <>
+      <div className="space-y-4">
+        {filteredWorkouts.map((workout: Workout) => (
+          <Card
+            key={workout.id}
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => handleWorkoutClick(workout)}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="p-2 rounded-lg bg-green-100">
+                    <Archive className="size-4 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-gray-900">
+                        {workout.name}
+                      </h3>
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                        Saved
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="size-4" />
+                        {format(new Date(workout.date), "PPP")}
+                      </div>
+                      {workout.duration && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="size-4" />
+                          {workout.duration} minutes
+                        </div>
+                      )}
+                    </div>
+                    {workout.notes && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {workout.notes}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => handleEditClick(e, workout.id)}
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                    title="Edit Workout"
+                    type="button"
+                  >
+                    <Edit className="size-4" />
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteClick(e, workout)}
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                    title="Delete Workout"
+                    type="button"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
               </div>
-              <p className="text-sm text-gray-500">
-                {new Date(workoutItem.date).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center text-sm text-gray-500">
-              <Clock className="size-4 mr-1" />
-              {workoutItem.duration || 0}m
-            </div>
-
-            <div className="flex gap-2">
-              {workoutItem.status === 'active' && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleComplete(workoutItem.id)}
-                  disabled={completingId === workoutItem.id}
-                  className="hover:bg-green-100 hover:text-green-600"
-                  title="Complete Workout"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleEdit(workoutItem.id)}
-                className="hover:bg-blue-100 hover:text-blue-600"
-                title="Edit Workout"
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDelete(workoutItem.id)}
-                disabled={deletingId === workoutItem.id}
-                className="hover:bg-red-100 hover:text-red-600"
-                title="Delete Workout"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
+      <WorkoutDetailDialog
+        workout={selectedWorkout}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    </>
+  );
 }

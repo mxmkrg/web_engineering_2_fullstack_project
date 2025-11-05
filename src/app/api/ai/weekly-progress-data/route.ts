@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { workout, workoutExercise, exercise, workoutSet } from "@/db/schema";
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get workouts from last 7 days for this user
@@ -30,10 +30,7 @@ export async function GET(request: NextRequest) {
       })
       .from(workout)
       .where(
-        and(
-          eq(workout.userId, session.user.id),
-          gte(workout.date, oneWeekAgo)
-        )
+        and(eq(workout.userId, session.user.id), gte(workout.date, oneWeekAgo)),
       )
       .orderBy(desc(workout.date));
 
@@ -56,27 +53,41 @@ export async function GET(request: NextRequest) {
         .from(workoutExercise)
         .innerJoin(exercise, eq(workoutExercise.exerciseId, exercise.id))
         .innerJoin(workout, eq(workoutExercise.workoutId, workout.id))
-        .leftJoin(workoutSet, eq(workoutExercise.id, workoutSet.workoutExerciseId))
+        .leftJoin(
+          workoutSet,
+          eq(workoutExercise.id, workoutSet.workoutExerciseId),
+        )
         .where(eq(workout.userId, session.user.id))
         .orderBy(desc(workout.date));
     }
 
     // Calculate statistics
-    const completedWorkouts = weeklyWorkouts.filter(w => w.status === 'completed');
-    const pendingWorkouts = weeklyWorkouts.filter(w => w.status !== 'completed');
-    const totalDuration = completedWorkouts.reduce((sum, w) => sum + (w.duration || 0), 0);
-    const avgDuration = completedWorkouts.length > 0 ? Math.round(totalDuration / completedWorkouts.length) : 0;
+    const completedWorkouts = weeklyWorkouts.filter(
+      (w) => w.status === "completed",
+    );
+    const pendingWorkouts = weeklyWorkouts.filter(
+      (w) => w.status !== "completed",
+    );
+    const totalDuration = completedWorkouts.reduce(
+      (sum, w) => sum + (w.duration || 0),
+      0,
+    );
+    const avgDuration =
+      completedWorkouts.length > 0
+        ? Math.round(totalDuration / completedWorkouts.length)
+        : 0;
 
     // Most trained muscle groups
     const muscleGroupCounts: { [key: string]: number } = {};
-    weeklyExercises.forEach(ex => {
+    weeklyExercises.forEach((ex) => {
       try {
-        const groups = JSON.parse(ex.muscleGroups || '[]');
+        const groups = JSON.parse(ex.muscleGroups || "[]");
         if (Array.isArray(groups)) {
           groups.forEach((g: any) => {
-            const groupName = typeof g === 'string' ? g : (g.name || '');
+            const groupName = typeof g === "string" ? g : g.name || "";
             if (groupName) {
-              muscleGroupCounts[groupName] = (muscleGroupCounts[groupName] || 0) + 1;
+              muscleGroupCounts[groupName] =
+                (muscleGroupCounts[groupName] || 0) + 1;
             }
           });
         }
@@ -92,8 +103,8 @@ export async function GET(request: NextRequest) {
       summary: `Weekly Progress: ${completedWorkouts.length} completed, ${pendingWorkouts.length} pending`,
       userId: session.user.id,
       weekRange: {
-        start: oneWeekAgo.toISOString().split('T')[0],
-        end: new Date().toISOString().split('T')[0],
+        start: oneWeekAgo.toISOString().split("T")[0],
+        end: new Date().toISOString().split("T")[0],
       },
       workoutStats: {
         totalWorkouts: weeklyWorkouts.length,
@@ -102,14 +113,14 @@ export async function GET(request: NextRequest) {
         totalDuration,
         avgDuration,
       },
-      workouts: weeklyWorkouts.map(w => ({
+      workouts: weeklyWorkouts.map((w) => ({
         id: w.id,
         name: w.name,
         date: w.date,
         duration: w.duration,
         status: w.status,
       })),
-      exercises: weeklyExercises.map(ex => ({
+      exercises: weeklyExercises.map((ex) => ({
         exerciseName: ex.exerciseName,
         category: ex.category,
         reps: ex.reps,
@@ -120,13 +131,14 @@ export async function GET(request: NextRequest) {
       topMuscleGroups,
       totalExercises: weeklyExercises.length,
     });
-
   } catch (error) {
-    console.error('Error fetching weekly progress data:', error);
+    console.error("Error fetching weekly progress data:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch weekly progress data', details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
+      {
+        error: "Failed to fetch weekly progress data",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
     );
   }
 }
-

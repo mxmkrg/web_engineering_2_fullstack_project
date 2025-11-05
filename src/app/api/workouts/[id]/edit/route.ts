@@ -1,70 +1,71 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "@/lib/auth-server"
-import { db } from "@/db"
-import { workout, workoutExercise, workoutSet } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "@/lib/auth-server";
+import { db } from "@/db";
+import { workout, workoutExercise, workoutSet } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 interface WorkoutSetData {
-  setNumber: number
-  reps: number | null
-  weight: number | null
-  completed: boolean
+  setNumber: number;
+  reps: number | null;
+  weight: number | null;
+  completed: boolean;
 }
 
 interface WorkoutExerciseData {
-  exerciseId: number
-  sets: WorkoutSetData[]
-  order: number
+  exerciseId: number;
+  sets: WorkoutSetData[];
+  order: number;
 }
 
 interface UpdateWorkoutData {
-  name?: string
-  notes?: string
-  exercises?: WorkoutExerciseData[]
+  name?: string;
+  notes?: string;
+  exercises?: WorkoutExerciseData[];
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession();
 
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: "Not authenticated" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    const { id } = await params
-    const workoutId = parseInt(id)
+    const { id } = await params;
+    const workoutId = parseInt(id);
 
     if (isNaN(workoutId)) {
       return NextResponse.json(
         { success: false, error: "Invalid workout ID" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
-    const body: UpdateWorkoutData = await request.json()
+    const body: UpdateWorkoutData = await request.json();
 
     // Start transaction
     await db.transaction(async (tx) => {
       // Update workout name and/or notes if provided
-      const updateData: any = { updatedAt: new Date() }
+      const updateData: any = { updatedAt: new Date() };
       if (body.name !== undefined) {
-        updateData.name = body.name
+        updateData.name = body.name;
       }
       if (body.notes !== undefined) {
-        updateData.notes = body.notes
+        updateData.notes = body.notes;
       }
 
-      if (Object.keys(updateData).length > 1) { // More than just updatedAt
+      if (Object.keys(updateData).length > 1) {
+        // More than just updatedAt
         await tx
           .update(workout)
           .set(updateData)
-          .where(eq(workout.id, workoutId))
+          .where(eq(workout.id, workoutId));
       }
 
       // If exercises are provided, update them
@@ -72,7 +73,7 @@ export async function PATCH(
         // Delete existing exercises and sets (cascade will handle sets)
         await tx
           .delete(workoutExercise)
-          .where(eq(workoutExercise.workoutId, workoutId))
+          .where(eq(workoutExercise.workoutId, workoutId));
 
         // Insert new exercises and sets
         for (const exercise of body.exercises) {
@@ -83,7 +84,7 @@ export async function PATCH(
               exerciseId: exercise.exerciseId,
               order: exercise.order,
             })
-            .returning()
+            .returning();
 
           // Insert sets for this exercise
           for (const set of exercise.sets) {
@@ -93,24 +94,24 @@ export async function PATCH(
               reps: set.reps,
               weight: set.weight,
               completed: set.completed,
-            })
+            });
           }
         }
       }
-    })
+    });
 
     return NextResponse.json(
       {
         success: true,
-        message: "Workout updated successfully"
+        message: "Workout updated successfully",
       },
-      { status: 200 }
-    )
+      { status: 200 },
+    );
   } catch (error) {
-    console.error("Error updating workout:", error)
+    console.error("Error updating workout:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update workout" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

@@ -70,4 +70,3 @@ etc.
 
 Be precise, maximum 100 words per exercise.
 `;
-

@@ -4,5 +4,5 @@
   "editor.formatOnSaveMode": "file",
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
-  } // Having a different mode here can get problematic...
+  }
 }
