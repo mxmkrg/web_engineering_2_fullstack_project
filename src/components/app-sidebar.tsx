@@ -10,7 +10,6 @@ import {
   User,
   ChevronUp,
   MoreHorizontal,
-  Plus,
   Shield,
 } from "lucide-react";
 
@@ -83,7 +82,7 @@ export function AppSidebar({
   userName = "User",
   userRole = "user",
 }: AppSidebarProps) {
-  const [logoutState, logoutAction] = useActionState(logout, {});
+  const [_logoutState, logoutAction] = useActionState(logout, {});
 
   return (
     <Sidebar variant="inset">
@@ -115,7 +114,7 @@ export function AppSidebar({
               {currentItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url as any}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -168,9 +167,14 @@ export function AppSidebar({
                 align="end"
                 sideOffset={4}
               >
-                <DropdownMenuItem disabled>
-                  <Settings />
-                  Account Settings
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/dashboard/settings"
+                    className="flex w-full items-center"
+                  >
+                    <Settings className="mr-2 size-4" />
+                    Account Settings
+                  </Link>
                 </DropdownMenuItem>
                 {userRole === "admin" && (
                   <DropdownMenuItem asChild>
