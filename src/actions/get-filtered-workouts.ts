@@ -30,16 +30,20 @@ export async function getFilteredWorkouts(
     const session = await getServerSession();
 
     if (!session?.user?.id || session.user.id !== userId) {
-      return { 
-        workouts: [], 
-        avgDuration: 0, 
-        totalDuration: 0, 
-        avgSets: 0, 
-        totalSets: 0 
+      return {
+        workouts: [],
+        avgDuration: 0,
+        totalDuration: 0,
+        avgSets: 0,
+        totalSets: 0,
       };
     }
 
-    const { status = ["completed", "archived"], limit = 50, filter = "total" } = options;
+    const {
+      status = ["completed", "archived"],
+      limit = 50,
+      filter = "total",
+    } = options;
 
     // Calculate date ranges
     const now = new Date();
@@ -112,27 +116,30 @@ export async function getFilteredWorkouts(
       })
       .from(workout)
       .leftJoin(workoutExercise, eq(workout.id, workoutExercise.workoutId))
-      .leftJoin(workoutSet, eq(workoutExercise.id, workoutSet.workoutExerciseId))
+      .leftJoin(
+        workoutSet,
+        eq(workoutExercise.id, workoutSet.workoutExerciseId),
+      )
       .where(and(...conditions));
 
     const totalSets = Math.round(setStatsResult[0]?.totalSets || 0);
     const avgSets = Math.round(setStatsResult[0]?.avgSets || 0);
 
-    return { 
-      workouts, 
-      avgDuration, 
-      totalDuration, 
-      avgSets, 
-      totalSets 
+    return {
+      workouts,
+      avgDuration,
+      totalDuration,
+      avgSets,
+      totalSets,
     };
   } catch (error) {
     console.error("Error getting filtered workouts:", error);
-    return { 
-      workouts: [], 
-      avgDuration: 0, 
-      totalDuration: 0, 
-      avgSets: 0, 
-      totalSets: 0 
+    return {
+      workouts: [],
+      avgDuration: 0,
+      totalDuration: 0,
+      avgSets: 0,
+      totalSets: 0,
     };
   }
 }

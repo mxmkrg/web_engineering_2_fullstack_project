@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Activity, Calendar, Target, TrendingUp, Clock, BarChart3, Hash } from "lucide-react";
+import {
+  Activity,
+  Calendar,
+  Target,
+  TrendingUp,
+  Clock,
+  BarChart3,
+  Hash,
+} from "lucide-react";
 import { WorkoutList } from "./workout-list";
 import {
   getFilteredWorkouts,
@@ -214,10 +222,7 @@ export function FilterableWorkoutSection({
         </h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {statisticTiles.map((stat, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 rounded-lg p-4"
-            >
+            <div key={index} className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">{stat.title}</p>

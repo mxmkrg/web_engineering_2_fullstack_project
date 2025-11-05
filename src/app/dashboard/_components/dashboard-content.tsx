@@ -95,24 +95,34 @@ export async function DashboardContent({
       (sum, group) => sum + group.totalVolume,
       0,
     );
-    
+
     // Estimate weekly average from monthly data (rough calculation)
     const weeklyAverageFromMonth = totalVolumeThisMonth / 4;
-    const volumeTrend = weeklyAverageFromMonth > 0 
-      ? ((totalVolumeThisWeek - weeklyAverageFromMonth) / weeklyAverageFromMonth) * 100
-      : 0;
+    const volumeTrend =
+      weeklyAverageFromMonth > 0
+        ? ((totalVolumeThisWeek - weeklyAverageFromMonth) /
+            weeklyAverageFromMonth) *
+          100
+        : 0;
 
     return {
       volumeTrend: Math.round(volumeTrend),
-      workoutFrequencyTrend: workoutStats.thisWeek >= 3 ? "excellent" : workoutStats.thisWeek >= 2 ? "good" : "needsWork",
+      workoutFrequencyTrend:
+        workoutStats.thisWeek >= 3
+          ? "excellent"
+          : workoutStats.thisWeek >= 2
+            ? "good"
+            : "needsWork",
     };
   };
 
   // Get most improved exercises
   const getMostImprovedExercises = () => {
     return exerciseProgression
-      .filter(ex => ex.progression.weightIncrease > 0)
-      .sort((a, b) => b.progression.weightIncrease - a.progression.weightIncrease)
+      .filter((ex) => ex.progression.weightIncrease > 0)
+      .sort(
+        (a, b) => b.progression.weightIncrease - a.progression.weightIncrease,
+      )
       .slice(0, 3);
   };
 
@@ -160,7 +170,12 @@ export async function DashboardContent({
       description: "kg lifted this month",
       icon: Zap,
       color: "text-purple-600",
-      trend: progressTrends.volumeTrend > 0 ? `+${progressTrends.volumeTrend}%` : progressTrends.volumeTrend < 0 ? `${progressTrends.volumeTrend}%` : "stable",
+      trend:
+        progressTrends.volumeTrend > 0
+          ? `+${progressTrends.volumeTrend}%`
+          : progressTrends.volumeTrend < 0
+            ? `${progressTrends.volumeTrend}%`
+            : "stable",
     },
     {
       title: "Avg Duration",
@@ -186,10 +201,9 @@ export async function DashboardContent({
         <div>
           <h1 className="text-3xl font-bold">Welcome back, {userName}!</h1>
           <p className="text-muted-foreground">
-            {workoutStats.total > 0 
+            {workoutStats.total > 0
               ? `${workoutStats.total} workouts completed • ${progressionOverview.totalExercises} exercises mastered`
-              : "Ready to start your fitness journey? Create your first workout below!"
-            }
+              : "Ready to start your fitness journey? Create your first workout below!"}
           </p>
         </div>
 
@@ -214,11 +228,18 @@ export async function DashboardContent({
                   </Badge>
                 )}
                 {stat.trend && (
-                  <p className={`text-xs mt-1 ${
-                    stat.trend.startsWith('+') ? 'text-green-600' : 
-                    stat.trend.startsWith('-') ? 'text-red-600' : 'text-gray-600'
-                  }`}>
-                    {stat.trend !== 'stable' ? `${stat.trend} vs last week` : 'Stable'}
+                  <p
+                    className={`text-xs mt-1 ${
+                      stat.trend.startsWith("+")
+                        ? "text-green-600"
+                        : stat.trend.startsWith("-")
+                          ? "text-red-600"
+                          : "text-gray-600"
+                    }`}
+                  >
+                    {stat.trend !== "stable"
+                      ? `${stat.trend} vs last week`
+                      : "Stable"}
                   </p>
                 )}
               </CardContent>
@@ -266,47 +287,81 @@ export async function DashboardContent({
                   <BarChart3 className="size-5 text-blue-600" />
                   Progress Highlights
                 </CardTitle>
-                <CardDescription>Your recent achievements and improvements</CardDescription>
+                <CardDescription>
+                  Your recent achievements and improvements
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {topImprovedExercises.length > 0 ? (
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Most Improved Exercise</h4>
+                      <h4 className="font-medium text-sm mb-2">
+                        Most Improved Exercise
+                      </h4>
                       <div className="flex items-center justify-between p-2 bg-green-50 rounded-lg">
-                        <span className="text-sm font-medium">{topImprovedExercises[0].exerciseName}</span>
-                        <Badge variant="secondary" className="bg-green-100 text-green-800">
-                          +{topImprovedExercises[0].progression.weightIncrease.toFixed(1)}%
+                        <span className="text-sm font-medium">
+                          {topImprovedExercises[0].exerciseName}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-100 text-green-800"
+                        >
+                          +
+                          {topImprovedExercises[0].progression.weightIncrease.toFixed(
+                            1,
+                          )}
+                          %
                         </Badge>
                       </div>
                     </div>
                   ) : null}
-                  
+
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Strongest Muscle Group</h4>
+                    <h4 className="font-medium text-sm mb-2">
+                      Strongest Muscle Group
+                    </h4>
                     <div className="flex items-center justify-between p-2 bg-purple-50 rounded-lg">
-                      <span className="text-sm font-medium">{strongestMuscleGroup.category}</span>
+                      <span className="text-sm font-medium">
+                        {strongestMuscleGroup.category}
+                      </span>
                       <span className="text-xs text-purple-600">
-                        {Math.round(strongestMuscleGroup.totalVolume / 1000)}K kg total
+                        {Math.round(strongestMuscleGroup.totalVolume / 1000)}K
+                        kg total
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Weekly Consistency</h4>
-                    <div className={`flex items-center justify-between p-2 rounded-lg ${
-                      progressTrends.workoutFrequencyTrend === 'excellent' ? 'bg-green-50' :
-                      progressTrends.workoutFrequencyTrend === 'good' ? 'bg-yellow-50' : 'bg-red-50'
-                    }`}>
+                    <h4 className="font-medium text-sm mb-2">
+                      Weekly Consistency
+                    </h4>
+                    <div
+                      className={`flex items-center justify-between p-2 rounded-lg ${
+                        progressTrends.workoutFrequencyTrend === "excellent"
+                          ? "bg-green-50"
+                          : progressTrends.workoutFrequencyTrend === "good"
+                            ? "bg-yellow-50"
+                            : "bg-red-50"
+                      }`}
+                    >
                       <span className="text-sm font-medium">
                         {workoutStats.thisWeek}/3 workouts this week
                       </span>
-                      <Badge variant="secondary" className={
-                        progressTrends.workoutFrequencyTrend === 'excellent' ? 'bg-green-100 text-green-800' :
-                        progressTrends.workoutFrequencyTrend === 'good' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-                      }>
-                        {progressTrends.workoutFrequencyTrend === 'excellent' ? 'Excellent' :
-                         progressTrends.workoutFrequencyTrend === 'good' ? 'Good' : 'Keep Going'}
+                      <Badge
+                        variant="secondary"
+                        className={
+                          progressTrends.workoutFrequencyTrend === "excellent"
+                            ? "bg-green-100 text-green-800"
+                            : progressTrends.workoutFrequencyTrend === "good"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                        }
+                      >
+                        {progressTrends.workoutFrequencyTrend === "excellent"
+                          ? "Excellent"
+                          : progressTrends.workoutFrequencyTrend === "good"
+                            ? "Good"
+                            : "Keep Going"}
                       </Badge>
                     </div>
                   </div>
@@ -328,25 +383,33 @@ export async function DashboardContent({
                     <h4 className="font-medium text-sm mb-2">Weekly Goal</h4>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full transition-all ${
-                            workoutStreak >= 3 ? 'bg-green-500' : 'bg-blue-500'
+                            workoutStreak >= 3 ? "bg-green-500" : "bg-blue-500"
                           }`}
-                          style={{ width: `${Math.min((workoutStreak / 3) * 100, 100)}%` }}
+                          style={{
+                            width: `${Math.min((workoutStreak / 3) * 100, 100)}%`,
+                          }}
                         />
                       </div>
-                      <span className="text-xs text-muted-foreground">{workoutStreak}/3</span>
+                      <span className="text-xs text-muted-foreground">
+                        {workoutStreak}/3
+                      </span>
                     </div>
                   </div>
 
                   {totalVolumeThisMonth > 0 && (
                     <div>
-                      <h4 className="font-medium text-sm mb-2">Monthly Volume Target</h4>
+                      <h4 className="font-medium text-sm mb-2">
+                        Monthly Volume Target
+                      </h4>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-purple-500 h-2 rounded-full transition-all"
-                            style={{ width: `${Math.min((totalVolumeThisMonth / 50000) * 100, 100)}%` }}
+                            style={{
+                              width: `${Math.min((totalVolumeThisMonth / 50000) * 100, 100)}%`,
+                            }}
                           />
                         </div>
                         <span className="text-xs text-muted-foreground">
@@ -360,10 +423,9 @@ export async function DashboardContent({
                     <Target className="size-8 text-blue-600 mx-auto mb-2" />
                     <p className="text-sm font-medium">Next Personal Record</p>
                     <p className="text-xs text-muted-foreground">
-                      {topImprovedExercises.length > 0 
+                      {topImprovedExercises.length > 0
                         ? `Try increasing ${topImprovedExercises[0].exerciseName} weight by 2.5kg`
-                        : "Complete more workouts to unlock PR suggestions"
-                      }
+                        : "Complete more workouts to unlock PR suggestions"}
                     </p>
                   </div>
                 </div>
@@ -389,7 +451,10 @@ export async function DashboardContent({
                   <p className="text-sm text-muted-foreground">
                     Visual progress charts and analytics
                   </p>
-                  <Badge variant="secondary" className="mt-1 bg-green-100 text-green-800 text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="mt-1 bg-green-100 text-green-800 text-xs"
+                  >
                     Available
                   </Badge>
                 </div>
@@ -401,7 +466,10 @@ export async function DashboardContent({
                   <p className="text-sm text-muted-foreground">
                     View and manage your workout schedule
                   </p>
-                  <Badge variant="secondary" className="mt-1 bg-blue-100 text-blue-800 text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="mt-1 bg-blue-100 text-blue-800 text-xs"
+                  >
                     Available
                   </Badge>
                 </div>
