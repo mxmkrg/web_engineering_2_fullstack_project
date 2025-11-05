@@ -11,6 +11,7 @@ import {
   ChevronUp,
   MoreHorizontal,
   Plus,
+  Shield,
 } from "lucide-react";
 
 import {
@@ -75,9 +76,13 @@ const futureItems = [
 
 interface AppSidebarProps {
   userName?: string;
+  userRole?: "user" | "admin";
 }
 
-export function AppSidebar({ userName = "User" }: AppSidebarProps) {
+export function AppSidebar({
+  userName = "User",
+  userRole = "user",
+}: AppSidebarProps) {
   const [logoutState, logoutAction] = useActionState(logout, {});
 
   return (
@@ -167,6 +172,14 @@ export function AppSidebar({ userName = "User" }: AppSidebarProps) {
                   <Settings />
                   Account Settings
                 </DropdownMenuItem>
+                {userRole === "admin" && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="flex w-full items-center">
+                      <Shield className="mr-2 size-4" />
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <form action={logoutAction} className="w-full">
                     <button type="submit" className="flex w-full items-center">
