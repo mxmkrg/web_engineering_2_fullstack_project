@@ -43,6 +43,8 @@ next-env.d.ts
 
 # Our database
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
 
 # backzp
 /backup_initial_example
