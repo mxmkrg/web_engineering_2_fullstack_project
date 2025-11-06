@@ -159,3 +159,27 @@ export const workoutSet = sqliteTable("workout_set", {
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
 });
+
+export const userProfile = sqliteTable("user_profile", {
+  id: integer("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  age: integer("age"),
+  gender: text("gender"), // 'male', 'female', 'other', 'prefer_not_to_say'
+  heightCm: integer("height_cm"),
+  weightKg: real("weight_kg"),
+  trainingGoal: text("training_goal"), // 'strength', 'muscle_gain', 'fat_loss', 'health'
+  trainingDaysPerWeek: integer("training_days_per_week"),
+  sessionDurationMinutes: integer("session_duration_minutes"),
+  exerciseLimitations: text("exercise_limitations"), // JSON array of limitations/injuries
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+

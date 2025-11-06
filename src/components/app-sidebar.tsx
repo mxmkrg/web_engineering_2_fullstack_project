@@ -163,6 +163,12 @@ export function AppSidebar({ userName = "User" }: AppSidebarProps) {
                 align="end"
                 sideOffset={4}
               >
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile" className="flex w-full items-center">
+                    <User className="mr-2 size-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem disabled>
                   <Settings />
                   Account Settings
