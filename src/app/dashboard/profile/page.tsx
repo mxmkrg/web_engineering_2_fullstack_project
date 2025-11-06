@@ -9,20 +9,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { Loader2, User, Target, Calendar, Clock, AlertCircle } from "lucide-react"
-import BlurText from "./BlurText"
-import PillNav from "./PillNav"
+import BlurText from "./_components/BlurText"
+import PillNav from "./_components/PillNav"
+import { 
+  saveBasicInfo, 
+  savePhysicalInfo, 
+  saveTrainingPreferences, 
+  saveLimitations 
+} from "@/actions/save-profile"
 
 type UserProfile = {
   id?: number
   userId: string
-  age?: number
-  gender?: string
-  heightCm?: number
-  weightKg?: number
-  trainingGoal?: string
-  trainingDaysPerWeek?: number
-  sessionDurationMinutes?: number
-  exerciseLimitations?: string
+  age?: number | null
+  gender?: string | null
+  heightCm?: number | null
+  weightKg?: number | null
+  trainingGoal?: string | null
+  trainingDaysPerWeek?: number | null
+  sessionDurationMinutes?: number | null
+  exerciseLimitations?: string | null
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export default function ProfilePage() {
@@ -60,6 +68,123 @@ export default function ProfilePage() {
     setActiveSection(index)
   }
 
+  // Section-specific save handlers
+  const handleSaveBasicInfo = async () => {
+    setIsSaving(true)
+    try {
+      const result = await saveBasicInfo(profile.age ?? undefined, profile.gender ?? undefined)
+      
+      if (result.success) {
+        toast.success(result.message)
+        if (result.profile) {
+          setProfile(prev => ({
+            ...prev,
+            id: result.profile.id,
+            age: result.profile.age ?? prev.age,
+            gender: result.profile.gender ?? prev.gender,
+            createdAt: result.profile.createdAt ?? prev.createdAt,
+            updatedAt: result.profile.updatedAt ?? prev.updatedAt
+          }))
+        }
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      console.error("Error saving basic info:", error)
+      toast.error("An unexpected error occurred")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleSavePhysicalInfo = async () => {
+    setIsSaving(true)
+    try {
+      const result = await savePhysicalInfo(profile.heightCm ?? undefined, profile.weightKg ?? undefined)
+      
+      if (result.success) {
+        toast.success(result.message)
+        if (result.profile) {
+          setProfile(prev => ({
+            ...prev,
+            id: result.profile.id,
+            heightCm: result.profile.heightCm ?? prev.heightCm,
+            weightKg: result.profile.weightKg ?? prev.weightKg,
+            createdAt: result.profile.createdAt ?? prev.createdAt,
+            updatedAt: result.profile.updatedAt ?? prev.updatedAt
+          }))
+        }
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      console.error("Error saving physical info:", error)
+      toast.error("An unexpected error occurred")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleSaveTrainingPreferences = async () => {
+    setIsSaving(true)
+    try {
+      const result = await saveTrainingPreferences(
+        profile.trainingGoal ?? undefined,
+        profile.trainingDaysPerWeek ?? undefined,
+        profile.sessionDurationMinutes ?? undefined
+      )
+      
+      if (result.success) {
+        toast.success(result.message)
+        if (result.profile) {
+          setProfile(prev => ({
+            ...prev,
+            id: result.profile.id,
+            trainingGoal: result.profile.trainingGoal ?? prev.trainingGoal,
+            trainingDaysPerWeek: result.profile.trainingDaysPerWeek ?? prev.trainingDaysPerWeek,
+            sessionDurationMinutes: result.profile.sessionDurationMinutes ?? prev.sessionDurationMinutes,
+            createdAt: result.profile.createdAt ?? prev.createdAt,
+            updatedAt: result.profile.updatedAt ?? prev.updatedAt
+          }))
+        }
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      console.error("Error saving training preferences:", error)
+      toast.error("An unexpected error occurred")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleSaveLimitations = async () => {
+    setIsSaving(true)
+    try {
+      const result = await saveLimitations(profile.exerciseLimitations ?? undefined)
+      
+      if (result.success) {
+        toast.success(result.message)
+        if (result.profile) {
+          setProfile(prev => ({
+            ...prev,
+            id: result.profile.id,
+            exerciseLimitations: result.profile.exerciseLimitations ?? prev.exerciseLimitations,
+            createdAt: result.profile.createdAt ?? prev.createdAt,
+            updatedAt: result.profile.updatedAt ?? prev.updatedAt
+          }))
+        }
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      console.error("Error saving limitations:", error)
+      toast.error("An unexpected error occurred")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const loadProfile = async () => {
     setIsLoading(true)
     try {
@@ -77,34 +202,7 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSaving(true)
 
-    try {
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(profile),
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        toast.success("Profile saved successfully!")
-        setProfile(result.profile)
-      } else {
-        toast.error(result.error || "Failed to save profile")
-      }
-    } catch (error) {
-      console.error("Error saving profile:", error)
-      toast.error("An unexpected error occurred")
-    } finally {
-      setIsSaving(false)
-    }
-  }
 
   if (isLoading) {
     return (
@@ -141,7 +239,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <div>
 
         {/* Personal Information with PillNav - Full Width */}
         <Card className=" w-full md:w-[800px] h-[550px] border-blue-100 dark:border-blue-900 shadow-sm hover:shadow-md transition-all duration-300 animate-slide-in-from-left" style={{ animationDelay: "100ms" }}>
@@ -222,9 +320,10 @@ export default function ProfilePage() {
                     {/* Save Button for Basic Info */}
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
-                        type="submit"
+                        type="button"
+                        onClick={handleSaveBasicInfo}
                         disabled={isSaving}
-                        className="bg-blue-500 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -290,9 +389,10 @@ export default function ProfilePage() {
                     {/* Save Button for Physical */}
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
-                        type="submit"
+                        type="button"
+                        onClick={handleSavePhysicalInfo}
                         disabled={isSaving}
-                        className="bg-blue-500 hover:from-blue-600 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -390,9 +490,10 @@ export default function ProfilePage() {
                     {/* Save Button for Training */}
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
-                        type="submit"
+                        type="button"
+                        onClick={handleSaveTrainingPreferences}
                         disabled={isSaving}
-                        className="bg-blue-500 hover:from-blue-600 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -435,9 +536,10 @@ export default function ProfilePage() {
                     {/* Save Button for Limitations */}
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
-                        type="submit"
+                        type="button"
+                        onClick={handleSaveLimitations}
                         disabled={isSaving}
-                        className="bg-blue-500 hover:from-blue-600 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -454,7 +556,7 @@ export default function ProfilePage() {
               </div>
             </CardContent>
         </Card>
-      </form>
+      </div>
     </div>
   )
 }
