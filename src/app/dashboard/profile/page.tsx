@@ -206,21 +206,21 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-200px)] items-center justify-center">
+      <div className="flex h-[calc(100vh-200px)] items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4 animate-fade-in">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-          <p className="text-sm text-muted-foreground">Loading your profile...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+          <p className="text-sm text-gray-600">Loading your profile...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-6 animate-fade-in">
+    <div className="mx-auto max-w-7xl p-6 animate-fade-in min-h-screen bg-white">
       {/* Header */}
       <div className="mb-8 animate-slide-in-from-top">
         <div className="flex items-center gap-3 mb-3">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+          <div className="p-3 rounded-xl bg-blue-500 shadow-lg shadow-blue-500/30">
             <User className="h-7 w-7 text-white" />
           </div>
           <div>
@@ -230,9 +230,9 @@ export default function ProfilePage() {
               animateBy="words"
               direction="top"
               onAnimationComplete={handleAnimationComplete}
-              className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent"
+              className="text-3xl md:text-4xl font-bold tracking-tight text-blue-500"
             />
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="text-gray-600 text-sm mt-1">
               Manage your personal information and training preferences
             </p>
           </div>
@@ -242,15 +242,15 @@ export default function ProfilePage() {
       <div>
 
         {/* Personal Information with PillNav - Full Width */}
-        <Card className=" w-full md:w-[800px] h-[550px] border-blue-100 dark:border-blue-900 shadow-sm hover:shadow-md transition-all duration-300 animate-slide-in-from-left" style={{ animationDelay: "100ms" }}>
-            <CardHeader className="border-b border-blue-50 dark:border-blue-900/50 bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-950/30">
+        <Card className=" w-full md:w-[800px] h-[550px] border-blue-500/20 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-in-from-left bg-white" style={{ animationDelay: "100ms" }}>
+            <CardHeader className="border-b border-blue-500/10 bg-blue-50/50">
               <div className="flex items-center gap-2 mb-4">
-                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/50">
-                  <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <div className="p-2 rounded-lg bg-blue-100">
+                  <User className="h-4 w-4 text-blue-500" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Personal Information</CardTitle>
-                  <CardDescription>Navigate through different sections of your profile</CardDescription>
+                  <CardTitle className="text-lg text-gray-900">Personal Information</CardTitle>
+                  <CardDescription className="text-gray-600">Navigate through different sections of your profile</CardDescription>
                 </div>
               </div>
 
@@ -271,15 +271,15 @@ export default function ProfilePage() {
                 {/* Basic Info Section */}
                 {activeSection === 0 && (
                   <div className="animate-fade-in">
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold text-blue-500 mb-4 flex items-center gap-2">
+                      <User className="h-5 w-5 text-blue-600" />
                       Basic Information
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2 group">
-                        <Label htmlFor="age" className="text-sm font-medium flex items-center gap-2">
+                        <Label htmlFor="age" className="text-sm font-medium flex items-center gap-2 text-gray-900">
                           Age
-                          <span className="text-blue-600">*</span>
+                          <span className="text-blue-500">*</span>
                         </Label>
                         <Input
                           id="age"
@@ -296,29 +296,29 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="space-y-2 group">
-                        <Label htmlFor="gender" className="text-sm font-medium flex items-center gap-2">
+                        <Label htmlFor="gender" className="text-sm font-medium flex items-center gap-2 text-gray-900">
                           Gender
-                          <span className="text-blue-600">*</span>
+                          <span className="text-blue-500">*</span>
                         </Label>
                         <Select
                           value={profile.gender || ""}
                           onValueChange={(value) => setProfile({ ...profile, gender: value })}
                         >
-                          <SelectTrigger id="gender" className="bg-white dark:bg-gray-800 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          <SelectTrigger id="gender" className="bg-white border-gray-300 text-gray-900 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                            <SelectItem value="male" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">Male</SelectItem>
-                            <SelectItem value="female" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">Female</SelectItem>
-                            <SelectItem value="other" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">Other</SelectItem>
-                            <SelectItem value="prefer_not_to_say" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">Prefer not to say</SelectItem>
+                          <SelectContent className="bg-white border-gray-300 shadow-lg">
+                            <SelectItem value="male" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">Male</SelectItem>
+                            <SelectItem value="female" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">Female</SelectItem>
+                            <SelectItem value="other" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">Other</SelectItem>
+                            <SelectItem value="prefer_not_to_say" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">Prefer not to say</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
 
                     {/* Save Button for Basic Info */}
-                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
+                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-500/20">
                       <Button
                         type="button"
                         onClick={handleSaveBasicInfo}
@@ -341,15 +341,15 @@ export default function ProfilePage() {
                 {/* Physical Section */}
                 {activeSection === 1 && (
                   <div className="animate-fade-in">
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                      <Target className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold text-blue-500 mb-4 flex items-center gap-2">
+                      <Target className="h-5 w-5 text-blue-600" />
                       Physical Measurements
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2 group">
-                        <Label htmlFor="height" className="text-sm font-medium flex items-center gap-2">
+                        <Label htmlFor="height" className="text-sm font-medium flex items-center gap-2 text-gray-900">
                           Height (cm)
-                          <span className="text-blue-600">*</span>
+                          <span className="text-blue-500">*</span>
                         </Label>
                         <Input
                           id="height"
@@ -366,9 +366,9 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="space-y-2 group">
-                        <Label htmlFor="weight" className="text-sm font-medium flex items-center gap-2">
+                        <Label htmlFor="weight" className="text-sm font-medium flex items-center gap-2 text-gray-900">
                           Weight (kg)
-                          <span className="text-blue-600">*</span>
+                          <span className="text-blue-500">*</span>
                         </Label>
                         <Input
                           id="weight"
@@ -387,7 +387,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Save Button for Physical */}
-                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
+                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-500/20">
                       <Button
                         type="button"
                         onClick={handleSavePhysicalInfo}
@@ -410,39 +410,39 @@ export default function ProfilePage() {
                 {/* Training Section */}
                 {activeSection === 2 && (
                   <div className="animate-fade-in">
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                      <Target className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold text-blue-500 mb-4 flex items-center gap-2">
+                      <Target className="h-5 w-5 text-blue-600" />
                       Training Preferences
                     </h3>
                     <div className="space-y-6">
                       <div className="space-y-2 group">
-                        <Label htmlFor="trainingGoal" className="text-sm font-medium flex items-center gap-2">
-                          <Target className="h-3.5 w-3.5 text-blue-600" />
+                        <Label htmlFor="trainingGoal" className="text-sm font-medium flex items-center gap-2 text-gray-900">
+                          <Target className="h-3.5 w-3.5 text-blue-500" />
                           Training Goal
-                          <span className="text-blue-600">*</span>
+                          <span className="text-blue-500">*</span>
                         </Label>
                         <Select
                           value={profile.trainingGoal || ""}
                           onValueChange={(value) => setProfile({ ...profile, trainingGoal: value })}
                         >
-                          <SelectTrigger id="trainingGoal" className="bg-white dark:bg-gray-800 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          <SelectTrigger id="trainingGoal" className="bg-white border-gray-300 text-gray-900 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <SelectValue placeholder="Select your training goal" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                            <SelectItem value="strength" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">💪 Strength</SelectItem>
-                            <SelectItem value="muscle_gain" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">🏋️ Muscle Gain</SelectItem>
-                            <SelectItem value="fat_loss" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">🔥 Fat Loss</SelectItem>
-                            <SelectItem value="health" className="hover:bg-blue-50 dark:hover:bg-blue-900/50">❤️ General Health</SelectItem>
+                          <SelectContent className="bg-white border-gray-300 shadow-lg">
+                            <SelectItem value="strength" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">💪 Strength</SelectItem>
+                            <SelectItem value="muscle_gain" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">🏋️ Muscle Gain</SelectItem>
+                            <SelectItem value="fat_loss" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">🔥 Fat Loss</SelectItem>
+                            <SelectItem value="health" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100">❤️ General Health</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2 group">
-                          <Label htmlFor="trainingDays" className="text-sm font-medium flex items-center gap-2">
-                            <Calendar className="h-3.5 w-3.5 text-blue-600" />
+                          <Label htmlFor="trainingDays" className="text-sm font-medium flex items-center gap-2 text-gray-900">
+                            <Calendar className="h-3.5 w-3.5 text-blue-500" />
                             Training Days per Week
-                            <span className="text-blue-600">*</span>
+                            <span className="text-blue-500">*</span>
                           </Label>
                           <Input
                             id="trainingDays"
@@ -462,10 +462,10 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="space-y-2 group">
-                          <Label htmlFor="sessionDuration" className="text-sm font-medium flex items-center gap-2">
-                            <Clock className="h-3.5 w-3.5 text-blue-600" />
+                          <Label htmlFor="sessionDuration" className="text-sm font-medium flex items-center gap-2 text-gray-900">
+                            <Clock className="h-3.5 w-3.5 text-blue-500" />
                             Session Duration (minutes)
-                            <span className="text-blue-600">*</span>
+                            <span className="text-blue-500">*</span>
                           </Label>
                           <Input
                             id="sessionDuration"
@@ -488,7 +488,7 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Save Button for Training */}
-                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
+                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-500/20">
                       <Button
                         type="button"
                         onClick={handleSaveTrainingPreferences}
@@ -511,8 +511,8 @@ export default function ProfilePage() {
                 {/* Limitations Section */}
                 {activeSection === 3 && (
                   <div className="animate-fade-in">
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4 flex items-center gap-2">
-                      <AlertCircle className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold text-blue-500 mb-4 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5 text-blue-600" />
                       Exercise Limitations
                     </h3>
                     <div className="space-y-2 group">
@@ -527,14 +527,14 @@ export default function ProfilePage() {
                         style={{ minHeight: 60 }}
 
                       />
-                      <p className="text-xs text-muted-foreground flex items-start gap-1.5">
-                        <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-gray-600 flex items-start gap-1.5">
+                        <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0 text-blue-500" />
                         <span>List any injuries, physical limitations, or exercises you need to avoid</span>
                       </p>
                     </div>
 
                     {/* Save Button for Limitations */}
-                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
+                    <div className="flex justify-end mt-6 pt-4 border-t border-blue-500/20">
                       <Button
                         type="button"
                         onClick={handleSaveLimitations}
