@@ -1,5 +1,5 @@
 import { getServerSession } from "@/lib/auth-server";
-import { DateFilter } from "@/actions/get-progression-stats";
+import type { DateFilter } from "@/actions/get-progression-stats";
 import { ProgressionOverview } from "./_components/progression-overview";
 import { ExerciseProgressionCharts } from "./_components/exercise-progression-charts";
 import { MuscleGroupStats } from "./_components/muscle-group-stats";
