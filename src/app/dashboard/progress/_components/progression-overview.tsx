@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   getProgressionOverview,
-  type DateFilter,
+  DateFilter,
 } from "@/actions/get-progression-stats";
 import { Activity, TrendingUp, Target, Calendar } from "lucide-react";
 

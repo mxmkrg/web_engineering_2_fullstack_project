@@ -10,8 +10,7 @@ import {
   User,
   ChevronUp,
   MoreHorizontal,
-  Shield,
-  Bug,
+  Plus,
 } from "lucide-react";
 
 import {
@@ -76,14 +75,10 @@ const futureItems = [
 
 interface AppSidebarProps {
   userName?: string;
-  userRole?: "user" | "admin";
 }
 
-export function AppSidebar({
-  userName = "User",
-  userRole = "user",
-}: AppSidebarProps) {
-  const [_logoutState, logoutAction] = useActionState(logout, {});
+export function AppSidebar({ userName = "User" }: AppSidebarProps) {
+  const [logoutState, logoutAction] = useActionState(logout, {});
 
   return (
     <Sidebar variant="inset">
@@ -115,7 +110,7 @@ export function AppSidebar({
               {currentItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                    <Link href={item.url as any}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -157,7 +152,7 @@ export function AppSidebar({
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{userName}</span>
-                    <span className="truncate text-xs">Settings</span>
+                    <span className="truncate text-xs">Manage account</span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -178,17 +173,6 @@ export function AppSidebar({
                   <Settings />
                   Account Settings
                 </DropdownMenuItem>
-                {userRole === "admin" && (
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/dashboard/admin"
-                      className="flex w-full items-center"
-                    >
-                      <Shield className="mr-2 size-4" />
-                      Admin Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                )}
                 <DropdownMenuItem asChild>
                   <form action={logoutAction} className="w-full">
                     <button type="submit" className="flex w-full items-center">

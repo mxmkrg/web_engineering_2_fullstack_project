@@ -1,46 +1,24 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { user } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 /**
- * Middleware for authentication and authorization.
+ * This is a super easy middleware for you to use, and it only has one job:
+ * It checks if the user is authenticated, and if not, redirects to the login page.
  *
- * Protects routes:
- * - /dashboard/* - Requires authentication (includes /dashboard/debug and /dashboard/admin)
- * - /dashboard/admin - Requires authentication + admin role
+ * If you need more functionality, follow the docs here: https://nextjs.org/docs/app/api-reference/file-conventions/middleware
  */
 export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  // Check if user is authenticated
+  // Very simple auth check with redirect if not authenticated.
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-
-  // Check if accessing admin routes (admin role required)
-  if (request.nextUrl.pathname.startsWith("/dashboard/admin")) {
-    // Get user's role from database
-    const userData = await db
-      .select({ role: user.role })
-      .from(user)
-      .where(eq(user.id, session.user.id))
-      .limit(1);
-
-    // Check if user has admin role
-    if (!userData.length || userData[0].role !== "admin") {
-      // Redirect non-admin users to dashboard
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
   return NextResponse.next();
 }
-
 export const config = {
   runtime: "nodejs",
   matcher: ["/dashboard/:path*"], // Apply middleware to all dashboard routes

@@ -8,9 +8,6 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb";
-import { db } from "@/db";
-import { user } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 export default async function DashboardLayout({
   children,
@@ -23,18 +20,9 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Fetch user role from database
-  const userData = await db
-    .select({ role: user.role })
-    .from(user)
-    .where(eq(user.id, session.user.id))
-    .limit(1);
-
-  const userRole = userData[0]?.role || "user";
-
   return (
     <SidebarProvider>
-      <AppSidebar userName={session.user.name || "User"} userRole={userRole} />
+      <AppSidebar userName={session.user.name || "User"} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   getExerciseProgression,
   type ExerciseProgression,
-  type DateFilter,
+  DateFilter,
 } from "@/actions/get-progression-stats";
 
 interface ExerciseProgressionChartsProps {

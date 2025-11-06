@@ -5,7 +5,7 @@ import { seedExercises } from "@/actions/seed-exercises";
 import { seedWorkouts } from "@/actions/seed-workouts";
 import { clearWorkouts } from "@/actions/clear-workouts";
 
-export default function DebugPage() {
+export default function AdminPage() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [isSeedingWorkouts, setIsSeedingWorkouts] = useState(false);
   const [isClearingWorkouts, setIsClearingWorkouts] = useState(false);
@@ -67,7 +67,7 @@ export default function DebugPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Debug Panel</h1>
+      <h1 className="text-3xl font-bold mb-8">Admin Panel</h1>
 
       <div className="space-y-6">
         <div>
