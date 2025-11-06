@@ -1,6 +1,6 @@
 "use client";
 
-import { unarchiveWorkout } from "@/actions/archive-workout";
+import { unarchiveWorkout } from "@/actions/archive-old-workouts";
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 

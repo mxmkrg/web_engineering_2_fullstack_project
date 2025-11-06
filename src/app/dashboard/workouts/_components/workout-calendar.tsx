@@ -114,6 +114,20 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
     return workoutDateMap.get(dateKey) || [];
   };
 
+  // Get the primary status for a day (for styling)
+  const getDayStatus = (day: number): string => {
+    const dayWorkouts = getDayWorkouts(day);
+    if (dayWorkouts.length === 0) return "none";
+    
+    // Prioritize active > planned > completed > archived
+    if (dayWorkouts.some(w => w.status === "active")) return "active";
+    if (dayWorkouts.some(w => w.status === "planned")) return "planned";
+    if (dayWorkouts.some(w => w.status === "completed")) return "completed";
+    if (dayWorkouts.some(w => w.status === "archived")) return "archived";
+    
+    return "completed"; // default
+  };
+
   // Handle day click
   const handleDayClick = async (day: number) => {
     const dayWorkouts = getDayWorkouts(day);
@@ -242,6 +256,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
 
             const dayWorkouts = getDayWorkouts(day);
             const hasWorkouts = dayWorkouts.length > 0;
+            const dayStatus = getDayStatus(day);
             const isToday =
               new Date().toDateString() ===
               new Date(currentYear, currentMonth, day).toDateString();
@@ -249,6 +264,22 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
               selectedWorkout &&
               selectedWorkout.date.toDateString() ===
                 new Date(currentYear, currentMonth, day).toDateString();
+
+            // Get styling based on workout status
+            const getWorkoutDayStyle = (status: string) => {
+              switch (status) {
+                case "planned":
+                  return "bg-gray-400 text-white hover:bg-gray-500";
+                case "active":
+                  return "bg-blue-600 text-white hover:bg-blue-700";
+                case "completed":
+                  return "bg-green-600 text-white hover:bg-green-700";
+                case "archived":
+                  return "bg-amber-600 text-white hover:bg-amber-700";
+                default:
+                  return "hover:bg-gray-100";
+              }
+            };
 
             return (
               <button
@@ -262,7 +293,7 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
                   h-8 flex items-center justify-center text-xs rounded transition-colors relative
                   ${
                     hasWorkouts
-                      ? `bg-blue-600 text-white hover:bg-blue-700 cursor-pointer ${isLoadingWorkout ? "opacity-50" : ""}`
+                      ? `${getWorkoutDayStyle(dayStatus)} cursor-pointer ${isLoadingWorkout ? "opacity-50" : ""}`
                       : "hover:bg-gray-100 cursor-pointer"
                   }
                   ${isToday && !hasWorkouts ? "bg-gray-200 font-semibold" : ""}
@@ -284,16 +315,20 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
         {/* Legend - smaller */}
         <div className="mt-3 flex items-center gap-3 text-xs text-gray-600">
           <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-gray-400 rounded"></div>
+            <span>Planned</span>
+          </div>
+          <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-blue-600 rounded"></div>
-            <span>Workout</span>
+            <span>Active</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-green-600 rounded"></div>
+            <span>Completed</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-gray-200 rounded"></div>
             <span>Today</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 border-2 border-purple-400 rounded"></div>
-            <span>Selected</span>
           </div>
         </div>
       </div>

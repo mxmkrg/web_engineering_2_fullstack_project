@@ -47,13 +47,13 @@ export async function saveWorkout(data: SaveWorkoutData) {
     }
 
     // Start transaction-like operations
-    // 1. Create the workout with archived status (automatically archived upon save)
+    // 1. Create the workout with completed status (saved workout)
     const [newWorkout] = await db
       .insert(workout)
       .values({
         userId: userId,
         name: data.workoutTitle,
-        status: "archived",
+        status: "completed",
         date: new Date(),
         duration: null,
         notes: data.workoutNotes,

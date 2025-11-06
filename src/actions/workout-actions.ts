@@ -162,7 +162,7 @@ export async function completeWorkout(workoutId: number) {
     await db
       .update(workout)
       .set({
-        status: "archived",
+        status: "completed",
         duration: durationMinutes,
         updatedAt: now,
       })
