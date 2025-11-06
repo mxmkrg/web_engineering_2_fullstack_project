@@ -321,9 +321,9 @@ export default function ProfilePage() {
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
                         type="button"
-                        onClick={handleSaveBasicInfo}
+                        onClick={handleSaveLimitations}
                         disabled={isSaving}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -390,9 +390,9 @@ export default function ProfilePage() {
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
                         type="button"
-                        onClick={handleSavePhysicalInfo}
+                        onClick={handleSaveBasicInfo}
                         disabled={isSaving}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -493,7 +493,7 @@ export default function ProfilePage() {
                         type="button"
                         onClick={handleSaveTrainingPreferences}
                         disabled={isSaving}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
@@ -537,9 +537,9 @@ export default function ProfilePage() {
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
                         type="button"
-                        onClick={handleSaveLimitations}
+                        onClick={handleSavePhysicalInfo}
                         disabled={isSaving}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
+                        className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
                         {isSaving ? (
                           <>
