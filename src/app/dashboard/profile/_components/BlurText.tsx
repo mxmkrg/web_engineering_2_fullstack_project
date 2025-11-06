@@ -46,7 +46,6 @@ export default function BlurText({
         return "translate-y-[-20px]"
     }
   }
-
   useEffect(() => {
     if (isVisible) {
       const totalDelay = items.length * delay + 500
