@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Calendar, Target } from "lucide-react";
+import { Clock, Calendar, Target, Play } from "lucide-react";
 import { PlanWorkoutFromRoutineDialog } from "./plan-workout-from-routine-dialog";
 import { getTemplate } from "@/lib/workout-templates";
+import { startWorkoutFromRoutine } from "@/actions/start-workout-from-routine";
 
 interface RoutineCardProps {
   routine: {
@@ -72,12 +73,25 @@ export function RoutineCard({ routine }: RoutineCardProps) {
           </div>
         </div>
 
-        <PlanWorkoutFromRoutineDialog routine={routine}>
-          <Button className="w-full" variant="outline">
-            <Calendar className="size-4 mr-2" />
-            Plan Workout
-          </Button>
-        </PlanWorkoutFromRoutineDialog>
+                <div className="flex space-x-2">
+          <PlanWorkoutFromRoutineDialog routine={routine}>
+            <Button className="flex-1">
+              <Calendar className="size-4 mr-2" />
+              Plan Workout
+            </Button>
+          </PlanWorkoutFromRoutineDialog>
+          <form action={startWorkoutFromRoutine}>
+            <input type="hidden" name="routineId" value={routine.id} />
+            <Button 
+              type="submit"
+              className="flex-1"
+              variant="outline"
+            >
+              <Play className="size-4 mr-2" />
+              Start Workout
+            </Button>
+          </form>
+        </div>
       </CardContent>
     </Card>
   );

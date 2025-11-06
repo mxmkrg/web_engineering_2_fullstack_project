@@ -66,6 +66,7 @@ export function FilterableWorkoutSection({
   const [activeFilter, setActiveFilter] = useState<WorkoutFilterType>("total");
   const [workouts, setWorkouts] = useState(initialWorkouts);
   const [includeArchived, setIncludeArchived] = useState(false);
+  const [includePlannedInStats, setIncludePlannedInStats] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
   const [currentAvgDuration, setCurrentAvgDuration] = useState(
     initialStats.avgDuration,
@@ -76,57 +77,55 @@ export function FilterableWorkoutSection({
   const [isLoading, setIsLoading] = useState(false);
   const [activeStatusTab, setActiveStatusTab] = useState("saved");
 
-  // Filter workouts by status for tabs
-  const plannedWorkouts = workouts.filter((w) => w.status === "planned");
-  const activeWorkouts = workouts.filter((w) => w.status === "active");
-  const savedWorkouts = workouts.filter((w) => w.status === "completed");
+  // Filter workouts by status for tabs and sort appropriately
+  const plannedWorkouts = workouts
+    .filter((w) => w.status === "planned")
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Upcoming first
 
-  // Initialize statistics when component mounts
+  const activeWorkouts = workouts
+    .filter((w) => w.status === "active")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Most recent first
+
+  const savedWorkouts = workouts
+    .filter((w) => w.status === "completed")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Most recent first
+
+  // Initialize statistics when component mounts or when includePlannedInStats changes
   useEffect(() => {
     const initializeStats = async () => {
       try {
         const result = await getFilteredWorkouts(userId, {
-          filter: "total",
+          filter: activeFilter,
           limit: 50,
+          includePlanned: includePlannedInStats,
+          forStatistics: true,
         });
         setCurrentTotalDuration(result.totalDuration);
         setCurrentAvgSets(result.avgSets);
         setCurrentTotalSets(result.totalSets);
+        if (activeFilter === "total") {
+          setCurrentAvgDuration(result.avgDuration);
+        }
       } catch (error) {
         console.error("Error initializing statistics:", error);
       }
     };
 
     initializeStats();
-  }, [userId]);
+  }, [userId, includePlannedInStats, activeFilter]);
 
-  // Reset to initial stats when returning to "total" filter
+    // Reset to initial stats when returning to "total" filter
   useEffect(() => {
     if (activeFilter === "total") {
       setWorkouts(initialWorkouts);
-      setCurrentAvgDuration(initialStats.avgDuration);
-      // Reinitialize other stats
-      const initializeStats = async () => {
-        try {
-          const result = await getFilteredWorkouts(userId, {
-            filter: "total",
-            limit: 50,
-          });
-          setCurrentTotalDuration(result.totalDuration);
-          setCurrentAvgSets(result.avgSets);
-          setCurrentTotalSets(result.totalSets);
-        } catch (error) {
-          console.error("Error reinitializing statistics:", error);
-        }
-      };
-      initializeStats();
+      // Note: Stats are handled by the main statistics effect above
     }
-  }, [activeFilter, initialWorkouts, initialStats.avgDuration, userId]);
+  }, [activeFilter, initialWorkouts]);
 
   const filterOptions: FilterOption[] = [
     {
       key: "total",
-      title: "Total Workouts",
+      title: "Saved Workouts",
       value: initialStats.total,
       icon: Activity,
       color: "text-blue-600",
@@ -134,7 +133,7 @@ export function FilterableWorkoutSection({
     },
     {
       key: "thisMonth",
-      title: "This Month",
+      title: "Saved This Month",
       value: initialStats.thisMonth,
       icon: Calendar,
       color: "text-green-600",
@@ -142,7 +141,7 @@ export function FilterableWorkoutSection({
     },
     {
       key: "thisWeek",
-      title: "This Week",
+      title: "Saved This Week",
       value: initialStats.thisWeek,
       icon: Target,
       color: "text-purple-600",
@@ -188,15 +187,25 @@ export function FilterableWorkoutSection({
     setIsLoading(true);
 
     try {
-      const result = await getFilteredWorkouts(userId, {
+      // Get all workouts for display (no status filter for time-based filters)
+      const displayResult = await getFilteredWorkouts(userId, {
         filter: filter,
         limit: 50,
       });
-      setWorkouts(result.workouts);
-      setCurrentAvgDuration(result.avgDuration);
-      setCurrentTotalDuration(result.totalDuration);
-      setCurrentAvgSets(result.avgSets);
-      setCurrentTotalSets(result.totalSets);
+      
+      // Get statistics data (respecting includePlannedInStats)
+      const statsResult = await getFilteredWorkouts(userId, {
+        filter: filter,
+        limit: 50,
+        includePlanned: includePlannedInStats,
+        forStatistics: true,
+      });
+      
+      setWorkouts(displayResult.workouts);
+      setCurrentAvgDuration(statsResult.avgDuration);
+      setCurrentTotalDuration(statsResult.totalDuration);
+      setCurrentAvgSets(statsResult.avgSets);
+      setCurrentTotalSets(statsResult.totalSets);
     } catch (error) {
       console.error("Error filtering workouts:", error);
     } finally {
@@ -264,6 +273,8 @@ export function FilterableWorkoutSection({
         const filterResult = await getFilteredWorkouts(userId, {
           filter: activeFilter,
           limit: 50,
+          includePlanned: includePlannedInStats,
+          forStatistics: true,
         });
         setCurrentAvgDuration(filterResult.avgDuration);
         setCurrentTotalDuration(filterResult.totalDuration);
@@ -340,6 +351,19 @@ export function FilterableWorkoutSection({
               Workouts
             </h3>
             <div className="flex items-center gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="include-planned-stats"
+                  checked={includePlannedInStats}
+                  onCheckedChange={(checked) => setIncludePlannedInStats(checked === true)}
+                />
+                <label
+                  htmlFor="include-planned-stats"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Include planned workouts in statistics
+                </label>
+              </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="include-archived"
