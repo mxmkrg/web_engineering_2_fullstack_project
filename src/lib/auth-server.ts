@@ -14,6 +14,11 @@ export const getServerSession = async () =>
     headers: await headers(),
   });
 
+export const getCurrentUser = async () => {
+    const session = await getServerSession();
+    return session?.user || null;
+};
+
 export const signInEmail = auth.api.signInEmail;
 
 export const signUpEmail = auth.api.signUpEmail;

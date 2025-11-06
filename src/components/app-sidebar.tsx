@@ -167,7 +167,15 @@ export function AppSidebar({
                 side="top"
                 align="end"
                 sideOffset={4}
-              >
+              ><DropdownMenuItem asChild>
+                <Link
+                    href="/dashboard/profile"
+                    className="flex w-full items-center"
+                >
+                  <User className="mr-2 size-4" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
                     href="/dashboard/settings"
