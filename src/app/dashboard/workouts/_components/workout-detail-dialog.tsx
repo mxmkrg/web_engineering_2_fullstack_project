@@ -2,7 +2,17 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Calendar, Clock, Edit, Trash2, X, Dumbbell, Play, CheckCircle, Folder } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Edit,
+  Trash2,
+  X,
+  Dumbbell,
+  Play,
+  CheckCircle,
+  Folder,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -58,25 +68,25 @@ export function WorkoutDetailDialog({
         return {
           icon: Play,
           text: "Active",
-          className: "bg-blue-100 text-blue-700"
+          className: "bg-blue-100 text-blue-700",
         };
       case "completed":
         return {
           icon: CheckCircle,
           text: "Completed",
-          className: "bg-green-100 text-green-700"
+          className: "bg-green-100 text-green-700",
         };
       case "archived":
         return {
           icon: Folder,
           text: "Archived",
-          className: "bg-gray-100 text-gray-700"
+          className: "bg-gray-100 text-gray-700",
         };
       default:
         return {
           icon: Play,
           text: "Unknown",
-          className: "bg-gray-100 text-gray-700"
+          className: "bg-gray-100 text-gray-700",
         };
     }
   };

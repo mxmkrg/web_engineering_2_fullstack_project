@@ -21,7 +21,9 @@ interface Exercise {
 export function WorkoutBuilder() {
   const [workoutTitle, setWorkoutTitle] = useState("");
   const [workoutNotes, setWorkoutNotes] = useState("");
-  const [workoutDate, setWorkoutDate] = useState(new Date().toISOString().split('T')[0]);
+  const [workoutDate, setWorkoutDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -37,11 +39,11 @@ export function WorkoutBuilder() {
       // Set date to tomorrow for planning mode
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      setWorkoutDate(tomorrow.toISOString().split('T')[0]);
+      setWorkoutDate(tomorrow.toISOString().split("T")[0]);
     } else {
       setMode("start");
       // Set date to today for start mode
-      setWorkoutDate(new Date().toISOString().split('T')[0]);
+      setWorkoutDate(new Date().toISOString().split("T")[0]);
     }
   }, [searchParams]);
 
@@ -98,26 +100,28 @@ export function WorkoutBuilder() {
 
     try {
       let result;
-      
+
       if (mode === "plan") {
         // For planning mode, create a form data object
         const formData = new FormData();
         formData.append("name", workoutTitle.trim());
         formData.append("date", workoutDate);
         formData.append("notes", workoutNotes.trim() || "");
-        
+
         // Convert exercises to the format expected by plan-workout action
         const exercises = selectedExercises.map((exercise, index) => ({
           exerciseId: 1, // This needs to be handled properly - we need to get exercise IDs
           order: index,
           notes: "",
-          sets: [{
-            reps: exercise.reps,
-            weight: exercise.weight || null,
-            notes: ""
-          }]
+          sets: [
+            {
+              reps: exercise.reps,
+              weight: exercise.weight || null,
+              notes: "",
+            },
+          ],
         }));
-        
+
         formData.append("exercises", JSON.stringify(exercises));
         result = await planWorkout(formData);
       } else {
@@ -130,7 +134,10 @@ export function WorkoutBuilder() {
       }
 
       if (result.success) {
-        toast.success(result.message || `Workout ${mode === "plan" ? "planned" : "saved"} successfully!`);
+        toast.success(
+          result.message ||
+            `Workout ${mode === "plan" ? "planned" : "saved"} successfully!`,
+        );
         // Redirect to workouts page or workout detail
         router.push("/dashboard/workouts");
       } else {
@@ -153,8 +160,8 @@ export function WorkoutBuilder() {
             {mode === "plan" ? "Plan Workout" : "Start Workout"}
           </h1>
           <p className="mt-1 text-muted-foreground">
-            {mode === "plan" 
-              ? "Schedule a workout for later" 
+            {mode === "plan"
+              ? "Schedule a workout for later"
               : "Create and track your workout session"}
           </p>
         </div>
@@ -170,7 +177,11 @@ export function WorkoutBuilder() {
           </Button>
           <Button
             size="lg"
-            className={mode === "plan" ? "bg-gray-500 hover:bg-gray-600" : "bg-blue-500 hover:bg-blue-600"}
+            className={
+              mode === "plan"
+                ? "bg-gray-500 hover:bg-gray-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            }
             onClick={saveData}
             disabled={isSaving}
           >
@@ -179,9 +190,13 @@ export function WorkoutBuilder() {
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            {isSaving 
-              ? (mode === "plan" ? "Planning..." : "Saving...") 
-              : (mode === "plan" ? "Plan Workout" : "Save Workout")}
+            {isSaving
+              ? mode === "plan"
+                ? "Planning..."
+                : "Saving..."
+              : mode === "plan"
+                ? "Plan Workout"
+                : "Save Workout"}
           </Button>
         </div>
       </div>
@@ -211,7 +226,7 @@ export function WorkoutBuilder() {
                 value={workoutDate}
                 onChange={(e) => setWorkoutDate(e.target.value)}
                 className="max-w-md"
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
           )}
@@ -221,9 +236,11 @@ export function WorkoutBuilder() {
               <span className="text-muted-foreground text-xs">(optional)</span>
             </label>
             <textarea
-              placeholder={mode === "plan" 
-                ? "Add notes about this planned workout (e.g., goals, focus areas)..." 
-                : "Add notes about this workout (e.g., how you felt, goals, achievements)..."}
+              placeholder={
+                mode === "plan"
+                  ? "Add notes about this planned workout (e.g., goals, focus areas)..."
+                  : "Add notes about this workout (e.g., how you felt, goals, achievements)..."
+              }
               value={workoutNotes}
               onChange={(e) => setWorkoutNotes(e.target.value)}
               className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

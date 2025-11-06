@@ -6,7 +6,17 @@ import { getWorkoutDetails } from "@/actions/get-workout-details";
 import { deleteWorkout } from "@/actions/delete-workout";
 import { startWorkout } from "@/actions/start-workout";
 import { format } from "date-fns";
-import { Calendar, Clock, Archive, Edit, Trash2, Play, CheckCircle, Folder, Clock3 } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Archive,
+  Edit,
+  Trash2,
+  Play,
+  CheckCircle,
+  Folder,
+  Clock3,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WorkoutDetailDialog } from "./workout-detail-dialog";
@@ -51,7 +61,7 @@ export function WorkoutList({
           text: "Planned",
           className: "bg-amber-100 text-amber-700",
           iconClassName: "text-amber-600",
-          iconBg: "bg-amber-100"
+          iconBg: "bg-amber-100",
         };
       case "active":
         return {
@@ -59,7 +69,7 @@ export function WorkoutList({
           text: "Active",
           className: "bg-blue-100 text-blue-700",
           iconClassName: "text-blue-600",
-          iconBg: "bg-blue-100"
+          iconBg: "bg-blue-100",
         };
       case "completed":
         return {
@@ -67,7 +77,7 @@ export function WorkoutList({
           text: "Completed",
           className: "bg-green-100 text-green-700",
           iconClassName: "text-green-600",
-          iconBg: "bg-green-100"
+          iconBg: "bg-green-100",
         };
       case "archived":
         return {
@@ -75,7 +85,7 @@ export function WorkoutList({
           text: "Archived",
           className: "bg-gray-100 text-gray-700",
           iconClassName: "text-gray-600",
-          iconBg: "bg-gray-100"
+          iconBg: "bg-gray-100",
         };
       default:
         return {
@@ -83,7 +93,7 @@ export function WorkoutList({
           text: "Unknown",
           className: "bg-gray-100 text-gray-700",
           iconClassName: "text-gray-600",
-          iconBg: "bg-gray-100"
+          iconBg: "bg-gray-100",
         };
     }
   };
@@ -215,11 +225,13 @@ export function WorkoutList({
       const result = await startWorkout(workout.id);
       if (result.success) {
         // Update the workout status in local state
-        setWorkouts(workouts.map(w => 
-          w.id === workout.id 
-            ? { ...w, status: "active", date: new Date() } 
-            : w
-        ));
+        setWorkouts(
+          workouts.map((w) =>
+            w.id === workout.id
+              ? { ...w, status: "active", date: new Date() }
+              : w,
+          ),
+        );
         toast.success(result.message || "Workout started successfully!");
         // Navigate to workout tracking page
         router.push(`/dashboard/workouts/${workout.id}/track`);
@@ -253,7 +265,7 @@ export function WorkoutList({
         {filteredWorkouts.map((workout: Workout) => {
           const statusInfo = getStatusInfo(workout.status);
           const StatusIcon = statusInfo.icon;
-          
+
           return (
             <Card
               key={workout.id}
@@ -264,69 +276,74 @@ export function WorkoutList({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className={`p-2 rounded-lg ${statusInfo.iconBg}`}>
-                      <StatusIcon className={`size-4 ${statusInfo.iconClassName}`} />
+                      <StatusIcon
+                        className={`size-4 ${statusInfo.iconClassName}`}
+                      />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-medium text-gray-900">
                           {workout.name}
                         </h3>
-                        <Badge variant="secondary" className={statusInfo.className}>
+                        <Badge
+                          variant="secondary"
+                          className={statusInfo.className}
+                        >
                           {statusInfo.text}
                         </Badge>
                       </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="size-4" />
-                        {format(new Date(workout.date), "PPP")}
-                      </div>
-                      {workout.duration && (
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
-                          <Clock className="size-4" />
-                          {workout.duration} minutes
+                          <Calendar className="size-4" />
+                          {format(new Date(workout.date), "PPP")}
                         </div>
+                        {workout.duration && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="size-4" />
+                            {workout.duration} minutes
+                          </div>
+                        )}
+                      </div>
+                      {workout.notes && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {workout.notes}
+                        </p>
                       )}
                     </div>
-                    {workout.notes && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {workout.notes}
-                      </p>
-                    )}
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  {workout.status === "planned" && (
+                  <div className="flex items-center gap-2">
+                    {workout.status === "planned" && (
+                      <button
+                        onClick={(e) => handleStartClick(e, workout)}
+                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3"
+                        title="Start Workout"
+                        type="button"
+                      >
+                        <Play className="size-4 mr-1" />
+                        Start
+                      </button>
+                    )}
                     <button
-                      onClick={(e) => handleStartClick(e, workout)}
-                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3"
-                      title="Start Workout"
+                      onClick={(e) => handleEditClick(e, workout.id)}
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                      title="Edit Workout"
                       type="button"
                     >
-                      <Play className="size-4 mr-1" />
-                      Start
+                      <Edit className="size-4" />
                     </button>
-                  )}
-                  <button
-                    onClick={(e) => handleEditClick(e, workout.id)}
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
-                    title="Edit Workout"
-                    type="button"
-                  >
-                    <Edit className="size-4" />
-                  </button>
-                  <button
-                    onClick={(e) => handleDeleteClick(e, workout)}
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
-                    title="Delete Workout"
-                    type="button"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
+                    <button
+                      onClick={(e) => handleDeleteClick(e, workout)}
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                      title="Delete Workout"
+                      type="button"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
           );
         })}
       </div>

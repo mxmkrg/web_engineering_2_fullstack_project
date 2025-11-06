@@ -10,7 +10,7 @@ export async function getWorkoutsAction(
     status?: "active" | "completed" | "archived";
     includeArchived?: boolean;
     limit?: number;
-  } = {}
+  } = {},
 ) {
   try {
     const workouts = await getWorkouts(userId, options);
@@ -21,13 +21,20 @@ export async function getWorkoutsAction(
   }
 }
 
-export async function refreshWorkoutsAction(userId: string, includeArchived: boolean = false) {
+export async function refreshWorkoutsAction(
+  userId: string,
+  includeArchived: boolean = false,
+) {
   try {
     const workouts = await getWorkouts(userId, { includeArchived, limit: 50 });
     revalidatePath("/dashboard/workouts");
     return { success: true, workouts };
   } catch (error) {
     console.error("Error refreshing workouts:", error);
-    return { success: false, error: "Failed to refresh workouts", workouts: [] };
+    return {
+      success: false,
+      error: "Failed to refresh workouts",
+      workouts: [],
+    };
   }
 }

@@ -11,23 +11,27 @@ const planWorkoutSchema = z.object({
   name: z.string().min(1, "Workout name is required"),
   date: z.string().transform((str) => new Date(str)),
   notes: z.string().optional(),
-  exercises: z.array(z.object({
-    exerciseId: z.number(),
-    order: z.number(),
-    notes: z.string().optional(),
-    sets: z.array(z.object({
-      reps: z.number().min(1),
-      weight: z.number().nullable().optional(),
-      notes: z.string().optional()
-    }))
-  }))
+  exercises: z.array(
+    z.object({
+      exerciseId: z.number(),
+      order: z.number(),
+      notes: z.string().optional(),
+      sets: z.array(
+        z.object({
+          reps: z.number().min(1),
+          weight: z.number().nullable().optional(),
+          notes: z.string().optional(),
+        }),
+      ),
+    }),
+  ),
 });
 
 export async function planWorkout(formData: FormData) {
   try {
     // Get authenticated user
     const session = await getServerSession();
-    
+
     if (!session?.user?.id) {
       return {
         success: false,
@@ -42,7 +46,7 @@ export async function planWorkout(formData: FormData) {
       name: formData.get("name")?.toString() || "",
       date: formData.get("date")?.toString() || "",
       notes: formData.get("notes")?.toString() || "",
-      exercises: JSON.parse(formData.get("exercises")?.toString() || "[]")
+      exercises: JSON.parse(formData.get("exercises")?.toString() || "[]"),
     };
 
     const validatedData = planWorkoutSchema.parse(rawData);
@@ -75,7 +79,7 @@ export async function planWorkout(formData: FormData) {
       // Add sets for the exercise
       for (let setIndex = 0; setIndex < exerciseData.sets.length; setIndex++) {
         const setData = exerciseData.sets[setIndex];
-        
+
         await db.insert(workoutSet).values({
           workoutExerciseId: newWorkoutExercise.id,
           setNumber: setIndex + 1,
@@ -97,14 +101,16 @@ export async function planWorkout(formData: FormData) {
     };
   } catch (error) {
     console.error("Error planning workout:", error);
-    
+
     if (error instanceof z.ZodError) {
       return {
         success: false,
-        error: "Invalid workout data: " + error.issues.map((e) => e.message).join(", "),
+        error:
+          "Invalid workout data: " +
+          error.issues.map((e) => e.message).join(", "),
       };
     }
-    
+
     return {
       success: false,
       error: "Failed to plan workout",

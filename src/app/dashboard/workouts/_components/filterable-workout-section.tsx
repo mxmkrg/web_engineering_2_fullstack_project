@@ -19,7 +19,10 @@ import {
   getFilteredWorkouts,
   type WorkoutFilterType,
 } from "@/actions/get-filtered-workouts";
-import { getWorkoutsAction, refreshWorkoutsAction } from "@/actions/workout-client-actions";
+import {
+  getWorkoutsAction,
+  refreshWorkoutsAction,
+} from "@/actions/workout-client-actions";
 import { archiveOldWorkouts } from "@/actions/archive-old-workouts";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -74,9 +77,9 @@ export function FilterableWorkoutSection({
   const [activeStatusTab, setActiveStatusTab] = useState("saved");
 
   // Filter workouts by status for tabs
-  const plannedWorkouts = workouts.filter(w => w.status === "planned");
-  const activeWorkouts = workouts.filter(w => w.status === "active");
-  const savedWorkouts = workouts.filter(w => w.status === "completed");
+  const plannedWorkouts = workouts.filter((w) => w.status === "planned");
+  const activeWorkouts = workouts.filter((w) => w.status === "active");
+  const savedWorkouts = workouts.filter((w) => w.status === "completed");
 
   // Initialize statistics when component mounts
   useEffect(() => {
@@ -222,20 +225,20 @@ export function FilterableWorkoutSection({
   const handleIncludeArchivedChange = async (checked: boolean) => {
     setIncludeArchived(checked);
     setIsLoading(true);
-    
+
     try {
       // Refresh workouts with or without archived ones
-      const result = await getWorkoutsAction(userId, { 
-        includeArchived: checked, 
-        limit: 50 
+      const result = await getWorkoutsAction(userId, {
+        includeArchived: checked,
+        limit: 50,
       });
-      
+
       if (result.success) {
         setWorkouts(result.workouts);
       } else {
         toast.error(result.error || "Failed to refresh workouts");
       }
-      
+
       // Reset to total filter when toggling archive inclusion
       setActiveFilter("total");
     } catch (error) {
@@ -249,13 +252,13 @@ export function FilterableWorkoutSection({
   const refreshWorkouts = async () => {
     try {
       const result = await refreshWorkoutsAction(userId, includeArchived);
-      
+
       if (result.success) {
         setWorkouts(result.workouts);
       } else {
         toast.error(result.error || "Failed to refresh workouts");
       }
-      
+
       // Refresh filter statistics
       if (activeFilter !== "total") {
         const filterResult = await getFilteredWorkouts(userId, {
@@ -338,13 +341,13 @@ export function FilterableWorkoutSection({
             </h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id="include-archived"
                   checked={includeArchived}
                   onCheckedChange={handleIncludeArchivedChange}
                 />
-                <label 
-                  htmlFor="include-archived" 
+                <label
+                  htmlFor="include-archived"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   Include archived workouts
@@ -363,9 +366,13 @@ export function FilterableWorkoutSection({
             </div>
           </div>
         </div>
-        
+
         <div className="px-6 pb-6">
-          <Tabs value={activeStatusTab} onValueChange={setActiveStatusTab} className="w-full">
+          <Tabs
+            value={activeStatusTab}
+            onValueChange={setActiveStatusTab}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="planned" className="flex items-center gap-2">
                 <Clock3 className="size-4" />

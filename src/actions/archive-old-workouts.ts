@@ -21,7 +21,7 @@ export async function archiveOldWorkouts() {
     // Archive completed workouts older than one year
     const result = await db
       .update(workout)
-      .set({ 
+      .set({
         status: "archived",
         updatedAt: new Date(),
       })
@@ -29,8 +29,8 @@ export async function archiveOldWorkouts() {
         and(
           eq(workout.userId, session.user.id),
           eq(workout.status, "completed"),
-          lt(workout.date, oneYearAgo)
-        )
+          lt(workout.date, oneYearAgo),
+        ),
       );
 
     // For SQLite, we need to count separately since result doesn't have changes
@@ -41,24 +41,24 @@ export async function archiveOldWorkouts() {
         and(
           eq(workout.userId, session.user.id),
           eq(workout.status, "archived"),
-          lt(workout.date, oneYearAgo)
-        )
+          lt(workout.date, oneYearAgo),
+        ),
       );
 
     const archivedCount = archivedWorkouts.length;
 
     revalidatePath("/dashboard/workouts");
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       archivedCount,
-      message: `Archived ${archivedCount} workouts older than one year`
+      message: `Archived ${archivedCount} workouts older than one year`,
     };
   } catch (error) {
     console.error("Error archiving old workouts:", error);
-    return { 
-      success: false, 
-      error: "Failed to archive old workouts" 
+    return {
+      success: false,
+      error: "Failed to archive old workouts",
     };
   }
 }
@@ -80,13 +80,13 @@ export async function unarchiveWorkout(workoutId: number) {
         and(
           eq(workout.id, workoutId),
           eq(workout.userId, session.user.id),
-          eq(workout.status, "archived")
-        )
+          eq(workout.status, "archived"),
+        ),
       );
 
     revalidatePath("/dashboard/workouts");
     revalidatePath("/dashboard/workouts/archived");
-    
+
     return { success: true };
   } catch (error) {
     console.error("Error unarchiving workout:", error);

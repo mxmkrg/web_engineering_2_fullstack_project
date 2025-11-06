@@ -26,17 +26,16 @@ export async function getWorkouts(
   }
 
   // Default behavior: get planned, active and completed workouts, optionally include archived
-  const allowedStatuses = includeArchived 
-    ? ["planned", "active", "completed", "archived"] 
+  const allowedStatuses = includeArchived
+    ? ["planned", "active", "completed", "archived"]
     : ["planned", "active", "completed"];
 
   const result = db
     .select()
     .from(workout)
-    .where(and(
-      eq(workout.userId, userId),
-      inArray(workout.status, allowedStatuses)
-    ))
+    .where(
+      and(eq(workout.userId, userId), inArray(workout.status, allowedStatuses)),
+    )
     .orderBy(desc(workout.date));
 
   return limit ? await result.limit(limit) : await result;

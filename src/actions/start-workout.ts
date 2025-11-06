@@ -11,7 +11,7 @@ export async function startWorkout(workoutId: number) {
   try {
     // Get authenticated user
     const session = await getServerSession();
-    
+
     if (!session?.user?.id) {
       return {
         success: false,
@@ -45,10 +45,10 @@ export async function startWorkout(workoutId: number) {
     // Update the workout status to "active" and set current timestamp
     await db
       .update(workout)
-      .set({ 
+      .set({
         status: "active",
         date: new Date(), // Update to current time when starting
-        duration: null // Reset duration since it will be tracked
+        duration: null, // Reset duration since it will be tracked
       })
       .where(and(eq(workout.id, workoutId), eq(workout.userId, userId)));
 

@@ -118,13 +118,13 @@ export function WorkoutCalendar({ workouts }: WorkoutCalendarProps) {
   const getDayStatus = (day: number): string => {
     const dayWorkouts = getDayWorkouts(day);
     if (dayWorkouts.length === 0) return "none";
-    
+
     // Prioritize active > planned > completed > archived
-    if (dayWorkouts.some(w => w.status === "active")) return "active";
-    if (dayWorkouts.some(w => w.status === "planned")) return "planned";
-    if (dayWorkouts.some(w => w.status === "completed")) return "completed";
-    if (dayWorkouts.some(w => w.status === "archived")) return "archived";
-    
+    if (dayWorkouts.some((w) => w.status === "active")) return "active";
+    if (dayWorkouts.some((w) => w.status === "planned")) return "planned";
+    if (dayWorkouts.some((w) => w.status === "completed")) return "completed";
+    if (dayWorkouts.some((w) => w.status === "archived")) return "archived";
+
     return "completed"; // default
   };
 

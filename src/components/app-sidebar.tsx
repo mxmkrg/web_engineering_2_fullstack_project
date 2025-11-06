@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Shield,
   Bug,
+  BookOpen,
 } from "lucide-react";
 
 import {
@@ -50,6 +51,11 @@ const currentItems = [
     title: "Workouts",
     url: "/dashboard/workouts",
     icon: Dumbbell,
+  },
+  {
+    title: "Routines",
+    url: "/dashboard/routines",
+    icon: BookOpen,
   },
   {
     title: "Progress",
@@ -167,15 +173,16 @@ export function AppSidebar({
                 side="top"
                 align="end"
                 sideOffset={4}
-              ><DropdownMenuItem asChild>
-                <Link
+              >
+                <DropdownMenuItem asChild>
+                  <Link
                     href="/dashboard/profile"
                     className="flex w-full items-center"
-                >
-                  <User className="mr-2 size-4" />
-                  Profile
-                </Link>
-              </DropdownMenuItem>
+                  >
+                    <User className="mr-2 size-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
                     href="/dashboard/settings"

@@ -821,12 +821,21 @@ export async function seedWorkouts() {
       // Create the workout - future dates are "planned", past dates are "completed"
       const currentDate = new Date();
       const workoutDate = workoutData.date;
-      
+
       // Use date-only comparison to avoid timezone issues
-      const workoutDateOnly = new Date(workoutDate.getFullYear(), workoutDate.getMonth(), workoutDate.getDate());
-      const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-      
-      const status = workoutDateOnly <= currentDateOnly ? "completed" : "planned";
+      const workoutDateOnly = new Date(
+        workoutDate.getFullYear(),
+        workoutDate.getMonth(),
+        workoutDate.getDate(),
+      );
+      const currentDateOnly = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate(),
+      );
+
+      const status =
+        workoutDateOnly <= currentDateOnly ? "completed" : "planned";
 
       const [newWorkout] = await db
         .insert(workout)
