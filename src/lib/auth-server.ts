@@ -15,8 +15,8 @@ export const getServerSession = async () =>
   });
 
 export const getCurrentUser = async () => {
-    const session = await getServerSession();
-    return session?.user || null;
+  const session = await getServerSession();
+  return session?.user || null;
 };
 
 export const signInEmail = auth.api.signInEmail;

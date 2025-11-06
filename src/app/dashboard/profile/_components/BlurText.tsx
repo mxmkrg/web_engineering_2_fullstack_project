@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface BlurTextProps {
-  text: string
-  delay?: number
-  animateBy?: "characters" | "words"
-  direction?: "top" | "bottom" | "left" | "right"
-  onAnimationComplete?: () => void
-  className?: string
+  text: string;
+  delay?: number;
+  animateBy?: "characters" | "words";
+  direction?: "top" | "bottom" | "left" | "right";
+  onAnimationComplete?: () => void;
+  className?: string;
 }
 
 export default function BlurText({
@@ -20,42 +20,42 @@ export default function BlurText({
   onAnimationComplete,
   className = "",
 }: BlurTextProps) {
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsVisible(true)
-    }, 100)
+      setIsVisible(true);
+    }, 100);
 
-    return () => clearTimeout(timer)
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
-  const items = animateBy === "words" ? text.split(" ") : text.split("")
+  const items = animateBy === "words" ? text.split(" ") : text.split("");
 
   const getDirectionClass = (direction: string) => {
     switch (direction) {
       case "top":
-        return "translate-y-[-20px]"
+        return "translate-y-[-20px]";
       case "bottom":
-        return "translate-y-[20px]"
+        return "translate-y-[20px]";
       case "left":
-        return "translate-x-[-20px]"
+        return "translate-x-[-20px]";
       case "right":
-        return "translate-x-[20px]"
+        return "translate-x-[20px]";
       default:
-        return "translate-y-[-20px]"
+        return "translate-y-[-20px]";
     }
-  }
+  };
   useEffect(() => {
     if (isVisible) {
-      const totalDelay = items.length * delay + 500
+      const totalDelay = items.length * delay + 500;
       const timer = setTimeout(() => {
-        onAnimationComplete?.()
-      }, totalDelay)
+        onAnimationComplete?.();
+      }, totalDelay);
 
-      return () => clearTimeout(timer)
+      return () => clearTimeout(timer);
     }
-  }, [isVisible, items.length, delay, onAnimationComplete])
+  }, [isVisible, items.length, delay, onAnimationComplete]);
 
   return (
     <div className={cn("inline-block", className)}>
@@ -66,10 +66,7 @@ export default function BlurText({
             "inline-block transition-all duration-500 ease-out",
             isVisible
               ? "opacity-100 translate-x-0 translate-y-0 blur-0"
-              : cn(
-                  "opacity-0 blur-sm",
-                  getDirectionClass(direction)
-                )
+              : cn("opacity-0 blur-sm", getDirectionClass(direction)),
           )}
           style={{
             transitionDelay: isVisible ? `${index * delay}ms` : "0ms",
@@ -80,5 +77,5 @@ export default function BlurText({
         </span>
       ))}
     </div>
-  )
+  );
 }

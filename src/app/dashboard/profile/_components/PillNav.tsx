@@ -1,88 +1,88 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
-import './PillNav.css'
+import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import "./PillNav.css";
 
 interface PillNavItem {
-  label: string
-  href?: string
-  id?: string
+  label: string;
+  href?: string;
+  id?: string;
 }
 
 interface PillNavProps {
-  logo?: string
-  logoAlt?: string
-  items: PillNavItem[]
-  activeHref?: string
-  className?: string
-  ease?: string
-  baseColor?: string
-  pillColor?: string
-  hoveredPillTextColor?: string
-  pillTextColor?: string
-  onMobileMenuClick?: () => void
-  initialLoadAnimation?: boolean
-  onItemClick?: (item: PillNavItem, index: number) => void
+  logo?: string;
+  logoAlt?: string;
+  items: PillNavItem[];
+  activeHref?: string;
+  className?: string;
+  ease?: string;
+  baseColor?: string;
+  pillColor?: string;
+  hoveredPillTextColor?: string;
+  pillTextColor?: string;
+  onMobileMenuClick?: () => void;
+  initialLoadAnimation?: boolean;
+  onItemClick?: (item: PillNavItem, index: number) => void;
 }
 
 const PillNav = ({
   logo,
-  logoAlt = 'Logo',
+  logoAlt = "Logo",
   items,
   activeHref,
-  className = '',
-  ease = 'power3.easeOut',
-  baseColor = '#2563eb',
-  pillColor = '#ffffff',
-  hoveredPillTextColor = '#ffffff',
+  className = "",
+  ease = "power3.easeOut",
+  baseColor = "#2563eb",
+  pillColor = "#ffffff",
+  hoveredPillTextColor = "#ffffff",
   pillTextColor,
   onMobileMenuClick,
   initialLoadAnimation = true,
-  onItemClick
+  onItemClick,
 }: PillNavProps) => {
-  const resolvedPillTextColor = pillTextColor ?? baseColor
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const navRef = useRef<HTMLDivElement>(null)
+  const resolvedPillTextColor = pillTextColor ?? baseColor;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
   const handleItemClick = (item: PillNavItem, index: number) => {
-    setActiveIndex(index)
-    onItemClick?.(item, index)
-  }
+    setActiveIndex(index);
+    onItemClick?.(item, index);
+  };
 
   const handleItemHover = (index: number) => {
-    setHoveredIndex(index)
-  }
+    setHoveredIndex(index);
+  };
 
   const handleItemLeave = () => {
-    setHoveredIndex(null)
-  }
+    setHoveredIndex(null);
+  };
 
   useEffect(() => {
     if (initialLoadAnimation && navRef.current) {
-      const nav = navRef.current
-      nav.style.opacity = '0'
-      nav.style.transform = 'translateY(-10px)'
-      
+      const nav = navRef.current;
+      nav.style.opacity = "0";
+      nav.style.transform = "translateY(-10px)";
+
       setTimeout(() => {
-        nav.style.transition = 'all 0.6s ease-out'
-        nav.style.opacity = '1'
-        nav.style.transform = 'translateY(0)'
-      }, 100)
+        nav.style.transition = "all 0.6s ease-out";
+        nav.style.opacity = "1";
+        nav.style.transform = "translateY(0)";
+      }, 100);
     }
-  }, [initialLoadAnimation])
+  }, [initialLoadAnimation]);
 
   const cssVars = {
-    '--base': baseColor,
-    '--pill-bg': pillColor,
-    '--hover-text': hoveredPillTextColor,
-    '--pill-text': resolvedPillTextColor
-  } as React.CSSProperties
+    "--base": baseColor,
+    "--pill-bg": pillColor,
+    "--hover-text": hoveredPillTextColor,
+    "--pill-text": resolvedPillTextColor,
+  } as React.CSSProperties;
 
   return (
-    <div 
-      className={cn("pill-nav-container", className)} 
+    <div
+      className={cn("pill-nav-container", className)}
       style={cssVars}
       ref={navRef}
     >
@@ -96,15 +96,16 @@ const PillNav = ({
                   className={cn(
                     "pill",
                     activeIndex === index && "is-active",
-                    hoveredIndex === index && "is-hovered"
+                    hoveredIndex === index && "is-hovered",
                   )}
                   aria-label={item.label}
                   onClick={() => handleItemClick(item, index)}
                   onMouseEnter={() => handleItemHover(index)}
                   onMouseLeave={handleItemLeave}
                   style={{
-                    transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
-                    transition: 'all 0.2s ease-out'
+                    transform:
+                      hoveredIndex === index ? "scale(1.05)" : "scale(1)",
+                    transition: "all 0.2s ease-out",
                   }}
                 >
                   <span className="hover-circle" aria-hidden="true" />
@@ -121,7 +122,7 @@ const PillNav = ({
         </div>
       </nav>
     </div>
-  )
-}
+  );
+};
 
-export default PillNav
+export default PillNav;
