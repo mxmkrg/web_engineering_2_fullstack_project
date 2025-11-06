@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   getPersonalRecords,
-  DateFilter,
+  type DateFilter,
 } from "@/actions/get-progression-stats";
 import { Trophy, TrendingUp, Target, Calendar } from "lucide-react";
 

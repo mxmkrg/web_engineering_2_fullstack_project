@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "@/lib/auth-server";
 import { getWorkoutStatistics } from "@/lib/workout-stats";
 

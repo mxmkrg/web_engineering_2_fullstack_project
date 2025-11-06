@@ -14,7 +14,7 @@ function generateGymJourneyDates(): Date[] {
   const startDate = new Date(2025, 8, 2); // September 2, 2025
   const endDate = new Date(2025, 11, 30); // December 30, 2025
 
-  let currentDate = new Date(startDate);
+  const currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
     const dayOfWeek = currentDate.getDay();
