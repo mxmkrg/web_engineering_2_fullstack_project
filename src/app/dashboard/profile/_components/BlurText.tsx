@@ -76,7 +76,7 @@ export default function BlurText({
           }}
         >
           {item}
-          {animateBy === "words" && index < items.length - 1 && " "}
+          {animateBy === "words" && index < items.length - 1 && "\u00A0"}
         </span>
       ))}
     </div>
