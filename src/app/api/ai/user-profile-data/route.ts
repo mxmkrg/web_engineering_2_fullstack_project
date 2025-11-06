@@ -31,9 +31,9 @@ export async function GET() {
         trainingGoal: profileData.trainingGoal,
         trainingDaysPerWeek: profileData.trainingDaysPerWeek,
         sessionDurationMinutes: profileData.sessionDurationMinutes,
-        exerciseLimitations: profileData.exerciseLimitations ?
-          (typeof profileData.exerciseLimitations === 'string' ?
-            JSON.parse(profileData.exerciseLimitations) :
+        exerciseLimitations: profileData.exerciseLimitations ? 
+          (typeof profileData.exerciseLimitations === 'string' ? 
+            JSON.parse(profileData.exerciseLimitations) : 
             profileData.exerciseLimitations) : [],
         createdAt: profileData.createdAt,
         updatedAt: profileData.updatedAt
