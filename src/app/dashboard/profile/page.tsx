@@ -321,7 +321,7 @@ export default function ProfilePage() {
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
                         type="button"
-                        onClick={handleSaveLimitations}
+                        onClick={handleSaveBasicInfo}
                         disabled={isSaving}
                         className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
                         type="button"
-                        onClick={handleSaveBasicInfo}
+                        onClick={handleSavePhysicalInfo}
                         disabled={isSaving}
                         className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
@@ -537,7 +537,7 @@ export default function ProfilePage() {
                     <div className="flex justify-end mt-6 pt-4 border-t border-blue-100">
                       <Button
                         type="button"
-                        onClick={handleSavePhysicalInfo}
+                        onClick={handleSaveLimitations}
                         disabled={isSaving}
                         className="bg-blue-500 hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all duration-200 hover:shadow-xl hover:shadow-blue-500/40"
                       >
