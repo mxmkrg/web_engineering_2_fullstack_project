@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   getMuscleGroupStats,
-  DateFilter,
+  type DateFilter,
 } from "@/actions/get-progression-stats";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 

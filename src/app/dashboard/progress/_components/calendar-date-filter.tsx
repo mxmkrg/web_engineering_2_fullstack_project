@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { Calendar, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { DateFilter } from "@/actions/get-progression-stats";
+import type { DateFilter } from "@/actions/get-progression-stats";
 
 interface CalendarDateFilterProps {
   currentFilter: DateFilter;
