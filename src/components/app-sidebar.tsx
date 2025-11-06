@@ -169,22 +169,14 @@ export function AppSidebar({
                 sideOffset={4}
               >
                 <DropdownMenuItem asChild>
-                  <Link
-                    href="/dashboard/settings"
-                    className="flex w-full items-center"
-                  >
-                    <Settings className="mr-2 size-4" />
-                    Account Settings
+                  <Link href="/dashboard/profile" className="flex w-full items-center">
+                    <User className="mr-2 size-4" />
+                    Profile
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/dashboard/debug"
-                    className="flex w-full items-center"
-                  >
-                    <Bug className="mr-2 size-4" />
-                    Debug Tools
-                  </Link>
+                <DropdownMenuItem disabled>
+                  <Settings />
+                  Account Settings
                 </DropdownMenuItem>
                 {userRole === "admin" && (
                   <DropdownMenuItem asChild>
