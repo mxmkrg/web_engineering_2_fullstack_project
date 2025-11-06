@@ -197,9 +197,6 @@ export function WorkoutList({
                       <h3 className="font-medium text-gray-900">
                         {workout.name}
                       </h3>
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                        Saved
-                      </span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">

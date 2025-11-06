@@ -123,12 +123,6 @@ export function WorkoutDetailDialog({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-green-100 text-green-700">
-              {workout.status === "archived" ? "Saved" : workout.status}
-            </Badge>
-          </div>
-
           {workout.notes && (
             <div>
               <h4 className="font-medium mb-2">Notes</h4>
