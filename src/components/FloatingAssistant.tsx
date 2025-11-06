@@ -5,7 +5,9 @@ import {
   MOTIVATION_PROMPT,
   PROGRESS_PROMPT,
   SUGGESTIONS_PROMPT,
+  GENERAL_CHAT_PROMPT,
 } from "@/app/dashboard/_components/prompts/Prompts";
+import { createPersonalizedPrompt } from "@/lib/prompt-helper";
 
 type UseCase = "motivation" | "progress" | "suggestions" | null;
 
@@ -112,14 +114,58 @@ export default function FloatingAssistant() {
           break;
       }
 
-      const dataResponse = await fetch(apiEndpoint);
+      // Fetch workout data and user profile data in parallel
+      const [dataResponse, profileResponse] = await Promise.all([
+        fetch(apiEndpoint),
+        fetch("/api/ai/user-profile-data")
+      ]);
+
       const dbData = await dataResponse.json();
+      const profileData = await profileResponse.json();
 
       // Add user message - nur der Typ, ohne Daten
       const userMessage = { role: "user", content: useCase };
       setMessages((prev) => [...prev, userMessage]);
 
-      // Call internal AI APIwith formatted data
+      // Reduce workout data to essential information only
+      const compactWorkoutData = {
+        workouts: dbData.workouts?.slice(0, 5)?.map((w: any) => ({
+          name: w.name,
+          status: w.status,
+          exercises: w.exercises?.slice(0, 3)?.map((e: any) => ({
+            name: e.name,
+            sets: e.sets?.length || 0
+          }))
+        })) || [],
+        totalWorkouts: dbData.workouts?.length || 0,
+        completedWorkouts: dbData.workouts?.filter((w: any) => w.status === 'completed')?.length || 0
+      };
+
+      const compactDataString = JSON.stringify(compactWorkoutData);
+      const systemPrompt = createPersonalizedPrompt(profileData, `${prompt}
+
+User Workout Data: ${compactDataString}`);
+
+      // Debug: KI Prompt logging
+      console.log(`🤖 KI PROMPT [${useCase.toUpperCase()}]:`, {
+        fullPrompt: systemPrompt,
+        promptLength: systemPrompt.length,
+        estimatedTokens: Math.ceil(systemPrompt.length / 4)
+      });
+
+      // Additional logging for progress requests
+      if (useCase === "progress") {
+        console.log(`📊 PROGRESS REQUEST DETAILS:`, {
+          useCase,
+          originalDataSize: JSON.stringify(dbData).length,
+          compactDataSize: compactDataString.length,
+          tokenReduction: Math.ceil((JSON.stringify(dbData).length - compactDataString.length) / 4),
+          totalSystemPromptTokens: Math.ceil(systemPrompt.length / 4),
+          messagesCount: messages.length
+        });
+      }
+
+      // Call internal AI API with formatted data
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
@@ -129,19 +175,7 @@ export default function FloatingAssistant() {
           messages: [
             {
               role: "system",
-              content: `You are an AI fitness coach assistant. Respond in English only.
-
-Antwortformat:
-- Use **bold text** for main points
-- Use numbered lists (1. 2. 3.) for structured guidance
-- Use bullet points (-) for lists
-- Be concise and professional
-- Minimal emojis
-
-${prompt}
-
-User Workout Data:
-${JSON.stringify(dbData, null, 2)}`,
+              content: systemPrompt,
             },
             ...messages.slice(1),
             userMessage,
@@ -176,6 +210,21 @@ ${JSON.stringify(dbData, null, 2)}`,
     setLoading(true);
 
     try {
+      // Fetch user profile data for personalization
+      const profileResponse = await fetch("/api/ai/user-profile-data");
+      const profileData = await profileResponse.json();
+
+      // Create personalized system prompt with general chat instructions
+      const systemPrompt = createPersonalizedPrompt(profileData, GENERAL_CHAT_PROMPT);
+
+      // Debug: KI Prompt logging
+      console.log(`🤖 KI PROMPT [GENERAL CHAT]:`, {
+        fullPrompt: systemPrompt,
+        promptLength: systemPrompt.length,
+        estimatedTokens: Math.ceil(systemPrompt.length / 4),
+        userMessage: input
+      });
+
       // Call internal AI API
       const response = await fetch("/api/ai/chat", {
         method: "POST",
@@ -186,14 +235,7 @@ ${JSON.stringify(dbData, null, 2)}`,
           messages: [
             {
               role: "system",
-              content: `You are an AI fitness coach assistant. Respond in English only.
-
-Response Format:
-- Use **bold text** for main points
-- Use numbered lists (1. 2. 3.) for structured guidance
-- Use bullet points (-) for lists
-- Be concise and professional
-- Minimal emojis`,
+              content: systemPrompt,
             },
             ...messages,
             userMessage,

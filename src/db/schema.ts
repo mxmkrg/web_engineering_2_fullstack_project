@@ -205,3 +205,49 @@ export const userProfile = sqliteTable("user_profile", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+/**
+ * Routines Schema
+ */
+export const routine = sqliteTable("routine", {
+  id: integer("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'strength', 'hypertrophy', 'endurance', 'mixed', 'custom'
+  difficulty: text("difficulty").notNull(), // 'beginner', 'intermediate', 'advanced'
+  duration: integer("duration"), // estimated duration in minutes
+  isPublic: integer("is_public", { mode: "boolean" }).default(false).notNull(), // can other users see/copy this routine
+  isTemplate: integer("is_template", { mode: "boolean" })
+    .default(false)
+    .notNull(), // is this a template routine
+  tags: text("tags"), // JSON array of tags like 'push', 'pull', 'legs', etc.
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const routineExercise = sqliteTable("routine_exercise", {
+  id: integer("id").primaryKey(),
+  routineId: integer("routine_id")
+    .notNull()
+    .references(() => routine.id, { onDelete: "cascade" }),
+  exerciseId: integer("exercise_id")
+    .notNull()
+    .references(() => exercise.id, { onDelete: "cascade" }),
+  order: integer("order").notNull().default(0), // order of exercise in routine
+  targetSets: integer("target_sets").notNull(), // planned number of sets
+  targetReps: text("target_reps"), // can be range like "8-12" or specific like "10"
+  targetWeight: real("target_weight"), // suggested starting weight
+  restPeriod: integer("rest_period"), // rest between sets in seconds
+  notes: text("notes"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+});

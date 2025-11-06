@@ -13,6 +13,7 @@ import {
   Shield,
   Bug,
   BookOpen,
+  Wrench,
 } from "lucide-react";
 
 import {
@@ -201,6 +202,17 @@ export function AppSidebar({
                     Debug Tools
                   </Link>
                 </DropdownMenuItem>
+                {process.env.NODE_ENV === "development" && (
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/dev"
+                      className="flex w-full items-center"
+                    >
+                      <Wrench className="mr-2 size-4" />
+                      Dev Tools
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 {userRole === "admin" && (
                   <DropdownMenuItem asChild>
                     <Link
