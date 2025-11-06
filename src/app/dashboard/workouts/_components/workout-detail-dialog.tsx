@@ -2,7 +2,17 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { Calendar, Clock, Edit, Trash2, X, Dumbbell } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Edit,
+  Trash2,
+  X,
+  Dumbbell,
+  Play,
+  CheckCircle,
+  Folder,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +61,38 @@ export function WorkoutDetailDialog({
   const [isDeleting, setIsDeleting] = useState(false);
 
   if (!workout) return null;
+
+  const getStatusInfo = (status: string) => {
+    switch (status) {
+      case "active":
+        return {
+          icon: Play,
+          text: "Active",
+          className: "bg-blue-100 text-blue-700",
+        };
+      case "completed":
+        return {
+          icon: CheckCircle,
+          text: "Completed",
+          className: "bg-green-100 text-green-700",
+        };
+      case "archived":
+        return {
+          icon: Folder,
+          text: "Archived",
+          className: "bg-gray-100 text-gray-700",
+        };
+      default:
+        return {
+          icon: Play,
+          text: "Unknown",
+          className: "bg-gray-100 text-gray-700",
+        };
+    }
+  };
+
+  const statusInfo = getStatusInfo(workout.status);
+  const StatusIcon = statusInfo.icon;
 
   const handleDelete = async () => {
     if (
@@ -121,6 +163,13 @@ export function WorkoutDetailDialog({
                 {workout.duration} minutes
               </div>
             )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className={statusInfo.className}>
+              <StatusIcon className="size-3 mr-1" />
+              {statusInfo.text}
+            </Badge>
           </div>
 
           {workout.notes && (

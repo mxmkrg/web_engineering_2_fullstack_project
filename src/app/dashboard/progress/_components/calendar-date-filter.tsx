@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -80,6 +81,7 @@ function generateYearMonths(
 }
 
 export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
+  const router = useRouter();
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [startMonth, setStartMonth] = useState<Date | null>(null);
   const [endMonth, setEndMonth] = useState<Date | null>(null);
@@ -146,7 +148,7 @@ export function CalendarDateFilter({ currentFilter }: CalendarDateFilterProps) {
       };
 
       const url = buildFilterUrl(filter);
-      window.location.href = url;
+      router.push(url);
     }
   };
 

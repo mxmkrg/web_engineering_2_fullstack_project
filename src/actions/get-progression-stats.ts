@@ -3,7 +3,7 @@
 import "server-only";
 import { db } from "@/db";
 import { workout, workoutExercise, workoutSet, exercise } from "@/db/schema";
-import { eq, desc, and, sql, gte, lte } from "drizzle-orm";
+import { eq, desc, and, sql, gte, lte, inArray } from "drizzle-orm";
 
 export interface DateFilter {
   type: "all-time" | "preset" | "month" | "custom";
@@ -12,10 +12,11 @@ export interface DateFilter {
   label: string;
 }
 
-function buildDateFilterConditions(userId: string, dateFilter?: DateFilter) {
+function buildDateFilterConditions(userId: string, dateFilter?: DateFilter, includePlanned: boolean = false) {
+  const statuses = includePlanned ? ["completed", "planned"] : ["completed"];
   const baseConditions = [
     eq(workout.userId, userId),
-    eq(workout.status, "completed"),
+    inArray(workout.status, statuses),
   ];
 
   if (

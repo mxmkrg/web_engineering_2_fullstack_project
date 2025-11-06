@@ -11,31 +11,38 @@ export interface WorkoutStatsData {
 
 export async function getWorkoutStatistics(
   userId: string,
+  includePlanned: boolean = false,
 ): Promise<WorkoutStatsData> {
-  // Get total completed and archived workouts (finished workouts)
+  // Define which statuses to include
+  const statuses = includePlanned 
+    ? ["completed", "archived", "planned"] 
+    : ["completed", "archived"];
+
+  // Get total completed and archived workouts (and planned if requested)
   const totalWorkouts = await db
     .select({ count: count() })
     .from(workout)
     .where(
       and(
         eq(workout.userId, userId),
-        inArray(workout.status, ["completed", "archived"]),
+        inArray(workout.status, statuses),
       ),
     );
 
-  // Get completed and archived workouts this month
+  // Get workouts this month
   const thisMonth = new Date();
   thisMonth.setDate(1);
   thisMonth.setHours(0, 0, 0, 0);
 
+  const statusCondition = statuses.map(status => `'${status}'`).join(', ');
   const monthlyWorkouts = await db
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.status} IN ('completed', 'archived') AND ${workout.date} >= ${thisMonth.getTime()}`,
+      sql`${workout.userId} = ${userId} AND ${workout.status} IN (${sql.raw(statusCondition)}) AND ${workout.date} >= ${thisMonth.getTime()}`,
     );
 
-  // Get completed and archived workouts this week (starting from Monday)
+  // Get workouts this week (starting from Monday)
   const thisWeek = new Date();
   const currentDay = thisWeek.getDay();
   const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1; // Sunday = 0, so 6 days from Monday
@@ -46,17 +53,17 @@ export async function getWorkoutStatistics(
     .select({ count: count() })
     .from(workout)
     .where(
-      sql`${workout.userId} = ${userId} AND ${workout.status} IN ('completed', 'archived') AND ${workout.date} >= ${thisWeek.getTime()}`,
+      sql`${workout.userId} = ${userId} AND ${workout.status} IN (${sql.raw(statusCondition)}) AND ${workout.date} >= ${thisWeek.getTime()}`,
     );
 
-  // Calculate average duration for completed and archived workouts
+  // Calculate average duration for included workout statuses
   const avgDuration = await db
     .select({ avg: sql<number>`AVG(${workout.duration})` })
     .from(workout)
     .where(
       and(
         eq(workout.userId, userId),
-        inArray(workout.status, ["completed", "archived"]),
+        inArray(workout.status, statuses),
       ),
     );
 

@@ -12,6 +12,8 @@ interface GetFilteredWorkoutsOptions {
   status?: string | string[];
   limit?: number;
   filter?: WorkoutFilterType;
+  includePlanned?: boolean;
+  forStatistics?: boolean; // If true, use includePlanned to determine which workouts to include
 }
 
 export interface FilteredWorkoutsResult {
@@ -40,9 +42,11 @@ export async function getFilteredWorkouts(
     }
 
     const {
-      status = ["completed", "archived"],
+      status,
       limit = 50,
       filter = "total",
+      includePlanned = false,
+      forStatistics = false,
     } = options;
 
     // Calculate date ranges
@@ -74,11 +78,20 @@ export async function getFilteredWorkouts(
     const conditions = [eq(workout.userId, userId)];
 
     // Add status condition
-    if (Array.isArray(status)) {
-      conditions.push(inArray(workout.status, status));
-    } else {
-      conditions.push(eq(workout.status, status));
+    if (status) {
+      if (Array.isArray(status)) {
+        conditions.push(inArray(workout.status, status));
+      } else {
+        conditions.push(eq(workout.status, status));
+      }
+    } else if (forStatistics) {
+      // For statistics: only completed workouts unless includePlanned is true
+      const statsStatuses = includePlanned 
+        ? ["completed", "archived", "planned"] 
+        : ["completed", "archived"];
+      conditions.push(inArray(workout.status, statsStatuses));
     }
+    // If neither status nor forStatistics is specified, get all workouts
 
     if (startDate) {
       conditions.push(gte(workout.date, startDate));

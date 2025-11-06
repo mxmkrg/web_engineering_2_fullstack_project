@@ -9,13 +9,26 @@ import {
   Clock,
   BarChart3,
   Hash,
+  Archive,
+  Clock3,
+  Play,
+  CheckCircle,
 } from "lucide-react";
 import { WorkoutList } from "./workout-list";
 import {
   getFilteredWorkouts,
   type WorkoutFilterType,
 } from "@/actions/get-filtered-workouts";
+import {
+  getWorkoutsAction,
+  refreshWorkoutsAction,
+} from "@/actions/workout-client-actions";
+import { archiveOldWorkouts } from "@/actions/archive-old-workouts";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 interface FilterableWorkoutSectionProps {
   userId: string;
@@ -52,6 +65,9 @@ export function FilterableWorkoutSection({
 }: FilterableWorkoutSectionProps) {
   const [activeFilter, setActiveFilter] = useState<WorkoutFilterType>("total");
   const [workouts, setWorkouts] = useState(initialWorkouts);
+  const [includeArchived, setIncludeArchived] = useState(false);
+  const [includePlannedInStats, setIncludePlannedInStats] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
   const [currentAvgDuration, setCurrentAvgDuration] = useState(
     initialStats.avgDuration,
   );
@@ -59,53 +75,57 @@ export function FilterableWorkoutSection({
   const [currentAvgSets, setCurrentAvgSets] = useState(0);
   const [currentTotalSets, setCurrentTotalSets] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeStatusTab, setActiveStatusTab] = useState("saved");
 
-  // Initialize statistics when component mounts
+  // Filter workouts by status for tabs and sort appropriately
+  const plannedWorkouts = workouts
+    .filter((w) => w.status === "planned")
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Upcoming first
+
+  const activeWorkouts = workouts
+    .filter((w) => w.status === "active")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Most recent first
+
+  const savedWorkouts = workouts
+    .filter((w) => w.status === "completed")
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Most recent first
+
+  // Initialize statistics when component mounts or when includePlannedInStats changes
   useEffect(() => {
     const initializeStats = async () => {
       try {
         const result = await getFilteredWorkouts(userId, {
-          filter: "total",
+          filter: activeFilter,
           limit: 50,
+          includePlanned: includePlannedInStats,
+          forStatistics: true,
         });
         setCurrentTotalDuration(result.totalDuration);
         setCurrentAvgSets(result.avgSets);
         setCurrentTotalSets(result.totalSets);
+        if (activeFilter === "total") {
+          setCurrentAvgDuration(result.avgDuration);
+        }
       } catch (error) {
         console.error("Error initializing statistics:", error);
       }
     };
 
     initializeStats();
-  }, [userId]);
+  }, [userId, includePlannedInStats, activeFilter]);
 
-  // Reset to initial stats when returning to "total" filter
+    // Reset to initial stats when returning to "total" filter
   useEffect(() => {
     if (activeFilter === "total") {
       setWorkouts(initialWorkouts);
-      setCurrentAvgDuration(initialStats.avgDuration);
-      // Reinitialize other stats
-      const initializeStats = async () => {
-        try {
-          const result = await getFilteredWorkouts(userId, {
-            filter: "total",
-            limit: 50,
-          });
-          setCurrentTotalDuration(result.totalDuration);
-          setCurrentAvgSets(result.avgSets);
-          setCurrentTotalSets(result.totalSets);
-        } catch (error) {
-          console.error("Error reinitializing statistics:", error);
-        }
-      };
-      initializeStats();
+      // Note: Stats are handled by the main statistics effect above
     }
-  }, [activeFilter, initialWorkouts, initialStats.avgDuration, userId]);
+  }, [activeFilter, initialWorkouts]);
 
   const filterOptions: FilterOption[] = [
     {
       key: "total",
-      title: "Total Workouts",
+      title: "Saved Workouts",
       value: initialStats.total,
       icon: Activity,
       color: "text-blue-600",
@@ -113,7 +133,7 @@ export function FilterableWorkoutSection({
     },
     {
       key: "thisMonth",
-      title: "This Month",
+      title: "Saved This Month",
       value: initialStats.thisMonth,
       icon: Calendar,
       color: "text-green-600",
@@ -121,7 +141,7 @@ export function FilterableWorkoutSection({
     },
     {
       key: "thisWeek",
-      title: "This Week",
+      title: "Saved This Week",
       value: initialStats.thisWeek,
       icon: Target,
       color: "text-purple-600",
@@ -167,19 +187,103 @@ export function FilterableWorkoutSection({
     setIsLoading(true);
 
     try {
-      const result = await getFilteredWorkouts(userId, {
+      // Get all workouts for display (no status filter for time-based filters)
+      const displayResult = await getFilteredWorkouts(userId, {
         filter: filter,
         limit: 50,
       });
-      setWorkouts(result.workouts);
-      setCurrentAvgDuration(result.avgDuration);
-      setCurrentTotalDuration(result.totalDuration);
-      setCurrentAvgSets(result.avgSets);
-      setCurrentTotalSets(result.totalSets);
+      
+      // Get statistics data (respecting includePlannedInStats)
+      const statsResult = await getFilteredWorkouts(userId, {
+        filter: filter,
+        limit: 50,
+        includePlanned: includePlannedInStats,
+        forStatistics: true,
+      });
+      
+      setWorkouts(displayResult.workouts);
+      setCurrentAvgDuration(statsResult.avgDuration);
+      setCurrentTotalDuration(statsResult.totalDuration);
+      setCurrentAvgSets(statsResult.avgSets);
+      setCurrentTotalSets(statsResult.totalSets);
     } catch (error) {
       console.error("Error filtering workouts:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleArchiveOldWorkouts = async () => {
+    setIsArchiving(true);
+    try {
+      const result = await archiveOldWorkouts();
+      if (result.success) {
+        toast.success(result.message);
+        // Refresh workouts list
+        await refreshWorkouts();
+      } else {
+        toast.error(result.error || "Failed to archive old workouts");
+      }
+    } catch (error) {
+      toast.error("Error archiving old workouts");
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
+  const handleIncludeArchivedChange = async (checked: boolean) => {
+    setIncludeArchived(checked);
+    setIsLoading(true);
+
+    try {
+      // Refresh workouts with or without archived ones
+      const result = await getWorkoutsAction(userId, {
+        includeArchived: checked,
+        limit: 50,
+      });
+
+      if (result.success) {
+        setWorkouts(result.workouts);
+      } else {
+        toast.error(result.error || "Failed to refresh workouts");
+      }
+
+      // Reset to total filter when toggling archive inclusion
+      setActiveFilter("total");
+    } catch (error) {
+      console.error("Error refreshing workouts:", error);
+      toast.error("Failed to refresh workouts");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const refreshWorkouts = async () => {
+    try {
+      const result = await refreshWorkoutsAction(userId, includeArchived);
+
+      if (result.success) {
+        setWorkouts(result.workouts);
+      } else {
+        toast.error(result.error || "Failed to refresh workouts");
+      }
+
+      // Refresh filter statistics
+      if (activeFilter !== "total") {
+        const filterResult = await getFilteredWorkouts(userId, {
+          filter: activeFilter,
+          limit: 50,
+          includePlanned: includePlannedInStats,
+          forStatistics: true,
+        });
+        setCurrentAvgDuration(filterResult.avgDuration);
+        setCurrentTotalDuration(filterResult.totalDuration);
+        setCurrentAvgSets(filterResult.avgSets);
+        setCurrentTotalSets(filterResult.totalSets);
+      }
+    } catch (error) {
+      console.error("Error refreshing workouts:", error);
+      toast.error("Failed to refresh workouts");
     }
   };
 
@@ -239,31 +343,127 @@ export function FilterableWorkoutSection({
         </div>
       </div>
 
-      {/* Workouts List Section */}
+      {/* Workouts List Section with Status Tabs */}
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-2xl font-semibold leading-none tracking-tight">
-              Saved Workouts
+              Workouts
             </h3>
-            <div className="text-sm text-muted-foreground">
-              {activeFilter === "total" && "All workouts"}
-              {activeFilter === "thisWeek" && "This week"}
-              {activeFilter === "thisMonth" && "This month"}
-              {isLoading && " (Loading...)"}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="include-planned-stats"
+                  checked={includePlannedInStats}
+                  onCheckedChange={(checked) => setIncludePlannedInStats(checked === true)}
+                />
+                <label
+                  htmlFor="include-planned-stats"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Include planned workouts in statistics
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="include-archived"
+                  checked={includeArchived}
+                  onCheckedChange={handleIncludeArchivedChange}
+                />
+                <label
+                  htmlFor="include-archived"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Include archived workouts
+                </label>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleArchiveOldWorkouts}
+                disabled={isArchiving}
+                className="flex items-center gap-2"
+              >
+                <Archive className="size-4" />
+                {isArchiving ? "Archiving..." : "Archive Old Workouts"}
+              </Button>
             </div>
           </div>
         </div>
-        <div className="p-6 pt-0">
-          {isLoading ? (
-            <WorkoutListSkeleton />
-          ) : (
-            <WorkoutList
-              userId={userId}
-              initialWorkouts={workouts}
-              activeFilter="all" // Always "all" since server-side filtering is handled here
-            />
-          )}
+
+        <div className="px-6 pb-6">
+          <Tabs
+            value={activeStatusTab}
+            onValueChange={setActiveStatusTab}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="planned" className="flex items-center gap-2">
+                <Clock3 className="size-4" />
+                Planned ({plannedWorkouts.length})
+              </TabsTrigger>
+              <TabsTrigger value="active" className="flex items-center gap-2">
+                <Play className="size-4" />
+                Active ({activeWorkouts.length})
+              </TabsTrigger>
+              <TabsTrigger value="saved" className="flex items-center gap-2">
+                <CheckCircle className="size-4" />
+                Saved ({savedWorkouts.length})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="planned" className="mt-6">
+              <div className="text-sm text-muted-foreground mb-4">
+                Workouts scheduled for future dates
+                {isLoading && " (Loading...)"}
+              </div>
+              {isLoading ? (
+                <WorkoutListSkeleton />
+              ) : (
+                <WorkoutList
+                  userId={userId}
+                  initialWorkouts={plannedWorkouts}
+                  activeFilter="all"
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="active" className="mt-6">
+              <div className="text-sm text-muted-foreground mb-4">
+                Currently active workout sessions
+                {isLoading && " (Loading...)"}
+              </div>
+              {isLoading ? (
+                <WorkoutListSkeleton />
+              ) : (
+                <WorkoutList
+                  userId={userId}
+                  initialWorkouts={activeWorkouts}
+                  activeFilter="all"
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="saved" className="mt-6">
+              <div className="text-sm text-muted-foreground mb-4">
+                Completed workout history
+                {activeFilter === "total" && " - All workouts"}
+                {activeFilter === "thisWeek" && " - This week"}
+                {activeFilter === "thisMonth" && " - This month"}
+                {isLoading && " (Loading...)"}
+                {includeArchived && " • Including archived workouts"}
+              </div>
+              {isLoading ? (
+                <WorkoutListSkeleton />
+              ) : (
+                <WorkoutList
+                  userId={userId}
+                  initialWorkouts={savedWorkouts}
+                  activeFilter="all"
+                />
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </>
