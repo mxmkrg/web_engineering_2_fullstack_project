@@ -166,9 +166,9 @@ export const workoutSet = sqliteTable("workout_set", {
 export const userProfile = sqliteTable("user_profile", {
   id: integer("id").primaryKey(),
   userId: text("user_id")
-      .notNull()
-      .unique()
-      .references(() => user.id, { onDelete: "cascade" }),
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
   age: integer("age"),
   gender: text("gender"), // 'male', 'female', 'other', 'prefer_not_to_say'
   heightCm: integer("height_cm"),
@@ -178,10 +178,56 @@ export const userProfile = sqliteTable("user_profile", {
   sessionDurationMinutes: integer("session_duration_minutes"),
   exerciseLimitations: text("exercise_limitations"), // JSON array of limitations/injuries
   createdAt: integer("created_at", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .notNull(),
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-      .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+/**
+ * Routines Schema
+ */
+export const routine = sqliteTable("routine", {
+  id: integer("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'strength', 'hypertrophy', 'endurance', 'mixed', 'custom'
+  difficulty: text("difficulty").notNull(), // 'beginner', 'intermediate', 'advanced'
+  duration: integer("duration"), // estimated duration in minutes
+  isPublic: integer("is_public", { mode: "boolean" }).default(false).notNull(), // can other users see/copy this routine
+  isTemplate: integer("is_template", { mode: "boolean" })
+    .default(false)
+    .notNull(), // is this a template routine
+  tags: text("tags"), // JSON array of tags like 'push', 'pull', 'legs', etc.
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const routineExercise = sqliteTable("routine_exercise", {
+  id: integer("id").primaryKey(),
+  routineId: integer("routine_id")
+    .notNull()
+    .references(() => routine.id, { onDelete: "cascade" }),
+  exerciseId: integer("exercise_id")
+    .notNull()
+    .references(() => exercise.id, { onDelete: "cascade" }),
+  order: integer("order").notNull().default(0), // order of exercise in routine
+  targetSets: integer("target_sets").notNull(), // planned number of sets
+  targetReps: text("target_reps"), // can be range like "8-12" or specific like "10"
+  targetWeight: real("target_weight"), // suggested starting weight
+  restPeriod: integer("rest_period"), // rest between sets in seconds
+  notes: text("notes"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
 });
