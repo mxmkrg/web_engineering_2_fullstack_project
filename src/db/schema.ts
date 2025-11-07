@@ -19,6 +19,11 @@ export const user = sqliteTable("user", {
   role: text("role", { enum: ["user", "admin"] })
     .notNull()
     .default("user"),
+  banned: integer("banned", { mode: "boolean" })
+    .default(false)
+    .notNull(),
+  banReason: text("ban_reason"),
+  banExpires: integer("ban_expires", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
