@@ -273,7 +273,7 @@ export function WorkoutBuilder() {
                 ) : (
                   <Play className="h-6 w-6 text-blue-600" />
                 )}
-                {mode === "plan" ? "Plan Workout" : "Finish Workout"}
+                {mode === "plan" ? "Plan Workout" : "Track Workout"}
               </h1>
               <p className="text-gray-600 text-sm">
                 {mode === "plan"
