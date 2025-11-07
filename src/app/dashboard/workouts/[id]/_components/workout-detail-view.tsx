@@ -78,11 +78,15 @@ export function WorkoutDetailView({ workoutData }: WorkoutDetailViewProps) {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={handleBack}>
+        <div className="flex items-start gap-6 flex-1">
+          <Button variant="ghost" size="sm" onClick={handleBack} className="mt-1">
             <ArrowLeft className="size-4 mr-2" />
-            Back to Workouts
+            Back
           </Button>
+          <div className="flex-1 text-center">
+            <h1 className="text-2xl font-bold text-gray-900">Workout Details</h1>
+            <p className="text-gray-600 text-sm">View your workout progress</p>
+          </div>
         </div>
         <Button onClick={handleEdit} className="gap-2">
           <Edit className="size-4" />

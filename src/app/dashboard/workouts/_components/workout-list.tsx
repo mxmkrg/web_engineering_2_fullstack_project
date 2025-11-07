@@ -316,29 +316,29 @@ export function WorkoutList({
                     {workout.status === "planned" && (
                       <button
                         onClick={(e) => handleStartClick(e, workout)}
-                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3"
+                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-2 border-blue-200 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-300 hover:scale-105 h-8 px-3"
                         title="Start Workout"
                         type="button"
                       >
-                        <Play className="size-4 mr-1" />
+                        <Play className="size-4 mr-1 transition-transform duration-200 hover:scale-110" />
                         Start
                       </button>
                     )}
                     <button
                       onClick={(e) => handleEditClick(e, workout.id)}
-                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 hover:scale-105 h-8 w-8"
                       title="Edit Workout"
                       type="button"
                     >
-                      <Edit className="size-4" />
+                      <Edit className="size-4 transition-transform duration-200 hover:scale-110" />
                     </button>
                     <button
                       onClick={(e) => handleDeleteClick(e, workout)}
-                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-2 border-red-200 bg-background text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 hover:scale-105 h-8 w-8"
                       title="Delete Workout"
                       type="button"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-4 transition-transform duration-200 hover:scale-110" />
                     </button>
                   </div>
                 </div>

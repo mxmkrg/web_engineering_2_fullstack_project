@@ -397,17 +397,26 @@ export function FilterableWorkoutSection({
             onValueChange={setActiveStatusTab}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="planned" className="flex items-center gap-2">
-                <Clock3 className="size-4" />
+            <TabsList className="grid w-full grid-cols-3 bg-gray-100 p-1 rounded-lg">
+              <TabsTrigger 
+                value="planned" 
+                className="flex items-center gap-2 transition-all duration-200 hover:bg-amber-100 hover:text-amber-700 hover:scale-105 data-[state=active]:bg-amber-200 data-[state=active]:text-amber-800 data-[state=active]:shadow-sm"
+              >
+                <Clock3 className="size-4 transition-transform duration-200 hover:scale-110" />
                 Planned ({plannedWorkouts.length})
               </TabsTrigger>
-              <TabsTrigger value="active" className="flex items-center gap-2">
-                <Play className="size-4" />
+              <TabsTrigger 
+                value="active" 
+                className="flex items-center gap-2 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 hover:scale-105 data-[state=active]:bg-blue-200 data-[state=active]:text-blue-800 data-[state=active]:shadow-sm"
+              >
+                <Play className="size-4 transition-transform duration-200 hover:scale-110" />
                 Active ({activeWorkouts.length})
               </TabsTrigger>
-              <TabsTrigger value="saved" className="flex items-center gap-2">
-                <CheckCircle className="size-4" />
+              <TabsTrigger 
+                value="saved" 
+                className="flex items-center gap-2 transition-all duration-200 hover:bg-green-100 hover:text-green-700 hover:scale-105 data-[state=active]:bg-green-200 data-[state=active]:text-green-800 data-[state=active]:shadow-sm"
+              >
+                <CheckCircle className="size-4 transition-transform duration-200 hover:scale-110" />
                 Saved ({savedWorkouts.length})
               </TabsTrigger>
             </TabsList>
