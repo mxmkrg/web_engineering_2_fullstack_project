@@ -25,6 +25,7 @@ import { clearWorkouts } from "@/actions/clear-workouts";
 import { seedRoutines } from "@/actions/seed-routines";
 import { clearExercises } from "@/actions/clear-exercises";
 import { clearRoutines } from "@/actions/clear-routines";
+import { toggleUserRole } from "@/actions/user/toggle-user-role";
 
 interface DebugContentProps {
   userId: string;
@@ -42,6 +43,7 @@ export function DebugContent({ userId }: DebugContentProps) {
   const [isSeedingRoutines, setIsSeedingRoutines] = useState(false);
   const [isClearingExercises, setIsClearingExercises] = useState(false);
   const [isClearingRoutines, setIsClearingRoutines] = useState(false);
+  const [isTogglingRole, setIsTogglingRole] = useState(false);
 
   const [seedResult, setSeedResult] = useState<ActionResult | null>(null);
   const [workoutResult, setWorkoutResult] = useState<ActionResult | null>(null);
@@ -51,6 +53,7 @@ export function DebugContent({ userId }: DebugContentProps) {
     useState<ActionResult | null>(null);
   const [clearRoutineResult, setClearRoutineResult] =
     useState<ActionResult | null>(null);
+  const [roleResult, setRoleResult] = useState<ActionResult | null>(null);
 
   const handleSeedExercises = async () => {
     setIsSeeding(true);
@@ -179,6 +182,28 @@ export function DebugContent({ userId }: DebugContentProps) {
       });
     } finally {
       setIsClearingRoutines(false);
+    }
+  };
+
+  const handleToggleRole = async (newRole: "admin" | "user") => {
+    setIsTogglingRole(true);
+    setRoleResult(null);
+
+    try {
+      const result = await toggleUserRole(userId, newRole);
+      setRoleResult({
+        success: result.success,
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to update role",
+      });
+    } catch (error) {
+      setRoleResult({
+        success: false,
+        message: "Error: " + (error as Error).message,
+      });
+    } finally {
+      setIsTogglingRole(false);
     }
   };
 
@@ -523,6 +548,77 @@ export function DebugContent({ userId }: DebugContentProps) {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* User Role Management */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-foreground">
+          User Role Management
+        </h3>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="size-5" />
+              Toggle Current User Role
+            </CardTitle>
+            <CardDescription>
+              Change the current user's role between admin and regular user
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-muted-foreground">
+              <p className="mb-2">
+                <strong>Current User ID:</strong> {userId}
+              </p>
+              <p>
+                Use this to quickly grant or revoke admin privileges for the
+                current user. This is useful when the database is empty and no
+                admin user exists.
+              </p>
+            </div>
+
+            <ResultMessage result={roleResult} />
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <Button
+                onClick={() => handleToggleRole("admin")}
+                disabled={isTogglingRole}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium shadow-sm"
+              >
+                {isTogglingRole ? (
+                  <>
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Users className="size-4 mr-2" />
+                    Make Admin
+                  </>
+                )}
+              </Button>
+
+              <Button
+                onClick={() => handleToggleRole("user")}
+                disabled={isTogglingRole}
+                variant="outline"
+                className="w-full font-medium shadow-sm"
+              >
+                {isTogglingRole ? (
+                  <>
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Users className="size-4 mr-2" />
+                    Make User
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Development Info */}

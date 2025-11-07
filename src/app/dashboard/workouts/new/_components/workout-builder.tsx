@@ -32,7 +32,7 @@ interface WorkoutSet {
 }
 
 interface Exercise {
-  id: string;
+  id: number;
   name: string;
   sets: WorkoutSet[];
 }
@@ -46,6 +46,7 @@ export function WorkoutBuilder() {
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [mode, setMode] = useState<"start" | "plan">("start");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,10 +70,10 @@ export function WorkoutBuilder() {
   // Generate unique ID for sets/exercises
   const generateId = () => Math.random().toString(36).substr(2, 9);
 
-  const handleAddExercise = (exerciseName: string) => {
+  const handleAddExercise = (exercise: { id: number; name: string }) => {
     const newExercise: Exercise = {
-      id: generateId(),
-      name: exerciseName,
+      id: exercise.id,
+      name: exercise.name,
       sets: [
         {
           id: generateId(),
@@ -85,7 +86,7 @@ export function WorkoutBuilder() {
     setShowExerciseSearch(false);
   };
 
-  const addSetToExercise = (exerciseId: string) => {
+  const addSetToExercise = (exerciseId: number) => {
     setSelectedExercises((prev) =>
       prev.map((exercise) =>
         exercise.id === exerciseId
@@ -105,7 +106,7 @@ export function WorkoutBuilder() {
     );
   };
 
-  const removeSetFromExercise = (exerciseId: string, setId: string) => {
+  const removeSetFromExercise = (exerciseId: number, setId: string) => {
     setSelectedExercises((prev) =>
       prev.map((exercise) =>
         exercise.id === exerciseId
@@ -119,7 +120,7 @@ export function WorkoutBuilder() {
   };
 
   const updateSet = (
-    exerciseId: string,
+    exerciseId: number,
     setId: string,
     field: "reps" | "weight",
     value: string,
@@ -148,7 +149,7 @@ export function WorkoutBuilder() {
     );
   };
 
-  const removeExercise = (exerciseId: string) => {
+  const removeExercise = (exerciseId: number) => {
     setSelectedExercises(
       selectedExercises.filter((ex) => ex.id !== exerciseId),
     );
@@ -186,12 +187,13 @@ export function WorkoutBuilder() {
       if (mode === "plan") {
         // For plan mode, use the planWorkout action
         const formData = new FormData();
-        formData.append("workoutTitle", workoutTitle.trim());
-        formData.append("workoutNotes", workoutNotes.trim() || "");
-        formData.append("workoutDate", workoutDate);
+        formData.append("name", workoutTitle.trim());
+        formData.append("date", workoutDate);
+        formData.append("notes", workoutNotes.trim() || "");
 
-        const exercises = selectedExercises.map((exercise) => ({
-          name: exercise.name,
+        const exercises = selectedExercises.map((exercise, index) => ({
+          exerciseId: exercise.id,
+          order: index + 1,
           notes: "",
           sets: exercise.sets.map((set) => ({
             reps: set.reps,
@@ -325,11 +327,11 @@ export function WorkoutBuilder() {
                 </div>
               )}
 
-              {!workoutNotes ? (
+              {!showNotes ? (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setWorkoutNotes("")}
+                  onClick={() => setShowNotes(true)}
                   className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 mt-4"
                 >
                   <Plus className="h-3 w-3 mr-1" />

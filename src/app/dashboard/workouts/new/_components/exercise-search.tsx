@@ -50,7 +50,7 @@ const CATEGORIES: { value: Category; label: string }[] = [
 ];
 
 interface ExerciseSearchProps {
-  onSelect: (exercise: string) => void;
+  onSelect: (exercise: { id: number; name: string }) => void;
   onClose: () => void;
 }
 
@@ -58,7 +58,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [exercises, setExercises] = useState<Record<string, string[]>>({});
+  const [exercises, setExercises] = useState<Record<string, Array<{ id: number; name: string }>>>({});
   const [isLoading, setIsLoading] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -76,12 +76,10 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
         const data = await response.json();
 
-        // Konvertiere zu erwartetem Format: { category: [exerciseName1, exerciseName2, ...] }
-        const formatted: Record<string, string[]> = {};
+        // Convert to expected format: { category: [{ id, name }, ...] }
+        const formatted: Record<string, Array<{ id: number; name: string }>> = {};
         for (const [category, exerciseList] of Object.entries(data)) {
-          formatted[category] = (
-            exerciseList as Array<{ id: number; name: string }>
-          ).map((ex) => ex.name);
+          formatted[category] = exerciseList as Array<{ id: number; name: string }>;
         }
 
         setExercises(formatted);
@@ -105,7 +103,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
   // Filter exercises based on search query
   const filteredExercises = getExercisesForCategory().filter((exercise) =>
-    exercise.toLowerCase().includes(searchQuery.toLowerCase()),
+    exercise.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Auto-focus input on mount
@@ -199,7 +197,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                   const exerciseCategory =
                     selectedCategory === "all"
                       ? (Object.entries(exercises).find(([_, exList]) =>
-                          exList.includes(exercise),
+                          exList.some(ex => ex.id === exercise.id),
                         )?.[0] as Exclude<Category, "all"> | undefined)
                       : selectedCategory;
                   const Icon =
@@ -209,7 +207,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
 
                   return (
                     <button
-                      key={index}
+                      key={exercise.id}
                       onClick={() => {
                         onSelect(exercise);
                         setIsDropdownOpen(false);
@@ -221,7 +219,7 @@ export function ExerciseSearch({ onSelect, onClose }: ExerciseSearchProps) {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-foreground">
-                          {exercise}
+                          {exercise.name}
                         </p>
                         <p className="text-sm capitalize text-muted-foreground">
                           {exerciseCategory}
