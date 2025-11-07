@@ -143,24 +143,6 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
-
-        {/* Demo credentials for testing */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-yellow-800 mb-2">
-            Demo Credentials (for testing)
-          </h3>
-          <div className="text-xs text-yellow-700 space-y-1">
-            <p>
-              <strong>Email:</strong> demo@example.com
-            </p>
-            <p>
-              <strong>Password:</strong> password123
-            </p>
-            <p className="text-yellow-600 mt-2">
-              Or create a new account above
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
