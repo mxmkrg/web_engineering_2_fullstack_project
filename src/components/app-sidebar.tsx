@@ -13,7 +13,7 @@ import {
   Shield,
   Bug,
   BookOpen,
-  Wrench,
+  LogOut,
 } from "lucide-react";
 
 import {
@@ -202,17 +202,6 @@ export function AppSidebar({
                     Debug Tools
                   </Link>
                 </DropdownMenuItem>
-                {process.env.NODE_ENV === "development" && (
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/dev"
-                      className="flex w-full items-center"
-                    >
-                      <Wrench className="mr-2 size-4" />
-                      Dev Tools
-                    </Link>
-                  </DropdownMenuItem>
-                )}
                 {userRole === "admin" && (
                   <DropdownMenuItem asChild>
                     <Link
@@ -224,14 +213,14 @@ export function AppSidebar({
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem asChild>
-                  <form action={logoutAction} className="w-full">
-                    <button type="submit" className="flex w-full items-center">
-                      <MoreHorizontal className="mr-2 size-4" />
+                <form action={logoutAction}>
+                  <DropdownMenuItem asChild>
+                    <button type="submit" className="w-full">
+                      <LogOut className="mr-2 size-4" />
                       Sign out
                     </button>
-                  </form>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

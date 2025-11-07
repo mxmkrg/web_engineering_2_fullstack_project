@@ -11,10 +11,19 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, RefreshCw, AlertCircle } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  RefreshCw,
+  AlertCircle,
+  Key,
+  UserPlus,
+} from "lucide-react";
 import { getAllUsers } from "@/actions/admin";
 import { EditUserDialog } from "./edit-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
+import { ResetPasswordDialog } from "./reset-password-dialog";
+import { CreateUserDialog } from "./create-user-dialog";
 import Link from "next/link";
 
 interface User {
@@ -33,6 +42,8 @@ export function UserManagementTable() {
   const [error, setError] = useState("");
   const [editUser, setEditUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
+  const [resetPasswordUser, setResetPasswordUser] = useState<User | null>(null);
+  const [createUserOpen, setCreateUserOpen] = useState(false);
 
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
@@ -106,14 +117,21 @@ export function UserManagementTable() {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Total users: {users.length}
-        </p>
-        <Button variant="outline" size="sm" onClick={loadUsers}>
-          <RefreshCw className="mr-2 size-4" />
-          Refresh
-        </Button>
+      <div className="mb-4 flex items-center justify-end">
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCreateUserOpen(true)}
+          >
+            <UserPlus className="mr-2 size-4" />
+            Create User
+          </Button>
+          <Button variant="outline" size="sm" onClick={loadUsers}>
+            <RefreshCw className="mr-2 size-4" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border">
@@ -176,13 +194,23 @@ export function UserManagementTable() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditUser(user)}
+                        title="Edit user"
                       >
                         <Pencil className="size-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => setResetPasswordUser(user)}
+                        title="Reset password"
+                      >
+                        <Key className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setDeleteUser(user)}
+                        title="Delete user"
                       >
                         <Trash2 className="size-4 text-destructive" />
                       </Button>
@@ -206,6 +234,19 @@ export function UserManagementTable() {
         user={deleteUser}
         open={!!deleteUser}
         onOpenChange={(open) => !open && setDeleteUser(null)}
+        onSuccess={loadUsers}
+      />
+
+      <ResetPasswordDialog
+        user={resetPasswordUser}
+        open={!!resetPasswordUser}
+        onOpenChange={(open) => !open && setResetPasswordUser(null)}
+        onSuccess={loadUsers}
+      />
+
+      <CreateUserDialog
+        open={createUserOpen}
+        onOpenChange={setCreateUserOpen}
         onSuccess={loadUsers}
       />
     </>

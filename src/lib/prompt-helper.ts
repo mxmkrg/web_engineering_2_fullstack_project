@@ -1,4 +1,4 @@
-import { ENHANCED_SYSTEM_PROMPT } from "@/app/dashboard/_components/prompts/Prompts"
+import { ENHANCED_SYSTEM_PROMPT } from "@/app/dashboard/_components/prompts/Prompts";
 
 // Simple token counter (rough estimation: 1 token ≈ 4 characters for English)
 function estimateTokens(text: string): number {
@@ -6,7 +6,10 @@ function estimateTokens(text: string): number {
 }
 
 // Helper function to create personalized system prompt with profile data
-export function createPersonalizedPrompt(profileData: any, additionalPrompt?: string): string {
+export function createPersonalizedPrompt(
+  profileData: any,
+  additionalPrompt?: string,
+): string {
   let systemPrompt = ENHANCED_SYSTEM_PROMPT;
 
   // Add profile-specific guidance if profile exists
@@ -29,7 +32,9 @@ export function createPersonalizedPrompt(profileData: any, additionalPrompt?: st
       systemPromptTokens: tokenCount,
       systemPromptLength: systemPrompt.length,
       additionalPromptTokens: estimateTokens(additionalPrompt),
-      profileDataTokens: profileData ? estimateTokens(JSON.stringify(profileData)) : 0
+      profileDataTokens: profileData
+        ? estimateTokens(JSON.stringify(profileData))
+        : 0,
     });
   }
 

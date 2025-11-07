@@ -14,27 +14,22 @@ export async function getWorkoutStatistics(
   includePlanned: boolean = false,
 ): Promise<WorkoutStatsData> {
   // Define which statuses to include
-  const statuses = includePlanned 
-    ? ["completed", "archived", "planned"] 
+  const statuses = includePlanned
+    ? ["completed", "archived", "planned"]
     : ["completed", "archived"];
 
   // Get total completed and archived workouts (and planned if requested)
   const totalWorkouts = await db
     .select({ count: count() })
     .from(workout)
-    .where(
-      and(
-        eq(workout.userId, userId),
-        inArray(workout.status, statuses),
-      ),
-    );
+    .where(and(eq(workout.userId, userId), inArray(workout.status, statuses)));
 
   // Get workouts this month
   const thisMonth = new Date();
   thisMonth.setDate(1);
   thisMonth.setHours(0, 0, 0, 0);
 
-  const statusCondition = statuses.map(status => `'${status}'`).join(', ');
+  const statusCondition = statuses.map((status) => `'${status}'`).join(", ");
   const monthlyWorkouts = await db
     .select({ count: count() })
     .from(workout)
@@ -60,12 +55,7 @@ export async function getWorkoutStatistics(
   const avgDuration = await db
     .select({ avg: sql<number>`AVG(${workout.duration})` })
     .from(workout)
-    .where(
-      and(
-        eq(workout.userId, userId),
-        inArray(workout.status, statuses),
-      ),
-    );
+    .where(and(eq(workout.userId, userId), inArray(workout.status, statuses)));
 
   return {
     total: totalWorkouts[0]?.count || 0,

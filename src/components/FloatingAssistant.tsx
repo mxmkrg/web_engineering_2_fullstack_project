@@ -117,7 +117,7 @@ export default function FloatingAssistant() {
       // Fetch workout data and user profile data in parallel
       const [dataResponse, profileResponse] = await Promise.all([
         fetch(apiEndpoint),
-        fetch("/api/ai/user-profile-data")
+        fetch("/api/ai/user-profile-data"),
       ]);
 
       const dbData = await dataResponse.json();
@@ -129,28 +129,34 @@ export default function FloatingAssistant() {
 
       // Reduce workout data to essential information only
       const compactWorkoutData = {
-        workouts: dbData.workouts?.slice(0, 5)?.map((w: any) => ({
-          name: w.name,
-          status: w.status,
-          exercises: w.exercises?.slice(0, 3)?.map((e: any) => ({
-            name: e.name,
-            sets: e.sets?.length || 0
-          }))
-        })) || [],
+        workouts:
+          dbData.workouts?.slice(0, 5)?.map((w: any) => ({
+            name: w.name,
+            status: w.status,
+            exercises: w.exercises?.slice(0, 3)?.map((e: any) => ({
+              name: e.name,
+              sets: e.sets?.length || 0,
+            })),
+          })) || [],
         totalWorkouts: dbData.workouts?.length || 0,
-        completedWorkouts: dbData.workouts?.filter((w: any) => w.status === 'completed')?.length || 0
+        completedWorkouts:
+          dbData.workouts?.filter((w: any) => w.status === "completed")
+            ?.length || 0,
       };
 
       const compactDataString = JSON.stringify(compactWorkoutData);
-      const systemPrompt = createPersonalizedPrompt(profileData, `${prompt}
+      const systemPrompt = createPersonalizedPrompt(
+        profileData,
+        `${prompt}
 
-User Workout Data: ${compactDataString}`);
+User Workout Data: ${compactDataString}`,
+      );
 
       // Debug: KI Prompt logging
       console.log(`🤖 KI PROMPT [${useCase.toUpperCase()}]:`, {
         fullPrompt: systemPrompt,
         promptLength: systemPrompt.length,
-        estimatedTokens: Math.ceil(systemPrompt.length / 4)
+        estimatedTokens: Math.ceil(systemPrompt.length / 4),
       });
 
       // Additional logging for progress requests
@@ -159,9 +165,11 @@ User Workout Data: ${compactDataString}`);
           useCase,
           originalDataSize: JSON.stringify(dbData).length,
           compactDataSize: compactDataString.length,
-          tokenReduction: Math.ceil((JSON.stringify(dbData).length - compactDataString.length) / 4),
+          tokenReduction: Math.ceil(
+            (JSON.stringify(dbData).length - compactDataString.length) / 4,
+          ),
           totalSystemPromptTokens: Math.ceil(systemPrompt.length / 4),
-          messagesCount: messages.length
+          messagesCount: messages.length,
         });
       }
 
@@ -215,14 +223,17 @@ User Workout Data: ${compactDataString}`);
       const profileData = await profileResponse.json();
 
       // Create personalized system prompt with general chat instructions
-      const systemPrompt = createPersonalizedPrompt(profileData, GENERAL_CHAT_PROMPT);
+      const systemPrompt = createPersonalizedPrompt(
+        profileData,
+        GENERAL_CHAT_PROMPT,
+      );
 
       // Debug: KI Prompt logging
       console.log(`🤖 KI PROMPT [GENERAL CHAT]:`, {
         fullPrompt: systemPrompt,
         promptLength: systemPrompt.length,
         estimatedTokens: Math.ceil(systemPrompt.length / 4),
-        userMessage: input
+        userMessage: input,
       });
 
       // Call internal AI API

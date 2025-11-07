@@ -85,9 +85,15 @@ export function RoutinesContent({
     try {
       // Get the routine with exercises
       const routineWithExercises = await onGetRoutineWithExercises(routine.id);
-      
-      if (!routineWithExercises || !routineWithExercises.exercises || routineWithExercises.exercises.length === 0) {
-        alert("This routine has no exercises yet. Please edit the routine to add exercises first.");
+
+      if (
+        !routineWithExercises ||
+        !routineWithExercises.exercises ||
+        routineWithExercises.exercises.length === 0
+      ) {
+        alert(
+          "This routine has no exercises yet. Please edit the routine to add exercises first.",
+        );
         return;
       }
 
@@ -97,11 +103,11 @@ export function RoutinesContent({
         routineId: routine.id,
         exercises: routineWithExercises.exercises,
       };
-      
-      localStorage.setItem('workoutTemplate', JSON.stringify(workoutTemplate));
-      
+
+      localStorage.setItem("workoutTemplate", JSON.stringify(workoutTemplate));
+
       // Navigate to workout creation page
-      router.push('/dashboard/workouts/new?fromRoutine=true');
+      router.push("/dashboard/workouts/new?fromRoutine=true");
     } catch (error) {
       console.error("Error starting workout from routine:", error);
       alert("Failed to start workout from routine. Please try again.");
@@ -153,7 +159,7 @@ export function RoutinesContent({
                 Create and manage your custom workout routines
               </p>
             </div>
-            <Button 
+            <Button
               onClick={() => setShowCreateDialog(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
@@ -235,7 +241,7 @@ export function RoutinesContent({
                   <p className="text-muted-foreground text-center mb-4">
                     Create your first custom workout routine to get started
                   </p>
-                  <Button 
+                  <Button
                     onClick={() => setShowCreateDialog(true)}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
@@ -303,9 +309,9 @@ export function RoutinesContent({
                             >
                               Edit
                             </Button>
-                            <Button 
-                              size="sm" 
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" 
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                               onClick={() => handleStartWorkout(routine)}
                             >
                               Start Workout

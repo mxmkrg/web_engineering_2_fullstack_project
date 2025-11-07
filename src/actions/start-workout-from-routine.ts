@@ -76,7 +76,8 @@ export async function startWorkoutFromRoutine(formData: FormData) {
 
     // Process exercises for the workout
     for (const routineExerciseData of routineExercises) {
-      const { routineExercise: rExercise, exercise: exerciseData } = routineExerciseData;
+      const { routineExercise: rExercise, exercise: exerciseData } =
+        routineExerciseData;
 
       // Create workout exercise
       const [newWorkoutExercise] = await db

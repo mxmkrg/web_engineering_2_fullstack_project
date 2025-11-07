@@ -114,7 +114,7 @@ export function FilterableWorkoutSection({
     initializeStats();
   }, [userId, includePlannedInStats, activeFilter]);
 
-    // Reset to initial stats when returning to "total" filter
+  // Reset to initial stats when returning to "total" filter
   useEffect(() => {
     if (activeFilter === "total") {
       setWorkouts(initialWorkouts);
@@ -192,7 +192,7 @@ export function FilterableWorkoutSection({
         filter: filter,
         limit: 50,
       });
-      
+
       // Get statistics data (respecting includePlannedInStats)
       const statsResult = await getFilteredWorkouts(userId, {
         filter: filter,
@@ -200,7 +200,7 @@ export function FilterableWorkoutSection({
         includePlanned: includePlannedInStats,
         forStatistics: true,
       });
-      
+
       setWorkouts(displayResult.workouts);
       setCurrentAvgDuration(statsResult.avgDuration);
       setCurrentTotalDuration(statsResult.totalDuration);
@@ -355,7 +355,9 @@ export function FilterableWorkoutSection({
                 <Checkbox
                   id="include-planned-stats"
                   checked={includePlannedInStats}
-                  onCheckedChange={(checked) => setIncludePlannedInStats(checked === true)}
+                  onCheckedChange={(checked) =>
+                    setIncludePlannedInStats(checked === true)
+                  }
                 />
                 <label
                   htmlFor="include-planned-stats"

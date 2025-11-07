@@ -86,8 +86,8 @@ export async function getFilteredWorkouts(
       }
     } else if (forStatistics) {
       // For statistics: only completed workouts unless includePlanned is true
-      const statsStatuses = includePlanned 
-        ? ["completed", "archived", "planned"] 
+      const statsStatuses = includePlanned
+        ? ["completed", "archived", "planned"]
         : ["completed", "archived"];
       conditions.push(inArray(workout.status, statsStatuses));
     }

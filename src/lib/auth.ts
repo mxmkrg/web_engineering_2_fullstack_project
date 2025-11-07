@@ -1,6 +1,7 @@
 import "server-only"; // Importing this will result in errors if this file should ever be imported on the client-side.
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { admin } from "better-auth/plugins";
 import { db } from "@/db";
 import * as dbSchema from "@/db/schema";
 import { nextCookies } from "better-auth/next-js";
@@ -15,7 +16,10 @@ export const auth = betterAuth({
     provider: "sqlite",
     schema: dbSchema,
   }),
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    admin(),
+  ],
   emailAndPassword: {
     enabled: true,
   },
