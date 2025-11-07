@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { MessageCircle, Send, Loader2 } from "lucide-react";
+import { MessageCircle, Send, Loader2, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import Link from "next/link";
 import {
   MOTIVATION_PROMPT,
   PROGRESS_PROMPT,
@@ -10,6 +12,14 @@ import {
 import { createPersonalizedPrompt } from "@/lib/prompt-helper";
 
 type UseCase = "motivation" | "progress" | "suggestions" | null;
+
+const STORAGE_KEY = "openai_api_key";
+
+// Helper function to get API key from localStorage
+const getStoredApiKey = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(STORAGE_KEY);
+};
 
 // Formatierungsfunktion für KI-Antworten
 const formatAIResponse = (content: string) => {
@@ -91,6 +101,16 @@ export default function FloatingAssistant() {
 
   const handleUseCaseClick = async (useCase: UseCase) => {
     if (!useCase) return;
+
+    // Check if API key is available
+    const apiKey = getStoredApiKey();
+    if (!apiKey) {
+      toast.error(
+        "Please configure your OpenAI API key in Account Settings to use the AI assistant.",
+        { duration: 5000 },
+      );
+      return;
+    }
 
     setLoading(true);
 
@@ -178,6 +198,7 @@ User Workout Data: ${compactDataString}`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-openai-key": apiKey,
         },
         body: JSON.stringify({
           messages: [
@@ -192,6 +213,21 @@ User Workout Data: ${compactDataString}`,
       });
 
       const aiResponse = await response.json();
+
+      // Handle API key error specifically
+      if (response.status === 401) {
+        toast.error(aiResponse.error || "API key not configured");
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "⚠️ Please configure your OpenAI API key in Account Settings to use this feature.",
+          },
+        ]);
+        return;
+      }
+
       const aiReply =
         aiResponse.choices?.[0]?.message?.content ||
         "⚠ Error retrieving response.";
@@ -211,6 +247,16 @@ User Workout Data: ${compactDataString}`,
   const handleSend = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (!input.trim()) return;
+
+    // Check if API key is available
+    const apiKey = getStoredApiKey();
+    if (!apiKey) {
+      toast.error(
+        "Please configure your OpenAI API key in Account Settings to use the AI assistant.",
+        { duration: 5000 },
+      );
+      return;
+    }
 
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
@@ -241,6 +287,7 @@ User Workout Data: ${compactDataString}`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-openai-key": apiKey,
         },
         body: JSON.stringify({
           messages: [
@@ -255,6 +302,21 @@ User Workout Data: ${compactDataString}`,
       });
 
       const data = await response.json();
+
+      // Handle API key error specifically
+      if (response.status === 401) {
+        toast.error(data.error || "API key not configured");
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "⚠️ Please configure your OpenAI API key in Account Settings to use this feature.",
+          },
+        ]);
+        return;
+      }
+
       const aiReply =
         data.choices?.[0]?.message?.content ||
         "Entschuldigung, es gab ein Problem.";
@@ -282,15 +344,40 @@ User Workout Data: ${compactDataString}`,
             className="mb-3 w-96 bg-white rounded-2xl shadow-2xl border border-blue-200 overflow-hidden flex flex-col h-[600px]"
           >
             {/* Header */}
-            <div className="p-3 bg-blue-600 text-white font-semibold text-sm flex justify-between">
+            <div className="p-3 bg-blue-600 text-white font-semibold text-sm flex justify-between items-center">
               <span>AI Fitness Coach</span>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-white/70 hover:text-white"
-              >
-                ×
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/dashboard/settings"
+                  className="text-white/70 hover:text-white transition"
+                  title="Configure API Key"
+                >
+                  <Settings size={16} />
+                </Link>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="text-white/70 hover:text-white text-xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
             </div>
+
+            {/* API Key Warning */}
+            {!getStoredApiKey() && (
+              <div className="px-3 py-2 bg-amber-50 border-b border-amber-200">
+                <p className="text-xs text-amber-800">
+                  ⚠️ No API key configured.{" "}
+                  <Link
+                    href="/dashboard/settings"
+                    className="font-semibold underline hover:text-amber-900"
+                  >
+                    Add one in Settings
+                  </Link>{" "}
+                  to use the AI assistant.
+                </p>
+              </div>
+            )}
 
             {/* Messages */}
             <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm text-gray-700">

@@ -6,7 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Save, Clock3, Play, Dumbbell, Hash, Target, Weight, Trash2, ArrowLeft } from "lucide-react";
+import {
+  X,
+  Plus,
+  Save,
+  Clock3,
+  Play,
+  Dumbbell,
+  Hash,
+  Target,
+  Weight,
+  Trash2,
+  ArrowLeft,
+} from "lucide-react";
 import { ExerciseSearch } from "./exercise-search";
 import { saveWorkout } from "@/actions/save-workout";
 import { planWorkout } from "@/actions/plan-workout";
@@ -74,59 +86,72 @@ export function WorkoutBuilder() {
   };
 
   const addSetToExercise = (exerciseId: string) => {
-    setSelectedExercises(prev => 
-      prev.map(exercise => 
-        exercise.id === exerciseId 
+    setSelectedExercises((prev) =>
+      prev.map((exercise) =>
+        exercise.id === exerciseId
           ? {
               ...exercise,
-              sets: [...exercise.sets, {
-                id: generateId(),
-                reps: 0,
-                weight: null,
-              }]
+              sets: [
+                ...exercise.sets,
+                {
+                  id: generateId(),
+                  reps: 0,
+                  weight: null,
+                },
+              ],
             }
-          : exercise
-      )
+          : exercise,
+      ),
     );
   };
 
   const removeSetFromExercise = (exerciseId: string, setId: string) => {
-    setSelectedExercises(prev => 
-      prev.map(exercise => 
-        exercise.id === exerciseId 
+    setSelectedExercises((prev) =>
+      prev.map((exercise) =>
+        exercise.id === exerciseId
           ? {
               ...exercise,
-              sets: exercise.sets.filter(set => set.id !== setId)
+              sets: exercise.sets.filter((set) => set.id !== setId),
             }
-          : exercise
-      )
+          : exercise,
+      ),
     );
   };
 
-  const updateSet = (exerciseId: string, setId: string, field: "reps" | "weight", value: string) => {
-    setSelectedExercises(prev => 
-      prev.map(exercise => 
-        exercise.id === exerciseId 
+  const updateSet = (
+    exerciseId: string,
+    setId: string,
+    field: "reps" | "weight",
+    value: string,
+  ) => {
+    setSelectedExercises((prev) =>
+      prev.map((exercise) =>
+        exercise.id === exerciseId
           ? {
               ...exercise,
-              sets: exercise.sets.map(set => 
-                set.id === setId 
+              sets: exercise.sets.map((set) =>
+                set.id === setId
                   ? {
                       ...set,
-                      [field]: field === "reps" 
-                        ? parseInt(value) || 0 
-                        : value === "" ? null : parseFloat(value) || null
+                      [field]:
+                        field === "reps"
+                          ? parseInt(value) || 0
+                          : value === ""
+                            ? null
+                            : parseFloat(value) || null,
                     }
-                  : set
-              )
+                  : set,
+              ),
             }
-          : exercise
-      )
+          : exercise,
+      ),
     );
   };
 
   const removeExercise = (exerciseId: string) => {
-    setSelectedExercises(selectedExercises.filter(ex => ex.id !== exerciseId));
+    setSelectedExercises(
+      selectedExercises.filter((ex) => ex.id !== exerciseId),
+    );
   };
 
   async function saveData() {
@@ -142,10 +167,12 @@ export function WorkoutBuilder() {
     }
 
     // Check if all exercises have at least one set with reps
-    const hasInvalidSets = selectedExercises.some(ex => 
-      ex.sets.length === 0 || ex.sets.every(set => !set.reps || set.reps === 0)
+    const hasInvalidSets = selectedExercises.some(
+      (ex) =>
+        ex.sets.length === 0 ||
+        ex.sets.every((set) => !set.reps || set.reps === 0),
     );
-    
+
     if (hasInvalidSets) {
       toast.error("Please enter repetitions for all sets");
       return;
@@ -166,7 +193,7 @@ export function WorkoutBuilder() {
         const exercises = selectedExercises.map((exercise) => ({
           name: exercise.name,
           notes: "",
-          sets: exercise.sets.map(set => ({
+          sets: exercise.sets.map((set) => ({
             reps: set.reps,
             weight: set.weight,
             notes: "",
@@ -177,12 +204,12 @@ export function WorkoutBuilder() {
         result = await planWorkout(formData);
       } else {
         // For start mode, convert to legacy format for saveWorkout
-        const legacyExercises = selectedExercises.flatMap(exercise => 
-          exercise.sets.map(set => ({
+        const legacyExercises = selectedExercises.flatMap((exercise) =>
+          exercise.sets.map((set) => ({
             name: exercise.name,
             reps: set.reps,
             weight: set.weight || undefined,
-          }))
+          })),
         );
 
         result = await saveWorkout({
@@ -197,7 +224,7 @@ export function WorkoutBuilder() {
           result.message ||
             `Workout ${mode === "plan" ? "planned" : "started"} successfully!`,
         );
-        
+
         // Redirect based on mode
         if (mode === "start" && result.workoutId) {
           // For started workouts, redirect to the workout page to continue
@@ -217,7 +244,10 @@ export function WorkoutBuilder() {
     }
   }
 
-  const totalSets = selectedExercises.reduce((total, ex) => total + ex.sets.length, 0);
+  const totalSets = selectedExercises.reduce(
+    (total, ex) => total + ex.sets.length,
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -250,10 +280,15 @@ export function WorkoutBuilder() {
               </p>
             </div>
           </div>
-          
+
           {selectedExercises.length > 0 && (
-            <Badge variant="outline" className="text-sm border-blue-200 text-blue-700">
-              {selectedExercises.length} exercise{selectedExercises.length !== 1 ? 's' : ''} • {totalSets} set{totalSets !== 1 ? 's' : ''}
+            <Badge
+              variant="outline"
+              className="text-sm border-blue-200 text-blue-700"
+            >
+              {selectedExercises.length} exercise
+              {selectedExercises.length !== 1 ? "s" : ""} • {totalSets} set
+              {totalSets !== 1 ? "s" : ""}
             </Badge>
           )}
         </div>
@@ -263,7 +298,9 @@ export function WorkoutBuilder() {
           <CardContent className="p-4">
             <div className="flex items-center gap-3 mb-3">
               <Target className="h-4 w-4 text-blue-600" />
-              <label className="text-sm font-medium text-gray-700">Workout Name</label>
+              <label className="text-sm font-medium text-gray-700">
+                Workout Name
+              </label>
             </div>
             <Input
               placeholder="What's today's focus? (e.g., Push Day, Leg Blast, Full Body)"
@@ -271,7 +308,7 @@ export function WorkoutBuilder() {
               onChange={(e) => setWorkoutTitle(e.target.value)}
               className="text-base font-medium border-gray-200 focus-visible:ring-blue-500 focus-visible:border-blue-500"
             />
-            
+
             <div className="flex items-center gap-4 mt-4">
               {mode === "plan" && (
                 <div>
@@ -289,9 +326,9 @@ export function WorkoutBuilder() {
               )}
 
               {!workoutNotes ? (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setWorkoutNotes("")}
                   className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 mt-4"
                 >
@@ -349,8 +386,12 @@ export function WorkoutBuilder() {
             <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
               <CardContent className="p-12 text-center">
                 <Dumbbell className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">No exercises yet</h3>
-                <p className="text-gray-500 mb-4">Add your first exercise to get started</p>
+                <h3 className="text-lg font-medium text-gray-600 mb-2">
+                  No exercises yet
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Add your first exercise to get started
+                </p>
                 <Button
                   onClick={() => setShowExerciseSearch(true)}
                   variant="outline"
@@ -364,14 +405,21 @@ export function WorkoutBuilder() {
           ) : (
             <div className="space-y-3">
               {selectedExercises.map((exercise, exerciseIndex) => (
-                <Card key={exercise.id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <Card
+                  key={exercise.id}
+                  className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-                          <span className="text-sm font-semibold text-blue-700">{exerciseIndex + 1}</span>
+                          <span className="text-sm font-semibold text-blue-700">
+                            {exerciseIndex + 1}
+                          </span>
                         </div>
-                        <CardTitle className="text-lg text-gray-900">{exercise.name}</CardTitle>
+                        <CardTitle className="text-lg text-gray-900">
+                          {exercise.name}
+                        </CardTitle>
                       </div>
                       <Button
                         variant="ghost"
@@ -390,13 +438,18 @@ export function WorkoutBuilder() {
                         <Hash className="h-4 w-4" />
                         <span>Sets</span>
                       </div>
-                      
+
                       {exercise.sets.map((set, setIndex) => (
-                        <div key={set.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <div
+                          key={set.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"
+                        >
                           <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-medium text-gray-700">{setIndex + 1}</span>
+                            <span className="text-xs font-medium text-gray-700">
+                              {setIndex + 1}
+                            </span>
                           </div>
-                          
+
                           <div className="flex items-center gap-3 flex-1">
                             <div className="flex items-center gap-2">
                               <Target className="h-4 w-4 text-blue-500" />
@@ -405,12 +458,21 @@ export function WorkoutBuilder() {
                                 min="1"
                                 placeholder="Reps"
                                 value={set.reps || ""}
-                                onChange={(e) => updateSet(exercise.id, set.id, "reps", e.target.value)}
+                                onChange={(e) =>
+                                  updateSet(
+                                    exercise.id,
+                                    set.id,
+                                    "reps",
+                                    e.target.value,
+                                  )
+                                }
                                 className="w-16 text-center font-medium text-sm border-gray-200 focus-visible:ring-blue-500"
                               />
-                              <span className="text-xs text-gray-500">reps</span>
+                              <span className="text-xs text-gray-500">
+                                reps
+                              </span>
                             </div>
-                            
+
                             <div className="flex items-center gap-2">
                               <Weight className="h-4 w-4 text-gray-500" />
                               <Input
@@ -419,18 +481,27 @@ export function WorkoutBuilder() {
                                 step="0.5"
                                 placeholder="Weight"
                                 value={set.weight || ""}
-                                onChange={(e) => updateSet(exercise.id, set.id, "weight", e.target.value)}
+                                onChange={(e) =>
+                                  updateSet(
+                                    exercise.id,
+                                    set.id,
+                                    "weight",
+                                    e.target.value,
+                                  )
+                                }
                                 className="w-20 text-center font-medium text-sm border-gray-200 focus-visible:ring-blue-500"
                               />
                               <span className="text-xs text-gray-500">kg</span>
                             </div>
                           </div>
-                          
+
                           {exercise.sets.length > 1 && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => removeSetFromExercise(exercise.id, set.id)}
+                              onClick={() =>
+                                removeSetFromExercise(exercise.id, set.id)
+                              }
                               className="text-gray-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0"
                             >
                               <X className="h-4 w-4" />
@@ -438,7 +509,7 @@ export function WorkoutBuilder() {
                           )}
                         </div>
                       ))}
-                      
+
                       {/* Add Set Button */}
                       <Button
                         variant="outline"

@@ -13,6 +13,7 @@ import {
 import { UpdateNameForm } from "@/app/dashboard/settings/_components/update-name-form";
 import { UpdateEmailForm } from "@/app/dashboard/settings/_components/update-email-form";
 import { UpdatePasswordForm } from "@/app/dashboard/settings/_components/update-password-form";
+import { UpdateOpenAIKeyForm } from "@/app/dashboard/settings/_components/update-openai-key-form";
 import { DeleteAccountSection } from "@/app/dashboard/settings/_components/delete-account-section";
 
 export default async function AccountSettingsPage() {
@@ -78,6 +79,18 @@ export default async function AccountSettingsPage() {
           </CardHeader>
           <CardContent>
             <UpdatePasswordForm />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>OpenAI API Key</CardTitle>
+            <CardDescription>
+              Configure your personal OpenAI API key for the AI chat assistant
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UpdateOpenAIKeyForm />
           </CardContent>
         </Card>
 

@@ -70,7 +70,7 @@ export async function createNewUser(formData: FormData) {
 
     // Create new user
     const userId = `user_${randomBytes(16).toString("hex")}`;
-    
+
     // Hash password using scrypt (same as better-auth default)
     const salt = randomBytes(16).toString("hex");
     const derivedKey = scryptSync(password, salt, 64).toString("hex");

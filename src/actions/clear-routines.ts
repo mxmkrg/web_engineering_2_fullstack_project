@@ -30,9 +30,7 @@ export async function clearRoutines() {
       }
 
       // Delete the routines themselves
-      await tx
-        .delete(routine)
-        .where(eq(routine.userId, session.user.id));
+      await tx.delete(routine).where(eq(routine.userId, session.user.id));
     });
 
     revalidatePath("/", "layout");
