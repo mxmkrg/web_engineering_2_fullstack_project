@@ -18,12 +18,7 @@ export const auth = betterAuth({
   }),
   plugins: [
     nextCookies(),
-    admin({
-      // Check if user has admin role
-      async isAdmin(user) {
-        return user.role === "admin";
-      },
-    }),
+    admin(),
   ],
   emailAndPassword: {
     enabled: true,
