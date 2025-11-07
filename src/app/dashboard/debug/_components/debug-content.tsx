@@ -47,8 +47,10 @@ export function DebugContent({ userId }: DebugContentProps) {
   const [workoutResult, setWorkoutResult] = useState<ActionResult | null>(null);
   const [clearResult, setClearResult] = useState<ActionResult | null>(null);
   const [routineResult, setRoutineResult] = useState<ActionResult | null>(null);
-  const [clearExerciseResult, setClearExerciseResult] = useState<ActionResult | null>(null);
-  const [clearRoutineResult, setClearRoutineResult] = useState<ActionResult | null>(null);
+  const [clearExerciseResult, setClearExerciseResult] =
+    useState<ActionResult | null>(null);
+  const [clearRoutineResult, setClearRoutineResult] =
+    useState<ActionResult | null>(null);
 
   const handleSeedExercises = async () => {
     setIsSeeding(true);
@@ -58,7 +60,9 @@ export function DebugContent({ userId }: DebugContentProps) {
       const result = await seedExercises();
       setSeedResult({
         success: result.success,
-        message: result.success ? result.message! : result.error || "Failed to seed exercises",
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to seed exercises",
       });
     } catch (error) {
       setSeedResult({
@@ -78,7 +82,9 @@ export function DebugContent({ userId }: DebugContentProps) {
       const result = await seedWorkouts();
       setWorkoutResult({
         success: result.success,
-        message: result.success ? result.message! : result.error || "Failed to seed workouts",
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to seed workouts",
       });
     } catch (error) {
       setWorkoutResult({
@@ -98,7 +104,9 @@ export function DebugContent({ userId }: DebugContentProps) {
       const result = await clearWorkouts();
       setClearResult({
         success: result.success,
-        message: result.success ? result.message! : result.error || "Failed to clear workouts",
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to clear workouts",
       });
     } catch (error) {
       setClearResult({
@@ -138,7 +146,9 @@ export function DebugContent({ userId }: DebugContentProps) {
       const result = await clearExercises();
       setClearExerciseResult({
         success: result.success,
-        message: result.success ? result.message! : result.error || "Failed to clear exercises",
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to clear exercises",
       });
     } catch (error) {
       setClearExerciseResult({
@@ -158,7 +168,9 @@ export function DebugContent({ userId }: DebugContentProps) {
       const result = await clearRoutines();
       setClearRoutineResult({
         success: result.success,
-        message: result.success ? result.message! : result.error || "Failed to clear routines",
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to clear routines",
       });
     } catch (error) {
       setClearRoutineResult({
@@ -195,7 +207,9 @@ export function DebugContent({ userId }: DebugContentProps) {
     <div className="space-y-6">
       {/* Exercise Management */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Exercise Management</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          Exercise Management
+        </h3>
         <div className="grid gap-4 md:grid-cols-2">
           {/* Seed Exercise Database */}
           <Card>
@@ -267,7 +281,8 @@ export function DebugContent({ userId }: DebugContentProps) {
             <CardContent className="space-y-4">
               <div className="text-sm text-muted-foreground">
                 <p className="text-red-700">
-                  This will permanently delete all exercises from the exercise library.
+                  This will permanently delete all exercises from the exercise
+                  library.
                 </p>
                 <p className="text-red-600 font-medium mt-2 bg-red-100 p-2 rounded-md border border-red-200">
                   ⚠️ This will affect all users and cannot be undone!
@@ -301,7 +316,9 @@ export function DebugContent({ userId }: DebugContentProps) {
 
       {/* Routine Management */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Routine Management</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          Routine Management
+        </h3>
         <div className="grid gap-4 md:grid-cols-2">
           {/* Seed Sample Routines */}
           <Card>
@@ -369,7 +386,8 @@ export function DebugContent({ userId }: DebugContentProps) {
             <CardContent className="space-y-4">
               <div className="text-sm text-muted-foreground">
                 <p className="text-red-700">
-                  This will permanently delete all your saved routines and their exercise configurations.
+                  This will permanently delete all your saved routines and their
+                  exercise configurations.
                 </p>
                 <p className="text-red-600 font-medium mt-2 bg-red-100 p-2 rounded-md border border-red-200">
                   ⚠️ This action cannot be undone!
@@ -403,7 +421,9 @@ export function DebugContent({ userId }: DebugContentProps) {
 
       {/* Workout Management */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Workout Management</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          Workout Management
+        </h3>
         <div className="grid gap-4 md:grid-cols-2">
           {/* Seed Progressive Workout Journey */}
           <Card>
@@ -431,7 +451,8 @@ export function DebugContent({ userId }: DebugContentProps) {
                   </li>
                 </ul>
                 <p className="mt-2">
-                  Perfect for testing progression statistics and filtering features.
+                  Perfect for testing progression statistics and filtering
+                  features.
                 </p>
               </div>
 
@@ -506,7 +527,9 @@ export function DebugContent({ userId }: DebugContentProps) {
 
       {/* Development Info */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Development Information</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          Development Information
+        </h3>
         <Card>
           <CardHeader>
             <CardTitle>Development Information</CardTitle>
