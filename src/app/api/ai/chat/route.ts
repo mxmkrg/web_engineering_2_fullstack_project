@@ -1,12 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-function getOpenAI() {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY environment variable is required");
+function getOpenAI(apiKey?: string) {
+  // Use user-provided API key if available, otherwise fall back to environment variable
+  const key = apiKey || process.env.OPENAI_API_KEY;
+
+  if (!key) {
+    throw new Error("No OpenAI API key available");
   }
+
   return new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: key,
   });
 }
 
@@ -42,6 +46,9 @@ function truncateMessages(messages: any[], maxTokens: number = 15000) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Get user API key from request header
+    const userApiKey = request.headers.get("x-openai-key");
+
     const { messages } = await request.json();
 
     // Estimate and log token usage
@@ -61,7 +68,7 @@ export async function POST(request: NextRequest) {
       console.log(`🔢 TRUNCATED TOKEN COUNT: ${totalTokens}`);
     }
 
-    const openai = getOpenAI();
+    const openai = getOpenAI(userApiKey || undefined);
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: truncatedMessages,
@@ -83,6 +90,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("OpenAI API Error:", error);
+
+    // Check if error is due to missing API key
+    if (error instanceof Error && error.message.includes("No OpenAI API key")) {
+      return NextResponse.json(
+        {
+          error:
+            "No API key configured. Please add your OpenAI API key in Account Settings.",
+        },
+        { status: 401 },
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to get AI response" },
       { status: 500 },
