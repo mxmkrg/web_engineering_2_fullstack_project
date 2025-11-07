@@ -187,7 +187,7 @@ export const userProfile = sqliteTable("user_profile", {
 });
 
 /**
- * Routines Schema
+ * Routines Schema - Enhanced version with more features
  */
 export const routine = sqliteTable("routine", {
   id: integer("id").primaryKey(),
