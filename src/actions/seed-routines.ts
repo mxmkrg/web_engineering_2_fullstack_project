@@ -6,7 +6,6 @@ import { routine } from "@/db/schema";
 import { getServerSession } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getAllTemplates } from "@/lib/workout-templates";
 
 export async function seedRoutines() {
   const session = await getServerSession();
@@ -15,23 +14,52 @@ export async function seedRoutines() {
   }
 
   try {
-    const templates = getAllTemplates();
-    const routinesToCreate = [];
-
-    // Create routines based on workout templates
-    for (const [templateKey, template] of Object.entries(templates)) {
-      routinesToCreate.push({
+    const routinesToCreate = [
+      {
         userId: session.user.id,
-        name: template.name,
-        description:
-          template.description ||
-          `A ${template.difficulty || "intermediate"} workout focusing on ${template.phase} training.`,
-        templateKey,
-        difficulty: template.difficulty || "intermediate",
-        estimatedDuration: template.baseDuration,
-        isActive: true,
-      });
-    }
+        name: "Push Day",
+        description: "Chest, shoulders, and triceps workout",
+        category: "strength",
+        difficulty: "intermediate",
+        duration: 60,
+        isPublic: false,
+        isTemplate: false,
+        tags: JSON.stringify(["push", "strength", "upper"]),
+      },
+      {
+        userId: session.user.id,
+        name: "Pull Day",
+        description: "Back and biceps workout", 
+        category: "strength",
+        difficulty: "intermediate",
+        duration: 60,
+        isPublic: false,
+        isTemplate: false,
+        tags: JSON.stringify(["pull", "strength", "upper"]),
+      },
+      {
+        userId: session.user.id,
+        name: "Leg Day",
+        description: "Legs and glutes workout",
+        category: "strength", 
+        difficulty: "intermediate",
+        duration: 60,
+        isPublic: false,
+        isTemplate: false,
+        tags: JSON.stringify(["legs", "strength", "lower"]),
+      },
+      {
+        userId: session.user.id,
+        name: "Full Body Beginner",
+        description: "A beginner-friendly full body workout",
+        category: "strength",
+        difficulty: "beginner",
+        duration: 45,
+        isPublic: false,
+        isTemplate: false,
+        tags: JSON.stringify(["full-body", "beginner"]),
+      },
+    ];
 
     // Insert all routines
     await db.insert(routine).values(routinesToCreate);

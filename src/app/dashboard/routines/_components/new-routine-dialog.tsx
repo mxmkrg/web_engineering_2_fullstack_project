@@ -20,31 +20,22 @@ import {
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { createRoutine } from "@/actions/create-routine";
-import { getAllTemplates } from "@/lib/workout-templates";
 
 export function NewRoutineDialog() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState("");
-
-  const templates = getAllTemplates();
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
     try {
       await createRoutine(formData);
       setOpen(false);
-      setSelectedTemplate("");
     } catch (error) {
       console.error("Failed to create routine:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const selectedTemplateData = selectedTemplate
-    ? templates[selectedTemplate]
-    : null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,49 +62,28 @@ export function NewRoutineDialog() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="templateKey">Workout Template</Label>
-            <Select
-              name="templateKey"
-              value={selectedTemplate}
-              onValueChange={setSelectedTemplate}
-              required
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a workout template" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(templates).map(([key, template]) => (
-                  <SelectItem key={key} value={key}>
-                    {template.name} ({template.difficulty || "intermediate"})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {selectedTemplateData && (
-            <div className="space-y-2">
-              <Label>Template Details</Label>
-              <div className="text-sm text-muted-foreground space-y-1">
-                <p>{selectedTemplateData.description}</p>
-                <div className="flex items-center gap-4">
-                  <span>Duration: {selectedTemplateData.baseDuration} min</span>
-                  <span>
-                    Exercises: {selectedTemplateData.exercises.length}
-                  </span>
-                  <span>Phase: {selectedTemplateData.phase}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>
             <Input
               id="description"
               name="description"
               placeholder="Describe your routine..."
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select name="category" defaultValue="strength">
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="strength">Strength</SelectItem>
+                <SelectItem value="hypertrophy">Hypertrophy</SelectItem>
+                <SelectItem value="endurance">Endurance</SelectItem>
+                <SelectItem value="mixed">Mixed</SelectItem>
+                <SelectItem value="custom">Custom</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -128,6 +98,18 @@ export function NewRoutineDialog() {
                 <SelectItem value="advanced">Advanced</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="duration">Estimated Duration (minutes)</Label>
+            <Input
+              id="duration"
+              name="duration"
+              type="number"
+              placeholder="60"
+              min="15"
+              max="180"
+            />
           </div>
 
           <div className="flex justify-end gap-2">

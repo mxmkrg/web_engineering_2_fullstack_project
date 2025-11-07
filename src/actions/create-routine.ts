@@ -1,7 +1,11 @@
+"use server";
+
 import "server-only";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { routine } from "@/db/schema";
+import { getServerSession } from "@/lib/auth-server";
 import { z } from "zod";
 
 const createRoutineSchema = z.object({
@@ -11,10 +15,14 @@ const createRoutineSchema = z.object({
   difficulty: z.enum(["beginner", "intermediate", "advanced"]),
   duration: z.coerce.number().min(15).max(180).optional(),
   tags: z.string().optional(),
-  userId: z.string().min(1),
 });
 
 export async function createRoutine(formData: FormData) {
+  const session = await getServerSession();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
   try {
     const validatedData = createRoutineSchema.parse({
       name: formData.get("name"),
@@ -23,7 +31,6 @@ export async function createRoutine(formData: FormData) {
       difficulty: formData.get("difficulty"),
       duration: formData.get("duration"),
       tags: formData.get("tags"),
-      userId: formData.get("userId"),
     });
 
     await db.insert(routine).values({
@@ -33,19 +40,19 @@ export async function createRoutine(formData: FormData) {
       difficulty: validatedData.difficulty,
       duration: validatedData.duration || null,
       tags: validatedData.tags || null,
-      userId: validatedData.userId,
+      userId: session.user.id,
+      isPublic: false,
+      isTemplate: false,
     });
 
-    revalidatePath("/dashboard/routines");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Error creating routine:", error);
-    return {
-      success: false,
-      error:
-        error instanceof z.ZodError
-          ? error.issues[0].message
-          : "Failed to create routine",
-    };
+    throw new Error(
+      error instanceof z.ZodError
+        ? error.issues[0].message
+        : "Failed to create routine"
+    );
   }
 }

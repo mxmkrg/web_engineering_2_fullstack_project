@@ -8,13 +8,13 @@ import {
   workoutSet,
   exercise,
   routine,
+  routineExercise,
 } from "@/db/schema";
 import { getServerSession } from "@/lib/auth-server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getTemplate } from "@/lib/workout-templates";
 
 const planWorkoutFromRoutineSchema = z.object({
   routineId: z.string().transform((val) => parseInt(val, 10)),
@@ -42,7 +42,7 @@ export async function planWorkoutFromRoutine(formData: FormData) {
   const selectedDate = new Date(workoutDate);
 
   try {
-    // Get the routine with template info
+    // Get the routine data
     const [routineData] = await db
       .select()
       .from(routine)
@@ -53,10 +53,18 @@ export async function planWorkoutFromRoutine(formData: FormData) {
       throw new Error("Routine not found or access denied");
     }
 
-    // Get the workout template
-    const template = getTemplate(routineData.templateKey);
-    if (!template) {
-      throw new Error("Workout template not found");
+    // Get the routine exercises with their associated exercise details
+    const routineExercises = await db
+      .select({
+        routineExercise: routineExercise,
+        exercise: exercise,
+      })
+      .from(routineExercise)
+      .innerJoin(exercise, eq(routineExercise.exerciseId, exercise.id))
+      .where(eq(routineExercise.routineId, routineId));
+
+    if (routineExercises.length === 0) {
+      throw new Error("No exercises found in this routine");
     }
 
     // Create the workout with "planned" status
@@ -64,7 +72,7 @@ export async function planWorkoutFromRoutine(formData: FormData) {
       .insert(workout)
       .values({
         userId: session.user.id,
-        name: `${template.name} (Planned)`,
+        name: `${routineData.name} (Planned)`,
         status: "planned",
         date: selectedDate,
         notes: `Planned workout from routine: ${routineData.name}`,
@@ -72,49 +80,28 @@ export async function planWorkoutFromRoutine(formData: FormData) {
       .returning();
 
     // Process exercises for the workout
-    for (let i = 0; i < template.exercises.length; i++) {
-      const templateExercise = template.exercises[i];
-
-      // Find or create the exercise in the database
-      let [exerciseRecord] = await db
-        .select()
-        .from(exercise)
-        .where(eq(exercise.name, templateExercise.name))
-        .limit(1);
-
-      if (!exerciseRecord) {
-        [exerciseRecord] = await db
-          .insert(exercise)
-          .values({
-            name: templateExercise.name,
-            category: "unknown", // You might want to add category to templates
-            muscleGroups: JSON.stringify([]), // You might want to add muscle groups to templates
-            equipment: "unknown",
-          })
-          .returning();
-      }
+    for (const routineExerciseData of routineExercises) {
+      const { routineExercise: rExercise, exercise: exerciseData } = routineExerciseData;
 
       // Create workout exercise
       const [newWorkoutExercise] = await db
         .insert(workoutExercise)
         .values({
           workoutId: newWorkout.id,
-          exerciseId: exerciseRecord.id,
-          order: i,
-          notes: "",
+          exerciseId: exerciseData.id,
+          order: rExercise.order,
+          notes: rExercise.notes || "",
         })
         .returning();
 
-      // Create sets for this exercise
-      for (let setIndex = 0; setIndex < templateExercise.sets; setIndex++) {
+      // Create sets for this exercise based on the routine's target sets
+      const targetSets = rExercise.targetSets || 3; // Default to 3 sets if not specified
+      for (let setIndex = 0; setIndex < targetSets; setIndex++) {
         await db.insert(workoutSet).values({
           workoutExerciseId: newWorkoutExercise.id,
           setNumber: setIndex + 1,
-          reps: templateExercise.baseReps,
-          weight:
-            templateExercise.baseWeight > 0
-              ? templateExercise.baseWeight
-              : null,
+          reps: rExercise.targetReps ? parseInt(rExercise.targetReps) : 10, // Parse target reps or default to 10
+          weight: rExercise.targetWeight || null,
           completed: false, // Planned workouts start with uncompleted sets
         });
       }

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Calendar, Target, Play } from "lucide-react";
 import { PlanWorkoutFromRoutineDialog } from "./plan-workout-from-routine-dialog";
-import { getTemplate } from "@/lib/workout-templates";
 import { startWorkoutFromRoutine } from "@/actions/start-workout-from-routine";
 
 interface RoutineCardProps {
@@ -19,15 +18,17 @@ interface RoutineCardProps {
     id: number;
     name: string;
     description: string | null;
-    templateKey: string;
+    category: string;
     difficulty: string;
-    estimatedDuration: number | null;
-    isActive: boolean;
+    duration: number | null;
+    isPublic: boolean;
+    isTemplate: boolean;
+    tags: string | null;
+    exerciseCount?: number; // We'll pass this from the server
   };
 }
 
 export function RoutineCard({ routine }: RoutineCardProps) {
-  const template = getTemplate(routine.templateKey);
   const difficultyColors = {
     beginner:
       "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -64,12 +65,12 @@ export function RoutineCard({ routine }: RoutineCardProps) {
           <div className="flex items-center gap-1">
             <Clock className="size-4" />
             <span>
-              {routine.estimatedDuration || template?.baseDuration || 60} min
+              {routine.duration || 60} min
             </span>
           </div>
           <div className="flex items-center gap-1">
             <Target className="size-4" />
-            <span>{template?.exercises?.length || 0} exercises</span>
+            <span>{routine.exerciseCount || 0} exercises</span>
           </div>
         </div>
 

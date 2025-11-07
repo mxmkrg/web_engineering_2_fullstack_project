@@ -13,16 +13,19 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Calendar, CalendarIcon } from "lucide-react";
 import { planWorkoutFromRoutine } from "@/actions/plan-workout-from-routine";
-import { getTemplate } from "@/lib/workout-templates";
 
 interface PlanWorkoutFromRoutineDialogProps {
   routine: {
     id: number;
     name: string;
     description: string | null;
-    templateKey: string;
+    category: string;
     difficulty: string;
-    estimatedDuration: number | null;
+    duration: number | null;
+    isPublic: boolean;
+    isTemplate: boolean;
+    tags: string | null;
+    exerciseCount?: number;
   };
   children: React.ReactNode;
 }
@@ -33,7 +36,6 @@ export function PlanWorkoutFromRoutineDialog({
 }: PlanWorkoutFromRoutineDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const template = getTemplate(routine.templateKey);
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
@@ -66,10 +68,9 @@ export function PlanWorkoutFromRoutineDialog({
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span>
-                Duration:{" "}
-                {routine.estimatedDuration || template?.baseDuration || 60} min
+                Duration: {routine.duration || 60} min
               </span>
-              <span>Exercises: {template?.exercises?.length || 0}</span>
+              <span>Exercises: {routine.exerciseCount || 0}</span>
             </div>
           </div>
 

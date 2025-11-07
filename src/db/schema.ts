@@ -163,26 +163,6 @@ export const workoutSet = sqliteTable("workout_set", {
     .notNull(),
 });
 
-export const routine = sqliteTable("routine", {
-  id: integer("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  description: text("description"),
-  templateKey: text("template_key").notNull(), // Key from workoutTemplates (e.g., 'fullBodyA', 'pushDay')
-  difficulty: text("difficulty").notNull().default("intermediate"), // 'beginner', 'intermediate', 'advanced'
-  estimatedDuration: integer("estimated_duration"), // in minutes
-  isActive: integer("is_active", { mode: "boolean" }).default(true).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
 export const userProfile = sqliteTable("user_profile", {
   id: integer("id").primaryKey(),
   userId: text("user_id")
