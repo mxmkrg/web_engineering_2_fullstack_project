@@ -10,7 +10,10 @@ import { revalidatePath } from "next/cache";
  * Toggle user role between admin and user.
  * This is a development-only function for debugging purposes.
  */
-export async function toggleUserRole(userId: string, newRole: "admin" | "user") {
+export async function toggleUserRole(
+  userId: string,
+  newRole: "admin" | "user",
+) {
   // Only allow in development mode
   if (process.env.NODE_ENV !== "development") {
     return {

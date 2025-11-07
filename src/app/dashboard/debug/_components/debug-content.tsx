@@ -193,7 +193,9 @@ export function DebugContent({ userId }: DebugContentProps) {
       const result = await toggleUserRole(userId, newRole);
       setRoleResult({
         success: result.success,
-        message: result.success ? result.message! : result.error || "Failed to update role",
+        message: result.success
+          ? result.message!
+          : result.error || "Failed to update role",
       });
     } catch (error) {
       setRoleResult({
@@ -550,7 +552,9 @@ export function DebugContent({ userId }: DebugContentProps) {
 
       {/* User Role Management */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">User Role Management</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          User Role Management
+        </h3>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -567,8 +571,9 @@ export function DebugContent({ userId }: DebugContentProps) {
                 <strong>Current User ID:</strong> {userId}
               </p>
               <p>
-                Use this to quickly grant or revoke admin privileges for the current user.
-                This is useful when the database is empty and no admin user exists.
+                Use this to quickly grant or revoke admin privileges for the
+                current user. This is useful when the database is empty and no
+                admin user exists.
               </p>
             </div>
 
