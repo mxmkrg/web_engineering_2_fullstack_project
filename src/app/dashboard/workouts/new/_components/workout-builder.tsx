@@ -46,6 +46,7 @@ export function WorkoutBuilder() {
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [mode, setMode] = useState<"start" | "plan">("start");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -326,11 +327,11 @@ export function WorkoutBuilder() {
                 </div>
               )}
 
-              {!workoutNotes ? (
+              {!showNotes ? (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setWorkoutNotes("")}
+                  onClick={() => setShowNotes(true)}
                   className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 mt-4"
                 >
                   <Plus className="h-3 w-3 mr-1" />
