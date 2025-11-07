@@ -19,10 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   updateUserEmail,
   updateUserName,
   updateUserRole,
+  updateUserEmailVerified,
 } from "@/actions/admin";
 import { Loader2 } from "lucide-react";
 
@@ -51,6 +53,7 @@ export function EditUserDialog({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"user" | "admin">("user");
+  const [emailVerified, setEmailVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -60,6 +63,7 @@ export function EditUserDialog({
       setName(user.name);
       setEmail(user.email);
       setRole(user.role as "user" | "admin");
+      setEmailVerified(user.emailVerified);
       setError(""); // Reset error when switching users
     }
   }, [user]);
@@ -90,6 +94,14 @@ export function EditUserDialog({
       // Update role if changed
       if (role !== user.role) {
         const result = await updateUserRole(user.id, role);
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+      }
+
+      // Update email verification if changed
+      if (emailVerified !== user.emailVerified) {
+        const result = await updateUserEmailVerified(user.id, emailVerified);
         if (!result.success) {
           throw new Error(result.error);
         }
@@ -152,6 +164,22 @@ export function EditUserDialog({
                 <SelectItem value="admin">Admin</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="emailVerified"
+              checked={emailVerified}
+              onCheckedChange={(checked) =>
+                setEmailVerified(checked as boolean)
+              }
+            />
+            <Label
+              htmlFor="emailVerified"
+              className="text-sm font-normal cursor-pointer"
+            >
+              Email verified
+            </Label>
           </div>
 
           {error && (

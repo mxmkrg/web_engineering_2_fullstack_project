@@ -9,6 +9,7 @@ export { deleteUser } from "./delete-user";
 export { updateUserEmail } from "./update-user-email";
 export { updateUserRole } from "./update-user-role";
 export { updateUserName } from "./update-user-name";
+export { updateUserEmailVerified } from "./update-user-email-verified";
 export { makeUserAdmin, makeFirstUserAdmin } from "./make-user-admin";
 export { getAppStats } from "./get-app-stats";
 export type { AppStats } from "./get-app-stats";

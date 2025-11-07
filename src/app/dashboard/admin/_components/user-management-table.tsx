@@ -117,13 +117,10 @@ export function UserManagementTable() {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Total users: {users.length}
-        </p>
+      <div className="mb-4 flex items-center justify-end">
         <div className="flex gap-2">
           <Button
-            variant="default"
+            variant="outline"
             size="sm"
             onClick={() => setCreateUserOpen(true)}
           >
