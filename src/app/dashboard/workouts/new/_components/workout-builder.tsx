@@ -273,7 +273,7 @@ export function WorkoutBuilder() {
                 ) : (
                   <Play className="h-6 w-6 text-blue-600" />
                 )}
-                {mode === "plan" ? "Plan Workout" : "Start Workout"}
+                {mode === "plan" ? "Plan Workout" : "Finish Workout"}
               </h1>
               <p className="text-gray-600 text-sm">
                 {mode === "plan"
@@ -556,7 +556,7 @@ export function WorkoutBuilder() {
                       : "Starting..."
                     : mode === "plan"
                       ? "Plan Workout"
-                      : "Start Workout"}
+                      : "Finish Workout"}
                 </Button>
               </CardContent>
             </Card>
