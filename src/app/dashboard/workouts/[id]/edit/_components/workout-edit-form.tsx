@@ -106,21 +106,24 @@ export function WorkoutEditForm({
     <div className="mx-auto max-w-7xl p-6">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold">Edit Workout</h1>
-          <p className="mt-1 text-muted-foreground">
-            Update your workout details
-          </p>
-        </div>
-        <div className="flex gap-3">
+        <div className="flex items-start gap-6 flex-1">
           <Button
             variant="ghost"
             size="lg"
             onClick={() => router.push("/dashboard/workouts")}
+            className="mt-1"
           >
             <X className="mr-2 h-4 w-4" />
-            Cancel
+            Back
           </Button>
+          <div className="flex-1 text-center">
+            <h1 className="text-4xl font-bold">Edit Workout</h1>
+            <p className="mt-1 text-muted-foreground">
+              Update your workout details
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-3">
           <Button
             size="lg"
             className="bg-blue-500 hover:bg-blue-600"

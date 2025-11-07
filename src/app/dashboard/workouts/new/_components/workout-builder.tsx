@@ -224,18 +224,18 @@ export function WorkoutBuilder() {
       <div className="mx-auto max-w-4xl p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-6">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push("/dashboard/workouts")}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 mt-1"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <div className="flex-1 text-center">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
                 {mode === "plan" ? (
                   <Clock3 className="h-6 w-6 text-blue-600" />
                 ) : (
