@@ -204,10 +204,7 @@ export function AppSidebar({
                 </DropdownMenuItem>
                 {process.env.NODE_ENV === "development" && (
                   <DropdownMenuItem asChild>
-                    <Link
-                      href="/dev"
-                      className="flex w-full items-center"
-                    >
+                    <Link href="/dev" className="flex w-full items-center">
                       <Wrench className="mr-2 size-4" />
                       Dev Tools
                     </Link>

@@ -29,7 +29,7 @@ export async function seedRoutines() {
       {
         userId: session.user.id,
         name: "Pull Day",
-        description: "Back and biceps workout", 
+        description: "Back and biceps workout",
         category: "strength",
         difficulty: "intermediate",
         duration: 60,
@@ -41,7 +41,7 @@ export async function seedRoutines() {
         userId: session.user.id,
         name: "Leg Day",
         description: "Legs and glutes workout",
-        category: "strength", 
+        category: "strength",
         difficulty: "intermediate",
         duration: 60,
         isPublic: false,

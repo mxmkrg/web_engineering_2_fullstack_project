@@ -64,9 +64,7 @@ export function RoutineCard({ routine }: RoutineCardProps) {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="size-4" />
-            <span>
-              {routine.duration || 60} min
-            </span>
+            <span>{routine.duration || 60} min</span>
           </div>
           <div className="flex items-center gap-1">
             <Target className="size-4" />
@@ -74,7 +72,7 @@ export function RoutineCard({ routine }: RoutineCardProps) {
           </div>
         </div>
 
-                <div className="flex space-x-2">
+        <div className="flex space-x-2">
           <PlanWorkoutFromRoutineDialog routine={routine}>
             <Button className="flex-1">
               <Calendar className="size-4 mr-2" />
@@ -83,11 +81,7 @@ export function RoutineCard({ routine }: RoutineCardProps) {
           </PlanWorkoutFromRoutineDialog>
           <form action={startWorkoutFromRoutine}>
             <input type="hidden" name="routineId" value={routine.id} />
-            <Button 
-              type="submit"
-              className="flex-1"
-              variant="outline"
-            >
+            <Button type="submit" className="flex-1" variant="outline">
               <Play className="size-4 mr-2" />
               Start Workout
             </Button>

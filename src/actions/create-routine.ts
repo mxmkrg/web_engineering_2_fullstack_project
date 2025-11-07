@@ -52,7 +52,7 @@ export async function createRoutine(formData: FormData) {
     throw new Error(
       error instanceof z.ZodError
         ? error.issues[0].message
-        : "Failed to create routine"
+        : "Failed to create routine",
     );
   }
 }

@@ -56,7 +56,7 @@ export function RoutineBuilder({
   onRoutineCreated,
 }: RoutineBuilderProps) {
   const [step, setStep] = useState<"basic" | "exercises">("basic");
-  
+
   // Basic routine info
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -67,7 +67,9 @@ export function RoutineBuilder({
   const [newTag, setNewTag] = useState("");
 
   // Exercise management
-  const [routineExercises, setRoutineExercises] = useState<RoutineExercise[]>([]);
+  const [routineExercises, setRoutineExercises] = useState<RoutineExercise[]>(
+    [],
+  );
   const [showExerciseSearch, setShowExerciseSearch] = useState(false);
   const [exerciseSearch, setExerciseSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -144,7 +146,11 @@ export function RoutineBuilder({
     setExerciseSearch("");
   };
 
-  const updateExercise = (index: number, field: keyof RoutineExercise, value: any) => {
+  const updateExercise = (
+    index: number,
+    field: keyof RoutineExercise,
+    value: any,
+  ) => {
     const updated = [...routineExercises];
     (updated[index] as any)[field] = value;
     setRoutineExercises(updated);
@@ -192,16 +198,23 @@ export function RoutineBuilder({
 
   // Filter exercises for search
   const filteredExercises = exercises.filter((exercise) => {
-    const matchesSearch = !exerciseSearch || 
+    const matchesSearch =
+      !exerciseSearch ||
       exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase()) ||
-      exercise.muscleGroups.toLowerCase().includes(exerciseSearch.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
-    
+      exercise.muscleGroups
+        .toLowerCase()
+        .includes(exerciseSearch.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "all" || exercise.category === selectedCategory;
+
     return matchesSearch && matchesCategory;
   });
 
-  const exerciseCategories = ["all", ...Array.from(new Set(exercises.map(ex => ex.category)))];
+  const exerciseCategories = [
+    "all",
+    ...Array.from(new Set(exercises.map((ex) => ex.category))),
+  ];
 
   if (!open) return null;
 
@@ -215,15 +228,14 @@ export function RoutineBuilder({
               {step === "basic" ? "Create Routine" : "Add Exercises"}
             </h2>
             <p className="text-muted-foreground">
-              {step === "basic" 
+              {step === "basic"
                 ? "Set up the basic information for your routine"
-                : "Add exercises to build your workout template"
-              }
+                : "Add exercises to build your workout template"}
             </p>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleClose}
             className="hover:bg-gray-100 rounded-full p-2"
           >
@@ -262,7 +274,11 @@ export function RoutineBuilder({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Category</Label>
-                    <Select value={category} onValueChange={setCategory} required>
+                    <Select
+                      value={category}
+                      onValueChange={setCategory}
+                      required
+                    >
                       <SelectTrigger className="bg-white">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
@@ -278,13 +294,19 @@ export function RoutineBuilder({
 
                   <div className="space-y-2">
                     <Label>Difficulty</Label>
-                    <Select value={difficulty} onValueChange={setDifficulty} required>
+                    <Select
+                      value={difficulty}
+                      onValueChange={setDifficulty}
+                      required
+                    >
                       <SelectTrigger className="bg-white">
                         <SelectValue placeholder="Select difficulty" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border border-gray-200 shadow-lg">
                         <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                        <SelectItem value="intermediate">
+                          Intermediate
+                        </SelectItem>
                         <SelectItem value="advanced">Advanced</SelectItem>
                       </SelectContent>
                     </Select>
@@ -313,14 +335,23 @@ export function RoutineBuilder({
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={handleTagKeyPress}
                     />
-                    <Button type="button" onClick={addTag} variant="outline" className="bg-white hover:bg-gray-50 border border-gray-300">
+                    <Button
+                      type="button"
+                      onClick={addTag}
+                      variant="outline"
+                      className="bg-white hover:bg-gray-50 border border-gray-300"
+                    >
                       Add
                     </Button>
                   </div>
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                           <Button
                             type="button"
@@ -355,12 +386,15 @@ export function RoutineBuilder({
                       {exerciseCategories.map((cat) => (
                         <Button
                           key={cat}
-                          variant={selectedCategory === cat ? "default" : "outline"}
+                          variant={
+                            selectedCategory === cat ? "default" : "outline"
+                          }
                           size="sm"
                           onClick={() => setSelectedCategory(cat)}
-                          className={selectedCategory === cat 
-                            ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                            : "bg-white hover:bg-gray-50 border border-gray-300"
+                          className={
+                            selectedCategory === cat
+                              ? "bg-blue-600 hover:bg-blue-700 text-white"
+                              : "bg-white hover:bg-gray-50 border border-gray-300"
                           }
                         >
                           {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -385,19 +419,29 @@ export function RoutineBuilder({
                           <div>
                             <div className="font-medium">{exercise.name}</div>
                             <div className="text-sm text-muted-foreground">
-                              {exercise.category} • {exercise.equipment || "No equipment"}
+                              {exercise.category} •{" "}
+                              {exercise.equipment || "No equipment"}
                             </div>
                           </div>
                           <Button
                             size="sm"
                             onClick={() => handleAddExercise(exercise)}
-                            disabled={routineExercises.some(re => re.exerciseId === exercise.id)}
-                            className={routineExercises.some(re => re.exerciseId === exercise.id) 
-                              ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                              : "bg-blue-600 hover:bg-blue-700 text-white"
+                            disabled={routineExercises.some(
+                              (re) => re.exerciseId === exercise.id,
+                            )}
+                            className={
+                              routineExercises.some(
+                                (re) => re.exerciseId === exercise.id,
+                              )
+                                ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                                : "bg-blue-600 hover:bg-blue-700 text-white"
                             }
                           >
-                            {routineExercises.some(re => re.exerciseId === exercise.id) ? "Added" : "Add"}
+                            {routineExercises.some(
+                              (re) => re.exerciseId === exercise.id,
+                            )
+                              ? "Added"
+                              : "Add"}
                           </Button>
                         </div>
                       ))}
@@ -413,7 +457,10 @@ export function RoutineBuilder({
                   </CardContent>
                 </Card>
               ) : (
-                <Button onClick={() => setShowExerciseSearch(true)} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                <Button
+                  onClick={() => setShowExerciseSearch(true)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   <Plus className="size-4 mr-2" />
                   Add Exercise
                 </Button>
@@ -427,7 +474,9 @@ export function RoutineBuilder({
                     <Card key={index}>
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
-                          <CardTitle className="text-base">{routineEx.exerciseName}</CardTitle>
+                          <CardTitle className="text-base">
+                            {routineEx.exerciseName}
+                          </CardTitle>
                           <Button
                             variant="outline"
                             size="sm"
@@ -446,7 +495,13 @@ export function RoutineBuilder({
                               type="number"
                               min="1"
                               value={routineEx.targetSets}
-                              onChange={(e) => updateExercise(index, "targetSets", parseInt(e.target.value) || 1)}
+                              onChange={(e) =>
+                                updateExercise(
+                                  index,
+                                  "targetSets",
+                                  parseInt(e.target.value) || 1,
+                                )
+                              }
                             />
                           </div>
                           <div>
@@ -454,28 +509,52 @@ export function RoutineBuilder({
                             <Input
                               placeholder="e.g., 8-12 or 10"
                               value={routineEx.targetReps}
-                              onChange={(e) => updateExercise(index, "targetReps", e.target.value)}
+                              onChange={(e) =>
+                                updateExercise(
+                                  index,
+                                  "targetReps",
+                                  e.target.value,
+                                )
+                              }
                             />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <Label className="text-xs">Weight (kg) - Optional</Label>
+                            <Label className="text-xs">
+                              Weight (kg) - Optional
+                            </Label>
                             <Input
                               type="number"
                               step="0.5"
                               placeholder="Starting weight"
                               value={routineEx.targetWeight || ""}
-                              onChange={(e) => updateExercise(index, "targetWeight", e.target.value ? parseFloat(e.target.value) : undefined)}
+                              onChange={(e) =>
+                                updateExercise(
+                                  index,
+                                  "targetWeight",
+                                  e.target.value
+                                    ? parseFloat(e.target.value)
+                                    : undefined,
+                                )
+                              }
                             />
                           </div>
                           <div>
-                            <Label className="text-xs">Rest Period (seconds)</Label>
+                            <Label className="text-xs">
+                              Rest Period (seconds)
+                            </Label>
                             <Input
                               type="number"
                               min="30"
                               value={routineEx.restPeriod || 60}
-                              onChange={(e) => updateExercise(index, "restPeriod", parseInt(e.target.value) || 60)}
+                              onChange={(e) =>
+                                updateExercise(
+                                  index,
+                                  "restPeriod",
+                                  parseInt(e.target.value) || 60,
+                                )
+                              }
                             />
                           </div>
                         </div>
@@ -484,7 +563,9 @@ export function RoutineBuilder({
                           <Input
                             placeholder="Exercise-specific notes..."
                             value={routineEx.notes || ""}
-                            onChange={(e) => updateExercise(index, "notes", e.target.value)}
+                            onChange={(e) =>
+                              updateExercise(index, "notes", e.target.value)
+                            }
                           />
                         </div>
                       </CardContent>
@@ -511,11 +592,18 @@ export function RoutineBuilder({
               Cancel
             </Button>
             {step === "basic" ? (
-              <Button onClick={handleNextStep} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button
+                onClick={handleNextStep}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
                 Next: Add Exercises
               </Button>
             ) : (
-              <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
                 <Save className="size-4 mr-2" />
                 {isSaving ? "Creating..." : "Create Routine"}
               </Button>

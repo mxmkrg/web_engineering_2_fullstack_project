@@ -67,9 +67,7 @@ export function PlanWorkoutFromRoutineDialog({
               {routine.description || "No description available"}
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>
-                Duration: {routine.duration || 60} min
-              </span>
+              <span>Duration: {routine.duration || 60} min</span>
               <span>Exercises: {routine.exerciseCount || 0}</span>
             </div>
           </div>

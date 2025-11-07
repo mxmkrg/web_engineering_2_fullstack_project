@@ -18,7 +18,9 @@ export function ProgressControls({
         <Checkbox
           id="include-planned-progress"
           checked={includePlanned}
-          onCheckedChange={(checked) => onIncludePlannedChange(checked === true)}
+          onCheckedChange={(checked) =>
+            onIncludePlannedChange(checked === true)
+          }
           disabled={true}
         />
         <label

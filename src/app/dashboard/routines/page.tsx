@@ -24,7 +24,7 @@ async function getUserRoutines(userId: string) {
           .select({ count: sql<number>`count(*)` })
           .from(routineExercise)
           .where(eq(routineExercise.routineId, r.id));
-        
+
         return {
           ...r,
           exerciseCount: Number(exerciseCount[0]?.count) || 0,
@@ -34,7 +34,7 @@ async function getUserRoutines(userId: string) {
               ? JSON.parse(r.tags)
               : [],
         };
-      })
+      }),
     );
 
     return routinesWithCounts;
@@ -133,7 +133,9 @@ async function createRoutine(formData: FormData) {
     const validatedData = createRoutineSchema.parse(rawData);
 
     const tags = validatedData.tags ? JSON.parse(validatedData.tags) : [];
-    const exercises = validatedData.exercises ? JSON.parse(validatedData.exercises) : [];
+    const exercises = validatedData.exercises
+      ? JSON.parse(validatedData.exercises)
+      : [];
 
     // Validate exercises if provided
     if (exercises.length > 0) {
@@ -145,30 +147,35 @@ async function createRoutine(formData: FormData) {
     // Create routine in a transaction
     const result = await db.transaction(async (tx) => {
       // Insert routine
-      const [newRoutine] = await tx.insert(routine).values({
-        userId: validatedData.userId,
-        name: validatedData.name,
-        description: validatedData.description || null,
-        category: validatedData.category,
-        difficulty: validatedData.difficulty,
-        duration: validatedData.duration || null,
-        tags: JSON.stringify(tags),
-        isPublic: false,
-        isTemplate: true, // Mark as template since we're building it
-      }).returning();
+      const [newRoutine] = await tx
+        .insert(routine)
+        .values({
+          userId: validatedData.userId,
+          name: validatedData.name,
+          description: validatedData.description || null,
+          category: validatedData.category,
+          difficulty: validatedData.difficulty,
+          duration: validatedData.duration || null,
+          tags: JSON.stringify(tags),
+          isPublic: false,
+          isTemplate: true, // Mark as template since we're building it
+        })
+        .returning();
 
       // Insert routine exercises if any
       if (exercises.length > 0) {
-        const routineExercisesToInsert = exercises.map((ex: any, index: number) => ({
-          routineId: newRoutine.id,
-          exerciseId: ex.exerciseId,
-          order: index,
-          targetSets: ex.targetSets,
-          targetReps: ex.targetReps,
-          targetWeight: ex.targetWeight || null,
-          restPeriod: ex.restPeriod || null,
-          notes: ex.notes || null,
-        }));
+        const routineExercisesToInsert = exercises.map(
+          (ex: any, index: number) => ({
+            routineId: newRoutine.id,
+            exerciseId: ex.exerciseId,
+            order: index,
+            targetSets: ex.targetSets,
+            targetReps: ex.targetReps,
+            targetWeight: ex.targetWeight || null,
+            restPeriod: ex.restPeriod || null,
+            notes: ex.notes || null,
+          }),
+        );
 
         await tx.insert(routineExercise).values(routineExercisesToInsert);
       }

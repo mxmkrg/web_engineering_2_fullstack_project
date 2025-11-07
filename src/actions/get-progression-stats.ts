@@ -12,7 +12,11 @@ export interface DateFilter {
   label: string;
 }
 
-function buildDateFilterConditions(userId: string, dateFilter?: DateFilter, includePlanned: boolean = false) {
+function buildDateFilterConditions(
+  userId: string,
+  dateFilter?: DateFilter,
+  includePlanned: boolean = false,
+) {
   const statuses = includePlanned ? ["completed", "planned"] : ["completed"];
   const baseConditions = [
     eq(workout.userId, userId),
