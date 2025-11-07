@@ -1,9 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAI() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY environment variable is required");
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 // Simple token counter (rough estimation: 1 token ≈ 4 characters for English)
 function estimateTokens(text: string): number {
@@ -56,6 +61,7 @@ export async function POST(request: NextRequest) {
       console.log(`🔢 TRUNCATED TOKEN COUNT: ${totalTokens}`);
     }
 
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: truncatedMessages,
