@@ -27,31 +27,31 @@ export function DevContent({ userId }: DevContentProps) {
     setSeedResult(null);
 
     try {
-      const response = await fetch('/api/dev/seed-routines', {
-        method: 'POST',
+      const response = await fetch("/api/dev/seed-routines", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId }),
       });
 
       const result = await response.json();
-      
+
       if (response.ok) {
         setSeedResult({
           success: true,
-          message: result.message || 'Sample routines seeded successfully!',
+          message: result.message || "Sample routines seeded successfully!",
         });
       } else {
         setSeedResult({
           success: false,
-          message: result.error || 'Failed to seed routines',
+          message: result.error || "Failed to seed routines",
         });
       }
     } catch (error) {
       setSeedResult({
         success: false,
-        message: 'Network error while seeding routines',
+        message: "Network error while seeding routines",
       });
     } finally {
       setIsSeeding(false);
@@ -76,20 +76,32 @@ export function DevContent({ userId }: DevContentProps) {
             <div className="text-sm text-muted-foreground">
               This will create the following sample routines:
               <ul className="list-disc list-inside mt-2 space-y-1">
-                <li><strong>Push Day</strong> - Chest, shoulders, triceps workout</li>
-                <li><strong>Pull Day</strong> - Back and biceps workout</li>
-                <li><strong>Leg Day</strong> - Lower body strength workout</li>
-                <li><strong>Full Body Beginner</strong> - Complete body workout</li>
-                <li><strong>HIIT Cardio</strong> - High-intensity cardio routine</li>
+                <li>
+                  <strong>Push Day</strong> - Chest, shoulders, triceps workout
+                </li>
+                <li>
+                  <strong>Pull Day</strong> - Back and biceps workout
+                </li>
+                <li>
+                  <strong>Leg Day</strong> - Lower body strength workout
+                </li>
+                <li>
+                  <strong>Full Body Beginner</strong> - Complete body workout
+                </li>
+                <li>
+                  <strong>HIIT Cardio</strong> - High-intensity cardio routine
+                </li>
               </ul>
             </div>
-            
+
             {seedResult && (
-              <div className={`flex items-center gap-2 p-3 rounded-lg ${
-                seedResult.success 
-                  ? 'bg-green-50 text-green-700 border border-green-200' 
-                  : 'bg-red-50 text-red-700 border border-red-200'
-              }`}>
+              <div
+                className={`flex items-center gap-2 p-3 rounded-lg ${
+                  seedResult.success
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-red-50 text-red-700 border border-red-200"
+                }`}
+              >
                 {seedResult.success ? (
                   <CheckCircle className="size-4" />
                 ) : (
@@ -98,8 +110,8 @@ export function DevContent({ userId }: DevContentProps) {
                 <span className="text-sm">{seedResult.message}</span>
               </div>
             )}
-            
-            <Button 
+
+            <Button
               onClick={handleSeedRoutines}
               disabled={isSeeding}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
@@ -135,7 +147,8 @@ export function DevContent({ userId }: DevContentProps) {
                 <strong>User ID:</strong> {userId}
               </p>
               <p>
-                <strong>Note:</strong> This page is only accessible in development mode and will redirect to dashboard in production.
+                <strong>Note:</strong> This page is only accessible in
+                development mode and will redirect to dashboard in production.
               </p>
             </div>
           </CardContent>

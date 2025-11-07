@@ -44,10 +44,15 @@ export async function POST(request: NextRequest) {
     console.log(`🔢 ORIGINAL TOKEN COUNT: ${originalTokens}`);
 
     // Truncate if necessary - use much lower limit to stay under OpenAI limits
-    const { messages: truncatedMessages, totalTokens } = truncateMessages(messages, 15000);
+    const { messages: truncatedMessages, totalTokens } = truncateMessages(
+      messages,
+      15000,
+    );
 
     if (truncatedMessages.length < messages.length) {
-      console.log(`✂️ TRUNCATED: ${messages.length} -> ${truncatedMessages.length} messages`);
+      console.log(
+        `✂️ TRUNCATED: ${messages.length} -> ${truncatedMessages.length} messages`,
+      );
       console.log(`🔢 TRUNCATED TOKEN COUNT: ${totalTokens}`);
     }
 
@@ -63,7 +68,7 @@ export async function POST(request: NextRequest) {
       console.log(`📊 ACTUAL USAGE:`, {
         prompt_tokens: completion.usage.prompt_tokens,
         completion_tokens: completion.usage.completion_tokens,
-        total_tokens: completion.usage.total_tokens
+        total_tokens: completion.usage.total_tokens,
       });
     }
 

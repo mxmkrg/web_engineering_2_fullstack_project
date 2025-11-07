@@ -60,7 +60,8 @@ export default async function ProgressPage({
         <div>
           <h1 className="text-3xl font-bold">Progress Tracking</h1>
           <p className="text-muted-foreground">
-            Analyze your fitness journey and track improvements (only saved workouts)
+            Analyze your fitness journey and track improvements (only saved
+            workouts)
           </p>
         </div>
       </div>
